@@ -16889,6 +16889,27 @@ async function runSync(opts) {
       } else warnings.push(`could not push the zone map (${res.status})`);
     }
   }
+  {
+    const res = await doFetch(`${base}/failure-policy`, { headers });
+    if (res.ok) {
+      try {
+        const { policy } = await res.json();
+        const value = policy === "reads" || policy === "journal" ? policy : "closed";
+        const target = join22(root, ".zones", "state", "failure-policy");
+        const current = existsSync15(target) ? readFileSync18(target, "utf8").trim() : null;
+        if (current !== value) {
+          mkdirSync8(dirname6(target), { recursive: true });
+          const tmp = `${target}.tmp`;
+          writeFileSync12(tmp, `${value}
+`);
+          renameSync(tmp, target);
+          log(`  failure policy: ${value} \u2014 what the hook's wrapper honors when the core is down`);
+        }
+      } catch {
+        warnings.push("the failure policy could not be read \u2014 the local one was left alone");
+      }
+    }
+  }
   let eventsPushed = 0;
   if (taskId) {
     const logPath = join22(root, ".zones", "state", "events", `${taskId}.jsonl`);

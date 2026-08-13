@@ -41,14 +41,75 @@ deny() {
   printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"CC hook unavailable — denying by default (%s). Fix it from OUTSIDE this session: run `cycle doctor` in a terminal, or disable the commitcycle plugin and open a new session to work unenforced while you do."}}' "$1"
 }
 
+allow_degraded() {
+  printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow","permissionDecisionReason":"%s"}}' "$1"
+}
+
 # Read stdin once; it is not replayable. `cat` is external too: if the PATH is
 # so broken it is gone, carry on with empty input — the node search below will
 # name the real cause instead of this line crashing the wrapper.
 INPUT=$(cat 2>/dev/null || :)
 
-if [ ! -f "$CORE" ]; then
-  deny "the hook core is missing at hook/dist/core.js"
+# The failure policy (CC-239, D-58): what this wrapper does when the core
+# cannot answer is the REPOSITORY'S decision, made by a person on the board,
+# synced down by `cycle sync` as one line in .zones/state/failure-policy.
+# Absent file — or any parse failure below — means closed, today's behavior:
+# a guard's only shippable default. The file is part of the trust root the
+# hook seals against agent writes (CC-237/D-57), and everything here uses
+# shell builtins only, because the premise of this code path is that nothing
+# else can be assumed to work.
+#
+# no_answer replaces every direct deny for the cannot-answer causes:
+#   closed  → deny, exactly as before.
+#   reads   → a fixed name-list of read-only tools passes, announced as
+#             degraded; everything else denies. The wrapper cannot see zones,
+#             so a repository declaring secrets accepted that risk when a
+#             person chose this mode — the board says so before saving.
+#   journal → the raw payload is appended to .zones/state/guard/journal.jsonl
+#             and the call passes, announced as unwitnessed; if the journal
+#             cannot be written the mode falls back to closed, because
+#             allow-without-record is the one combination nobody chose.
+no_answer() {
+  _cwd="${INPUT#*\"cwd\":\"}"
+  if [ "$_cwd" = "$INPUT" ]; then _cwd=""; else _cwd="${_cwd%%\"*}"; fi
+  _root=""; _policy="closed"
+  d="$_cwd"
+  while [ -n "$d" ] && [ "$d" != "/" ]; do
+    if [ -f "$d/.zones/state/failure-policy" ]; then
+      _root="$d"
+      IFS= read -r _p < "$d/.zones/state/failure-policy" 2>/dev/null || _p="closed"
+      case "$_p" in reads|journal) _policy="$_p" ;; esac
+      break
+    fi
+    d="${d%/*}"
+  done
+
+  if [ "$_policy" = "reads" ]; then
+    _tool="${INPUT#*\"tool_name\":\"}"
+    if [ "$_tool" = "$INPUT" ]; then _tool="${INPUT#*\"tool_name\": \"}"; fi
+    if [ "$_tool" = "$INPUT" ]; then _tool=""; else _tool="${_tool%%\"*}"; fi
+    case "$_tool" in
+      Read|Glob|Grep)
+        allow_degraded "CC hook down ($1) — allowed by this repository's failure policy: reads stay open while the core is out. Writes are still denied. Run \`cycle doctor\` in a terminal when you can."
+        exit 0 ;;
+    esac
+    deny "$1 — the failure policy keeps reads open, and this tool is not on the read list"
+    exit 0
+  fi
+
+  if [ "$_policy" = "journal" ] && [ -n "$_root" ]; then
+    if printf '%s\n' "$INPUT" >> "$_root/.zones/state/guard/journal.jsonl" 2>/dev/null; then
+      allow_degraded "CC hook down ($1) — allowed and journaled by this repository's failure policy. Nothing is enforcing zones until the core returns, and this call is on the unwitnessed record."
+      exit 0
+    fi
+  fi
+
+  deny "$1"
   exit 0
+}
+
+if [ ! -f "$CORE" ]; then
+  no_answer "the hook core is missing at hook/dist/core.js"
 fi
 
 # Where node actually is (CC-233). The harness strips the PATH, and node is
@@ -79,7 +140,7 @@ else
 fi
 
 if [ -z "$NODE_BIN" ]; then
-  deny "node was not found on the PATH or in the usual install locations — set CC_HOOK_NODE to your node binary"
+  no_answer "node was not found on the PATH or in the usual install locations — set CC_HOOK_NODE to your node binary"
   exit 0
 fi
 
@@ -102,7 +163,7 @@ case "$OUT" in
 esac
 
 if [ "$STATUS" -ne 0 ]; then
-  deny "the hook core did not answer"
+  no_answer "the hook core did not answer"
   exit 0
 fi
 
