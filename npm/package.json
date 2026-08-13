@@ -1,0 +1,14 @@
+{
+  "name": "commitcycle",
+  "version": "0.1.5",
+  "description": "Least privilege for AI coding agents: zones with owners, a five-state board with a gate, and grants bound to a task and a branch.",
+  "type": "module",
+  "bin": { "cycle": "./bin/cycle.js" },
+  "files": ["bin"],
+  "engines": { "node": ">=18" },
+  "author": "Paulo L. <paulo.lima@outlook.com>",
+  "homepage": "https://commitcycle.com",
+  "repository": { "type": "git", "url": "git+https://github.com/pow-paulinho/commitcycle-plugin.git" },
+  "keywords": ["ai-agents", "least-privilege", "change-management", "guardrails", "claude-code"],
+  "license": "UNLICENSED"
+}

@@ -23,7 +23,7 @@ gates everything will decline all of it.
 Check for `.zones/zones.yml` in the repository root.
 
 - **It exists** — CommitCycle is already set up. Do not rewrite it. Say what is
-  protected, and offer `cc doctor` if something seems wrong.
+  protected, and offer `cycle doctor` if something seems wrong.
 - **It does not** — continue.
 
 Check the repository is a git repository. CommitCycle binds tasks to branches,
@@ -114,7 +114,7 @@ Then ask which of three they are: they have a board already, they want one now,
 or they want to run locally first.
 
 **They want one now.** Say the sign-in is an address and a six-digit code, and
-hand them the command to run — `cc login`. **Do not run it for them and never
+hand them the command to run — `cycle login`. **Do not run it for them and never
 handle the code.** It is a credential, and an agent typing one on somebody's
 behalf is the exact shape this product exists to make impossible. Wait, then
 continue with the address and organization below.

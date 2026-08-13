@@ -20,7 +20,7 @@ Three checks, in this order, and each one that fails ends it silently:
 2. **The request will change something.** Reading, explaining, answering a
    question about the code: none of that needs a task. Do not file one for
    "what does this function do".
-3. **No task is already active.** Run `cc status`. A branch named
+3. **No task is already active.** Run `cycle status`. A branch named
    `task/CC-x-…` with a live grant means the person is already inside one —
    continue the work, do not file a second.
 
@@ -48,14 +48,14 @@ conversation, not an answer, and a spec nobody corrected is the one that gets
 argued about at the end. If there is no board configured, ask the four questions
 yourself and keep them just as short.
 
-**Save it with `cc_scope`, then start it with `cc start <id>`.**
+**Save it with `cc_scope`, then start it with `cycle start <id>`.**
 
 ## The line this does not cross
 
-`cc start` is the gate, and the gate is the person's call — it is what issues
+`cycle start` is the gate, and the gate is the person's call — it is what issues
 the grant that opens a protected area. Run it when they say to, and if it
 refuses, read the refusal out and stop. A high-risk zone needs its owner, and
-the answer arrives in this session (`cc requests`). **Do not offer to remove a
+the answer arrives in this session (`cycle requests`). **Do not offer to remove a
 zone, widen one, or work around a block.** An agent proposing that is worse than
 the block it is avoiding, and it is the exact failure this product exists to
 catch.
