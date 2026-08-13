@@ -1,0 +1,16 @@
+{
+  "name": "commitcycle",
+  "version": "0.1.0",
+  "description": "Least privilege for AI coding agents: zones with owners, a five-state board with a gate, and grants bound to a task and a branch.",
+  "author": {
+    "name": "CommitCycle"
+  },
+  "homepage": "https://commitcycle.com",
+  "repository": "https://github.com/pow-paulinho/commitcycle-plugin",
+  "keywords": [
+    "ai-agents",
+    "least-privilege",
+    "change-management",
+    "guardrails"
+  ]
+}

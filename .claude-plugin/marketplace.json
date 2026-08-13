@@ -1,0 +1,14 @@
+{
+  "name": "commitcycle",
+  "owner": {
+    "name": "CommitCycle",
+    "url": "https://commitcycle.com"
+  },
+  "plugins": [
+    {
+      "name": "commitcycle",
+      "source": "./plugin",
+      "description": "Least privilege for AI coding agents: zones with owners, a five-state board with a gate, and grants bound to one task and one branch."
+    }
+  ]
+}

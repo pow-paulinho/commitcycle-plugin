@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "commitcycle": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/bin/cc.js", "mcp"]
+    }
+  }
+}
