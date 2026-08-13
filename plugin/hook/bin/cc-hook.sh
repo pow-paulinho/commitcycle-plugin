@@ -38,7 +38,7 @@ CORE="$DIR/../dist/core.js"
 # $1 is always one of the fixed strings below — never input — so it is safe to
 # interpolate into JSON.
 deny() {
-  printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"CC hook unavailable — denying by default (%s). Fix it from OUTSIDE this session: run `cc doctor` in a terminal, or disable the commitcycle plugin and open a new session to work unenforced while you do."}}' "$1"
+  printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"CC hook unavailable — denying by default (%s). Fix it from OUTSIDE this session: run `cycle doctor` in a terminal, or disable the commitcycle plugin and open a new session to work unenforced while you do."}}' "$1"
 }
 
 # Read stdin once; it is not replayable. `cat` is external too: if the PATH is
