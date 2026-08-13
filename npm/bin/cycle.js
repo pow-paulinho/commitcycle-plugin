@@ -13982,6 +13982,117 @@ function renderTaskRecord(r) {
 // ../../apps/api/src/identity.ts
 var enc = new TextEncoder();
 
+// ../../apps/api/src/mail/index.ts
+var TEMPLATES = {
+  "sign-in-code": {
+    title: "Sign-in code",
+    when: "Sent on every sign-in and sign-up, from POST /v1/auth/code.",
+    subject: "{{code}} \u2014 your CommitCycle code",
+    text: [
+      "{{code}} is your CommitCycle sign-in code.",
+      "",
+      "Type it back into the page that asked for it. It expires in {{ttl}} minutes and works once.",
+      "Nobody at CommitCycle will ever ask you for it.",
+      "",
+      "If you did not ask for this, nothing has happened to your account and nothing needs doing:",
+      "a code on its own signs nobody in.",
+      "",
+      "\u2014 CommitCycle"
+    ].join("\n"),
+    sample: { code: "482193", ttl: "10" }
+  },
+  "early-access": {
+    title: "Early access",
+    when: "Not sent yet \u2014 apps/web has no mail transport, and D-30 keeps this registry out of that app. Wiring it is its own task.",
+    subject: "You're early \u2014 CommitCycle is already running",
+    text: [
+      "You're early.",
+      "",
+      "Not a waiting list \u2014 there is no queue to be in. CommitCycle is running today: boards, the",
+      "gate, the audit trail, and a connector that sets a repository up from inside your editor.",
+      "What you are early for is the invitation, because access stays invite-only while this is",
+      "small.",
+      "",
+      "What you will run first:",
+      "",
+      "    cycle init",
+      "",
+      "You said you work in {{harness}}. That is the point of the whole thing: CommitCycle sits",
+      "between the agent and the repository, so a write into somewhere risky gets stopped and asked",
+      "about rather than found in the diff afterwards.",
+      "",
+      "Being straight about today: the board, the gate and the setup flow all work from the browser.",
+      "Enforcement \u2014 the part that actually blocks a write \u2014 needs a small binary on your own",
+      "machine, on purpose. Nothing that runs in someone else's cloud can stop a file being written",
+      "on yours.",
+      "",
+      "Your invitation arrives at this address. The two questions you answered decide what gets built",
+      "next and nothing else.",
+      "",
+      "\u2014 CommitCycle"
+    ].join("\n"),
+    sample: { harness: "Claude Code" }
+  },
+  invite: {
+    title: "Invite a machine",
+    when: "Not sent yet \u2014 the console hands this line over on screen. Built so the registry is exercised more than once.",
+    subject: "Connect a machine to {{board}}",
+    text: [
+      "{{invitedBy}} wants to connect a machine to the CommitCycle board for {{board}}.",
+      "",
+      "Run this where the work happens \u2014 in a terminal, or in the editor session you already trust:",
+      "",
+      "    {{command}}",
+      "",
+      "It works once and expires in {{ttl}} minutes. Read it before you run it; anyone holding this",
+      "line can connect a machine to that board until it expires, so treat it like a password.",
+      "",
+      "No `cycle` on that machine yet? Install the CommitCycle plugin in your editor first \u2014 it",
+      "brings the command with it.",
+      "",
+      "\u2014 CommitCycle"
+    ].join("\n"),
+    sample: {
+      board: "pow/commitcycle",
+      invitedBy: "paulo@commitcycle.com",
+      command: "cycle connect 7f3a91c4-2b8e-4d1a-9e77-c0a5b2d84f16",
+      ttl: "10"
+    }
+  },
+  "owner-approval": {
+    title: "Access request for an owner",
+    when: "Not sent yet \u2014 escalation.ts records the request and the console shows it. This is the notification that closes the loop.",
+    subject: "{{requester}} needs {{mode}} on {{zone}}",
+    text: [
+      "{{requester}} is blocked on {{zone}}.",
+      "",
+      "They are asking for {{mode}} access to {{zone}}, which you own, for {{task}}.",
+      "",
+      "Why:",
+      "    {{reason}}",
+      "",
+      "If you do nothing, they said they would: {{alternative}}",
+      "",
+      "Answer it in the console under Access requests, or from a terminal with `cycle requests`.",
+      "Approving opens the zone for that one task, for as long as you say, and the trail records",
+      "which door answered.",
+      "",
+      "You are getting this because zones.yml names you as the owner of {{zone}}.",
+      "",
+      "\u2014 CommitCycle"
+    ].join("\n"),
+    sample: {
+      requester: "ana@commitcycle.com",
+      zone: "Database schema",
+      mode: "write",
+      task: "CC-250 \u2014 Two organizations cannot both file their first access request",
+      reason: "REQ ids are minted per scope from a count while the migration declares them globally unique, so the second tenant to escalate gets a 500. Fixing it means keying the table.",
+      alternative: "Ship the mint change against a spike_ table and leave the migration for a follow-up."
+    }
+  }
+};
+var TEMPLATE_NAMES = Object.keys(TEMPLATES).sort();
+
 // ../../apps/api/src/mcp-http.ts
 init_tools_list();
 
