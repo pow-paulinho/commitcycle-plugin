@@ -13680,6 +13680,17 @@ var EventType = external_exports.enum([
    * allowing them silently is what made the Layer 2 guarantee narrower than the
    * product claims while still reporting success. */
   "unwatched",
+  /* A path that changed while nothing watched (CC-238).
+   *
+   * Written once per session start, when the hook finds the tree different
+   * from the last snapshot anything observed and no event claims the change:
+   * a downed core, a disabled plugin, a terminal, a colleague. The sibling of
+   * `unwatched` with the opposite subject — there, a tool ran and the matrix
+   * could not see WHAT it did; here, nothing ran through the hook at all and
+   * the file says something happened anyway. The closing gate pairs these
+   * with the diff by path, which turns a silent gap into a question a person
+   * can answer (D-40). */
+  "unwitnessed",
   "discard",
   "promote",
   "gate_lowered",
