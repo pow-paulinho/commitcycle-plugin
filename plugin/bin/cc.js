@@ -17100,7 +17100,23 @@ async function runStart(input) {
       return false;
     }
   };
+  const repointed = (() => {
+    if (!exists()) return false;
+    try {
+      execFileSync6("git", ["merge-base", "--is-ancestor", branch, "HEAD"], { cwd: root, stdio: "pipe" });
+      const tip = execFileSync6("git", ["rev-parse", branch], { cwd: root, stdio: "pipe" }).toString().trim();
+      const head = execFileSync6("git", ["rev-parse", "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
+      if (tip === head) return false;
+      execFileSync6("git", ["branch", "-f", branch, "HEAD"], { cwd: root, stdio: "pipe" });
+      return true;
+    } catch {
+      return false;
+    }
+  })();
   execFileSync6("git", exists() ? ["checkout", branch] : ["checkout", "-b", branch], { cwd: root, stdio: "pipe" });
+  if (repointed) {
+    console.error(`  note: ${branch} pointed at history HEAD already contains \u2014 re-pointed to HEAD instead of rewinding the checkout`);
+  }
   if (state !== "Todo") await call3(`/tasks/${taskId}/transition`, "POST", { to: "Todo", actor });
   const gate = await call3(`/tasks/${taskId}/transition`, "POST", {
     to: "In Progress",
