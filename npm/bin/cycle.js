@@ -13737,7 +13737,7 @@ function checkClosing(input) {
     return {
       failures: [{
         field: "manifest",
-        message: "No change manifest. Run `cc verify` on the branch \u2014 closing without knowing what changed is the thing this gate exists to prevent."
+        message: "No change manifest. Run `cycle verify` on the branch \u2014 closing without knowing what changed is the thing this gate exists to prevent."
       }],
       warnings
     };
@@ -13768,7 +13768,7 @@ function checkClosing(input) {
   if (unzoned.length) {
     warnings.push({
       field: "manifest",
-      message: `${unzoned.length} changed file(s) are in no zone: ${unzoned.slice(0, 5).join(", ")}${unzoned.length > 5 ? ` and ${unzoned.length - 5} more` : ""}. Should any be protected? \`cc protect <glob> --zone <id>\` if yes, \`cc dismiss <glob>\` to stop being asked.`
+      message: `${unzoned.length} changed file(s) are in no zone: ${unzoned.slice(0, 5).join(", ")}${unzoned.length > 5 ? ` and ${unzoned.length - 5} more` : ""}. Should any be protected? \`cycle protect <glob> --zone <id>\` if yes, \`cycle dismiss <glob>\` to stop being asked.`
     });
   }
   if (task.quality_gate && task.quality_gate !== "none" && evidence.length === 0) {
