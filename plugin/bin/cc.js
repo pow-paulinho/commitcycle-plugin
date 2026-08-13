@@ -17359,6 +17359,25 @@ import { execFileSync as execFileSync7 } from "node:child_process";
 function currentBranch2(env = process.env, fromGit = gitBranch) {
   return env.CC_DEPLOY_BRANCH || env.WORKERS_CI_BRANCH || env.GITHUB_REF_NAME || env.VERCEL_GIT_COMMIT_REF || env.BRANCH || env.CI_COMMIT_REF_NAME || env.BUILDKITE_BRANCH || fromGit() || null;
 }
+var headIsTrunkTip = (trunk2) => {
+  try {
+    execFileSync7("git", ["fetch", "--quiet", "origin", trunk2], {
+      stdio: ["ignore", "ignore", "ignore"],
+      timeout: 2e4
+    });
+    const head = execFileSync7("git", ["rev-parse", "HEAD"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"]
+    }).trim();
+    const tip = execFileSync7("git", ["rev-parse", `origin/${trunk2}`], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"]
+    }).trim();
+    return Boolean(head) && head === tip;
+  } catch {
+    return null;
+  }
+};
 var gitBranch = () => {
   try {
     const name = execFileSync7("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
@@ -17382,19 +17401,30 @@ function decide2(input) {
     };
   }
   if (input.branch !== trunk2) {
+    if (input.atTrunkTip === true) {
+      return {
+        action: "deploy",
+        why: `this is "${input.branch}", and its HEAD is exactly the tip of origin/${trunk2} (verified after fetch) \u2014 the bytes deploying are the trunk\u2019s`
+      };
+    }
     return {
       action: "skip",
       why: `this is "${input.branch}" and production deploys from "${trunk2}", so nothing was deployed.
-  Merge it, or set CC_ALLOW_BRANCH_DEPLOY=1 to deploy this branch on purpose.`
+  Merge it, push it to ${trunk2} \u2014 a checkout sitting exactly on origin/${trunk2}\u2019s tip deploys whatever its branch is called \u2014 or set CC_ALLOW_BRANCH_DEPLOY=1 on purpose.`
     };
   }
   return { action: "deploy", why: `on ${trunk2}` };
 }
-function runGuard(env = process.env, log = console.log, err = console.error, fromGit = gitBranch) {
+function runGuard(env = process.env, log = console.log, err = console.error, fromGit = gitBranch, tipCheck = headIsTrunkTip) {
+  const trunk2 = env.CC_PRODUCTION_BRANCH || "main";
+  const branch = currentBranch2(env, fromGit);
   const verdict = decide2({
-    branch: currentBranch2(env, fromGit),
-    trunk: env.CC_PRODUCTION_BRANCH || "main",
-    override: env.CC_ALLOW_BRANCH_DEPLOY === "1"
+    branch,
+    trunk: trunk2,
+    override: env.CC_ALLOW_BRANCH_DEPLOY === "1",
+    // Only asked when the answer could change the verdict: the fetch costs a
+    // round trip, and on the trunk itself the name already decides.
+    atTrunkTip: branch && branch !== trunk2 ? tipCheck(trunk2) : null
   });
   if (verdict.action === "refuse") {
     err(`
