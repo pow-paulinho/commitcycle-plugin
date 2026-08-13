@@ -16846,6 +16846,7 @@ async function runSync(opts) {
   };
   const branch = currentBranch(root);
   const taskId = taskIdFrom(branch);
+  let boardSaw = false;
   let zonesPushed = 0;
   let zoneLines = null;
   const zonesPath = join22(root, ".zones", "zones.yml");
@@ -16871,6 +16872,7 @@ async function runSync(opts) {
       }));
       const res = await doFetch(`${base}/zones`, { method: "PUT", headers, body: JSON.stringify({ zones }) });
       if (res.ok) {
+        boardSaw = true;
         zonesPushed = zones.length;
         log(`  pushed ${zones.length} zone(s)`);
       } else warnings.push(`could not push the zone map (${res.status})`);
@@ -16895,6 +16897,7 @@ async function runSync(opts) {
           body: JSON.stringify({ events })
         });
         if (res.ok) {
+          boardSaw = true;
           eventsPushed = events.length;
           log(`  mirrored ${events.length} event(s)`);
         } else warnings.push(`could not mirror events (${res.status})`);
@@ -16911,7 +16914,16 @@ async function runSync(opts) {
     const res = await doFetch(`${base}/tasks/${taskId}/grant`, { headers });
     const drift = replyDrift(res);
     if (drift) warnings.push(`protocol: ${drift}`);
-    if (res.status === 404) {
+    if (res.ok) boardSaw = true;
+    if (res.status === 404 && !boardSaw) {
+      boardSaw = (await doFetch(`${base}/tasks/${taskId}`, { headers })).ok;
+    }
+    if (res.status === 404 && !boardSaw) {
+      const who = savedIdentity(apiUrl);
+      warnings.push(
+        `this board answered 404 to everything \u2014 signed in as ${who ?? "nobody (`cc login` has not run here)"}, so either ${tenant}/${repo} does not exist or that identity is not a member of it. Nothing local was touched.`
+      );
+    } else if (res.status === 404) {
       const stale = join22(root, ".zones", "state", "grants", `${taskId}.json`);
       if (existsSync15(stale)) {
         rmSync2(stale, { force: true });
@@ -16924,7 +16936,6 @@ async function runSync(opts) {
       warnings.push(`could not fetch the grant (${res.status}) \u2014 the local grant was left alone`);
     } else {
       const { grant } = await res.json();
-      live = grant;
       const target = join22(root, ".zones", "state", "grants", `${taskId}.json`);
       const next = JSON.stringify(grant, null, 2) + "\n";
       const current = existsSync15(target) ? readFileSync18(target, "utf8") : null;
@@ -16938,6 +16949,13 @@ async function runSync(opts) {
         grantState = "written";
         log(`  wrote the grant for ${taskId}`);
       }
+    }
+  }
+  if (taskId) {
+    try {
+      live = JSON.parse(readFileSync18(join22(root, ".zones", "state", "grants", `${taskId}.json`), "utf8"));
+    } catch {
+      live = null;
     }
   }
   const scan = scanPlaybooks(root);
