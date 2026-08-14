@@ -14250,21 +14250,76 @@ async function upgradeRequired(res) {
 
 // src/login.ts
 var sessionPath = () => join3(homedir(), ".commitcycle", "session.json");
-function savedToken(apiUrl) {
+var norm = (apiUrl) => apiUrl.replace(/\/+$/, "");
+function allSessions() {
+  let raw;
   try {
-    const saved = JSON.parse(readFileSync3(sessionPath(), "utf8"));
-    return saved.api_url === apiUrl.replace(/\/+$/, "") ? saved.token : void 0;
+    raw = JSON.parse(readFileSync3(sessionPath(), "utf8"));
   } catch {
-    return void 0;
+    return [];
+  }
+  if (!raw || typeof raw !== "object") return [];
+  const map = raw.sessions;
+  if (map && typeof map === "object") {
+    return Object.values(map).filter(
+      (s) => Boolean(s && typeof s.api_url === "string" && typeof s.token === "string")
+    );
+  }
+  const legacy = raw;
+  return legacy.api_url && legacy.token ? [{ ...legacy }] : [];
+}
+function rememberSession(entry) {
+  const kept = allSessions().filter(
+    (s) => !(norm(s.api_url) === norm(entry.api_url) && s.email === entry.email)
+  );
+  const sessions = {};
+  for (const s of [...kept, entry]) sessions[`${norm(s.api_url)}|${s.email}`] = s;
+  const file = sessionPath();
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync2(file, `${JSON.stringify({ sessions }, null, 2)}
+`);
+  try {
+    chmodSync(file, 384);
+  } catch {
   }
 }
-function savedIdentity(apiUrl) {
+function forgetSessions(apiUrl, email) {
+  const before = allSessions();
+  const kept = before.filter(
+    (s) => !(norm(s.api_url) === norm(apiUrl) && (!email || s.email === email))
+  );
+  if (kept.length === before.length) return 0;
+  const sessions = {};
+  for (const s of kept) sessions[`${norm(s.api_url)}|${s.email}`] = s;
+  const file = sessionPath();
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync2(file, `${JSON.stringify({ sessions }, null, 2)}
+`);
   try {
-    const saved = JSON.parse(readFileSync3(sessionPath(), "utf8"));
-    return saved.api_url === apiUrl.replace(/\/+$/, "") ? saved.email : void 0;
+    chmodSync(file, 384);
   } catch {
-    return void 0;
   }
+  return before.length - kept.length;
+}
+function sessionFor(apiUrl, tenant) {
+  const here = allSessions().filter((s) => norm(s.api_url) === norm(apiUrl));
+  if (!here.length) return {};
+  if (!tenant) return { session: here[here.length - 1] };
+  const member = here.find((s) => s.organizations?.includes(tenant));
+  if (member) return { session: member };
+  const unknown = here.find((s) => !s.organizations);
+  if (unknown) return { session: unknown };
+  return { wrongTenant: { tenant, held: here } };
+}
+function savedToken(apiUrl, tenant) {
+  const choice = sessionFor(apiUrl, tenant);
+  return "session" in choice ? choice.session.token : void 0;
+}
+function savedIdentity(apiUrl, tenant) {
+  const choice = sessionFor(apiUrl, tenant);
+  if ("session" in choice) return choice.session.email;
+  if ("wrongTenant" in choice) return choice.wrongTenant.held[0]?.email;
+  return void 0;
 }
 async function runLogin(opts) {
   const doFetch = opts.fetchImpl ?? fetch;
@@ -14304,16 +14359,20 @@ async function runLogin(opts) {
       return { ok: false, failures: body.failures ?? [{ field: "code", message: "That code is not valid." }] };
     }
     const { token, user, organizations } = await verified.json();
-    const file = sessionPath();
-    mkdirSync(dirname(file), { recursive: true });
-    writeFileSync2(file, JSON.stringify({ api_url: base, email: user.email, token, saved_at: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
-    try {
-      chmodSync(file, 384);
-    } catch {
-    }
+    rememberSession({
+      api_url: base,
+      email: user.email,
+      token,
+      saved_at: (/* @__PURE__ */ new Date()).toISOString(),
+      organizations: (organizations ?? []).map((o) => o.id)
+    });
     log(`  signed in as ${user.email}`);
     if (organizations?.length) log(`  projects: ${organizations.map((o) => o.id).join(", ")}`);
     else log("  no projects yet \u2014 create one in the console, or with `cycle project <name>`");
+    const others = allSessions().filter((s) => s.api_url === base && s.email !== user.email);
+    if (others.length) {
+      log(`  also held here: ${others.map((s) => s.email).join(", ")} \u2014 each repository uses the identity that belongs to its organization`);
+    }
     return { ok: true, email: user.email, failures: [] };
   } finally {
     rl?.close();
@@ -14449,9 +14508,13 @@ function resolveBoard(root) {
   }
   const str2 = (v) => typeof v === "string" && v ? v : void 0;
   const apiUrl = process.env.CC_API_URL ?? str2(file.api_url);
+  const tenant = tenantOf(file);
+  const choice = apiUrl && tenant ? sessionFor(apiUrl, tenant) : {};
+  const usingSession = !process.env.CC_TOKEN && !str2(file.token) && !(apiUrl && tenant && machineToken(apiUrl, tenant, repoOf(root, file)));
   return {
     apiUrl,
     tenant: process.env.CC_TENANT ?? str2(file.tenant),
+    ...usingSession && "wrongTenant" in choice ? { wrongIdentity: { tenant: choice.wrongTenant.tenant, held: choice.wrongTenant.held.map((s) => s.email) } } : {},
     // Derived last: the directory name is usually right, and being wrong is
     // visible the moment the scope is printed.
     repo: process.env.CC_REPO_ID ?? str2(file.repo) ?? root.split("/").pop() ?? "repo",
@@ -14465,7 +14528,7 @@ function resolveBoard(root) {
        laptop is the ordinary case for a CLI and the session is the one a
        browser holds — and it is scoped to one repository, so it is also the
        narrower of the two (CC-184). */
-    token: process.env.CC_TOKEN ?? str2(file.token) ?? (apiUrl && tenantOf(file) ? machineToken(apiUrl, tenantOf(file), repoOf(root, file)) : void 0) ?? (apiUrl ? savedToken(apiUrl) : void 0)
+    token: process.env.CC_TOKEN ?? str2(file.token) ?? (apiUrl && tenant ? machineToken(apiUrl, tenant, repoOf(root, file)) : void 0) ?? (apiUrl ? savedToken(apiUrl, tenant) : void 0)
   };
 }
 
@@ -16233,6 +16296,7 @@ function runFeed(root, topic, text, taskId) {
   const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const bumped = lines.map((l, i) => i < 20 && /^updated: /.test(l) ? `updated: ${today}` : l);
   writeFileSync8(path, bumped.join("\n"));
+  recordOwnWrites(root, taskId ?? null, [book.file]);
   return { ok: true, path: book.file, bullet };
 }
 function withProvenance(text, taskId) {
@@ -16549,8 +16613,8 @@ function writeDecision(root, n, p, verdict, grounds) {
 }
 
 // src/close.ts
-import { existsSync as existsSync14, mkdirSync as mkdirSync7, readFileSync as readFileSync17, writeFileSync as writeFileSync11 } from "node:fs";
-import { dirname as dirname5, join as join21 } from "node:path";
+import { existsSync as existsSync15, mkdirSync as mkdirSync8, readFileSync as readFileSync18, writeFileSync as writeFileSync12 } from "node:fs";
+import { dirname as dirname6, join as join22 } from "node:path";
 
 // src/verify.ts
 import { execFileSync as execFileSync5 } from "node:child_process";
@@ -16580,6 +16644,7 @@ function buildManifest(root, base) {
   const files = /* @__PURE__ */ new Map();
   const record = (status, path) => {
     if (path.startsWith(".zones/state/")) return;
+    if (path.startsWith(".claude/worktrees/")) return;
     const s = status.startsWith("A") || status === "??" ? "A" : status.startsWith("D") ? "D" : "M";
     if (!files.has(path) || files.get(path) === "M") files.set(path, s);
   };
@@ -16870,87 +16935,35 @@ ${strays.map((s) => `      ${s.slice(0, 8)} ${subjectOf(root, s).slice(0, 88)}`)
   };
 }
 
-// src/close.ts
-async function runClose(opts) {
-  const { root, apiUrl, token, tenant, repo, actor } = opts;
-  const doFetch = opts.fetchImpl ?? fetch;
-  const log = opts.log ?? (() => {
-  });
-  const local = runVerify({ root, base: opts.base, evidence: opts.evidence, fromHistory: opts.fromHistory, taskId: opts.taskId, log });
-  if (!local.ok || !local.taskId || !local.manifest) {
-    return { ok: false, taskId: local.taskId, failures: local.failures, warnings: local.warnings };
-  }
-  const base = `${apiUrl.replace(/\/+$/, "")}/v1/${tenant}/${repo}`;
-  const headers = boardHeaders(token);
-  const res = await doFetch(`${base}/tasks/${local.taskId}/transition`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      to: "Done",
-      actor,
-      manifest: local.manifest,
-      generated: local.generated,
-      unprotected: local.unprotected,
-      evidence: opts.evidence ?? [],
-      override: opts.override
-    })
-  });
-  const drift = replyDrift(res);
-  if (drift) local.warnings.push({ field: "protocol", message: drift });
-  const upgrade = await upgradeRequired(res);
-  if (upgrade) {
-    return {
-      ok: false,
-      taskId: local.taskId,
-      warnings: local.warnings,
-      failures: [{ field: "protocol", message: upgrade }]
-    };
-  }
-  if (res.status === 422) {
-    const body2 = await res.json().catch(() => ({}));
-    return { ok: false, taskId: local.taskId, failures: body2.failures ?? [], warnings: local.warnings };
-  }
-  if (!res.ok) {
-    return {
-      ok: false,
-      taskId: local.taskId,
-      warnings: local.warnings,
-      failures: [{ field: "network", message: `The board answered ${res.status}. Nothing was closed.` }]
-    };
-  }
-  const body = await res.json();
-  let auditPath;
-  if (body.audit) {
-    auditPath = join21(".zones", "audit", `${local.taskId}.md`);
-    const full = join21(root, auditPath);
-    mkdirSync7(dirname5(full), { recursive: true });
-    if (existsSync14(full) && readFileSync17(full, "utf8") !== body.audit) {
-      const kept = `${auditPath}.superseded`;
-      writeFileSync11(join21(root, kept), readFileSync17(full, "utf8"));
-      log(`  an audit record was already here \u2014 kept as ${kept}`);
-      local.warnings.push({
-        field: "audit",
-        message: `${local.taskId} already had an audit record and it differed. The previous one is at ${kept}; read both before deleting either \u2014 a task that closes twice usually means its id or its board changed.`
-      });
-    }
-    writeFileSync11(full, body.audit);
-    log(`  wrote ${auditPath}`);
-  }
-  return { ok: true, taskId: local.taskId, failures: [], warnings: local.warnings, auditPath };
-}
-function parseEvidence(values, by, at = (/* @__PURE__ */ new Date()).toISOString()) {
-  return values.map((value) => ({
-    kind: /^https?:\/\//.test(value) ? "url" : "capture",
-    value,
-    by,
-    at
-  }));
-}
-var missingCapture = (root, e) => e.kind === "capture" && !existsSync14(join21(root, e.value));
-
 // src/sync.ts
-import { existsSync as existsSync15, mkdirSync as mkdirSync8, readFileSync as readFileSync18, renameSync, rmSync as rmSync2, writeFileSync as writeFileSync12 } from "node:fs";
-import { dirname as dirname6, join as join22 } from "node:path";
+import { existsSync as existsSync14, mkdirSync as mkdirSync7, readFileSync as readFileSync17, renameSync, rmSync as rmSync2, writeFileSync as writeFileSync11 } from "node:fs";
+import { dirname as dirname5, join as join21 } from "node:path";
+async function mirrorTaskEvents(input) {
+  const doFetch = input.fetchImpl ?? fetch;
+  const logPath = join21(input.root, ".zones", "state", "events", `${input.taskId}.jsonl`);
+  if (!existsSync14(logPath)) return { pushed: 0 };
+  const lines = readFileSync17(logPath, "utf8").split("\n").filter((l) => l.trim());
+  const events = lines.flatMap((l) => {
+    try {
+      return [JSON.parse(l)];
+    } catch {
+      return [];
+    }
+  });
+  if (!events.length) return { pushed: 0 };
+  let res;
+  try {
+    res = await doFetch(`${input.base}/tasks/${input.taskId}/events`, {
+      method: "POST",
+      headers: input.headers,
+      body: JSON.stringify({ events })
+    });
+  } catch (err) {
+    return { pushed: 0, warning: `could not mirror events (${err.message})` };
+  }
+  if (!res.ok) return { pushed: 0, warning: `could not mirror events (${res.status})` };
+  return { pushed: events.length };
+}
 async function runSync(opts) {
   const { root, apiUrl, token, tenant, repo } = opts;
   const rawFetch = opts.fetchImpl ?? fetch;
@@ -16971,9 +16984,9 @@ async function runSync(opts) {
   let boardSaw = false;
   let zonesPushed = 0;
   let zoneLines = null;
-  const zonesPath = join22(root, ".zones", "zones.yml");
-  if (existsSync15(zonesPath)) {
-    const parsed = parseZonesFile(readFileSync18(zonesPath, "utf8"));
+  const zonesPath = join21(root, ".zones", "zones.yml");
+  if (existsSync14(zonesPath)) {
+    const parsed = parseZonesFile(readFileSync17(zonesPath, "utf8"));
     if (!parsed.ok) {
       warnings.push(`zones.yml is invalid, so it was not synced: ${parsed.issues[0]?.message}`);
     } else {
@@ -17006,12 +17019,12 @@ async function runSync(opts) {
       try {
         const { policy } = await res.json();
         const value = policy === "reads" || policy === "journal" ? policy : "closed";
-        const target = join22(root, ".zones", "state", "failure-policy");
-        const current = existsSync15(target) ? readFileSync18(target, "utf8").trim() : null;
+        const target = join21(root, ".zones", "state", "failure-policy");
+        const current = existsSync14(target) ? readFileSync17(target, "utf8").trim() : null;
         if (current !== value) {
-          mkdirSync8(dirname6(target), { recursive: true });
+          mkdirSync7(dirname5(target), { recursive: true });
           const tmp = `${target}.tmp`;
-          writeFileSync12(tmp, `${value}
+          writeFileSync11(tmp, `${value}
 `);
           renameSync(tmp, target);
           log(`  failure policy: ${value} \u2014 what the hook's wrapper honors when the core is down`);
@@ -17023,29 +17036,13 @@ async function runSync(opts) {
   }
   let eventsPushed = 0;
   if (taskId) {
-    const logPath = join22(root, ".zones", "state", "events", `${taskId}.jsonl`);
-    if (existsSync15(logPath)) {
-      const lines = readFileSync18(logPath, "utf8").split("\n").filter((l) => l.trim());
-      const events = lines.flatMap((l) => {
-        try {
-          return [JSON.parse(l)];
-        } catch {
-          return [];
-        }
-      });
-      if (events.length) {
-        const res = await doFetch(`${base}/tasks/${taskId}/events`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ events })
-        });
-        if (res.ok) {
-          boardSaw = true;
-          eventsPushed = events.length;
-          log(`  mirrored ${events.length} event(s)`);
-        } else warnings.push(`could not mirror events (${res.status})`);
-      }
+    const mirrored = await mirrorTaskEvents({ root, base, headers, taskId, fetchImpl: doFetch });
+    if (mirrored.pushed) {
+      boardSaw = true;
+      eventsPushed = mirrored.pushed;
+      log(`  mirrored ${mirrored.pushed} event(s)`);
     }
+    if (mirrored.warning) warnings.push(mirrored.warning);
   }
   let grantState = "none";
   let live = null;
@@ -17067,8 +17064,8 @@ async function runSync(opts) {
         `this board answered 404 to everything \u2014 signed in as ${who ?? "nobody (`cycle login` has not run here)"}, so either ${tenant}/${repo} does not exist or that identity is not a member of it. Nothing local was touched.`
       );
     } else if (res.status === 404) {
-      const stale = join22(root, ".zones", "state", "grants", `${taskId}.json`);
-      if (existsSync15(stale)) {
+      const stale = join21(root, ".zones", "state", "grants", `${taskId}.json`);
+      if (existsSync14(stale)) {
         rmSync2(stale, { force: true });
         grantState = "revoked";
         log(`  removed the grant for ${taskId} \u2014 the board has revoked it`);
@@ -17079,15 +17076,15 @@ async function runSync(opts) {
       warnings.push(`could not fetch the grant (${res.status}) \u2014 the local grant was left alone`);
     } else {
       const { grant } = await res.json();
-      const target = join22(root, ".zones", "state", "grants", `${taskId}.json`);
+      const target = join21(root, ".zones", "state", "grants", `${taskId}.json`);
       const next = JSON.stringify(grant, null, 2) + "\n";
-      const current = existsSync15(target) ? readFileSync18(target, "utf8") : null;
+      const current = existsSync14(target) ? readFileSync17(target, "utf8") : null;
       if (current === next) {
         grantState = "unchanged";
       } else {
-        mkdirSync8(dirname6(target), { recursive: true });
+        mkdirSync7(dirname5(target), { recursive: true });
         const tmp = `${target}.tmp`;
-        writeFileSync12(tmp, next);
+        writeFileSync11(tmp, next);
         renameSync(tmp, target);
         grantState = "written";
         log(`  wrote the grant for ${taskId}`);
@@ -17096,7 +17093,7 @@ async function runSync(opts) {
   }
   if (taskId) {
     try {
-      live = JSON.parse(readFileSync18(join22(root, ".zones", "state", "grants", `${taskId}.json`), "utf8"));
+      live = JSON.parse(readFileSync17(join21(root, ".zones", "state", "grants", `${taskId}.json`), "utf8"));
     } catch {
       live = null;
     }
@@ -17165,6 +17162,90 @@ async function runSync(opts) {
   }
   return { taskId, zonesPushed, eventsPushed, grant: grantState, agents, warnings };
 }
+
+// src/close.ts
+async function runClose(opts) {
+  const { root, apiUrl, token, tenant, repo, actor } = opts;
+  const doFetch = opts.fetchImpl ?? fetch;
+  const log = opts.log ?? (() => {
+  });
+  const local = runVerify({ root, base: opts.base, evidence: opts.evidence, fromHistory: opts.fromHistory, taskId: opts.taskId, log });
+  if (!local.ok || !local.taskId || !local.manifest) {
+    return { ok: false, taskId: local.taskId, failures: local.failures, warnings: local.warnings };
+  }
+  const base = `${apiUrl.replace(/\/+$/, "")}/v1/${tenant}/${repo}`;
+  const headers = boardHeaders(token);
+  const mirrored = await mirrorTaskEvents({ root, base, headers, taskId: local.taskId, fetchImpl: doFetch });
+  if (mirrored.pushed) log(`  mirrored ${mirrored.pushed} event(s)`);
+  if (mirrored.warning) local.warnings.push({ field: "events", message: mirrored.warning });
+  const res = await doFetch(`${base}/tasks/${local.taskId}/transition`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      to: "Done",
+      actor,
+      manifest: local.manifest,
+      generated: local.generated,
+      unprotected: local.unprotected,
+      evidence: opts.evidence ?? [],
+      override: opts.override
+    })
+  });
+  const drift = replyDrift(res);
+  if (drift) local.warnings.push({ field: "protocol", message: drift });
+  const upgrade = await upgradeRequired(res);
+  if (upgrade) {
+    return {
+      ok: false,
+      taskId: local.taskId,
+      warnings: local.warnings,
+      failures: [{ field: "protocol", message: upgrade }]
+    };
+  }
+  if (res.status === 422) {
+    const body2 = await res.json().catch(() => ({}));
+    return { ok: false, taskId: local.taskId, failures: body2.failures ?? [], warnings: local.warnings };
+  }
+  if (!res.ok) {
+    return {
+      ok: false,
+      taskId: local.taskId,
+      warnings: local.warnings,
+      failures: [{ field: "network", message: `The board answered ${res.status}. Nothing was closed.` }]
+    };
+  }
+  const body = await res.json();
+  let auditPath;
+  if (body.audit) {
+    auditPath = join22(".zones", "audit", `${local.taskId}.md`);
+    const full = join22(root, auditPath);
+    mkdirSync8(dirname6(full), { recursive: true });
+    const written = [auditPath];
+    if (existsSync15(full) && readFileSync18(full, "utf8") !== body.audit) {
+      const kept = `${auditPath}.superseded`;
+      writeFileSync12(join22(root, kept), readFileSync18(full, "utf8"));
+      written.push(kept);
+      log(`  an audit record was already here \u2014 kept as ${kept}`);
+      local.warnings.push({
+        field: "audit",
+        message: `${local.taskId} already had an audit record and it differed. The previous one is at ${kept}; read both before deleting either \u2014 a task that closes twice usually means its id or its board changed.`
+      });
+    }
+    writeFileSync12(full, body.audit);
+    recordOwnWrites(root, local.taskId, written);
+    log(`  wrote ${auditPath}`);
+  }
+  return { ok: true, taskId: local.taskId, failures: [], warnings: local.warnings, auditPath };
+}
+function parseEvidence(values, by, at = (/* @__PURE__ */ new Date()).toISOString()) {
+  return values.map((value) => ({
+    kind: /^https?:\/\//.test(value) ? "url" : "capture",
+    value,
+    by,
+    at
+  }));
+}
+var missingCapture = (root, e) => e.kind === "capture" && !existsSync15(join22(root, e.value));
 
 // src/start.ts
 import { execFileSync as execFileSync6 } from "node:child_process";
@@ -17642,7 +17723,11 @@ function repoRoot(from = process.cwd()) {
 }
 var HELP = `cycle \u2014 a gate for AI-assisted development
 
-  cycle login        Sign in to the board: an address, a six-digit code, done
+  cycle login        Sign in to the board: an address, a six-digit code, done. More than
+                  one address is fine \u2014 each repository uses the one its organization knows
+  cycle accounts     Who this machine is signed in as, and which identity this repo uses
+  cycle logout [email]
+                  Forget one identity for this board, or all of them
   cycle pair         Join this machine to a board: a code here, confirmed in your
                   browser. Sets up .zones/board.json \u2014 no name to type
   cycle connect <ticket>
@@ -17712,6 +17797,26 @@ function boardEnv(root) {
     );
     return null;
   }
+  if (resolved.wrongIdentity) {
+    const { held } = resolved.wrongIdentity;
+    console.error(
+      `
+Signed in here as ${held.join(", ")} \u2014 and ${tenant} is not an organization ${held.length > 1 ? "any of them belong" : "that identity belongs"} to.
+Every call would come back 404, which reads exactly like "no grant" and is not.
+
+Three ways on, narrowest first:
+  cycle pair                     join this machine to ${tenant}/${resolved.repo} \u2014 scoped to this repository,
+                                 and it outranks every session on this laptop
+  cycle login                    as an address that is a member of ${tenant}; the others stay,
+                                 each repository uses the identity its organization knows
+  CC_TOKEN=\u2026 cycle <command>     one command, one credential, nothing stored
+
+If ${tenant} is simply the wrong name, it is "tenant" in .zones/board.json \u2014 the
+first half of the address in the console.
+`
+    );
+    return null;
+  }
   console.log(`  board  ${apiUrl} \xB7 ${tenant}/${resolved.repo}`);
   return { apiUrl, token: resolved.token, tenant, repo: resolved.repo };
 }
@@ -17760,8 +17865,59 @@ async function main2() {
         return 1;
       }
       console.log(`
-The session is in ${sessionPath()}, and every cycle command will use it.
+The session is in ${sessionPath()}, beside any other address this machine holds.
 `);
+      return 0;
+    }
+    /* Who this machine is, in one screen (CC-259). The question it answers is
+       not "am I logged in" but "which of me is about to be used here", which is
+       the one nobody could ask before. */
+    case "accounts": {
+      const resolved = resolveBoard(root);
+      const held = allSessions();
+      if (!held.length) {
+        console.log("\nNo identity on this machine. `cycle login`, or `cycle pair` to join one repository.\n");
+        return 0;
+      }
+      const chosen = resolved.apiUrl ? sessionFor(resolved.apiUrl, resolved.tenant) : {};
+      const active = "session" in chosen ? chosen.session.email : void 0;
+      console.log("");
+      for (const s of held) {
+        const orgs = s.organizations?.length ? s.organizations.join(", ") : s.organizations ? "no organizations" : "organizations unknown \u2014 signed in before they were recorded, so it is tried rather than ruled out";
+        const here = s.email === active && s.api_url.replace(/\/+$/, "") === (resolved.apiUrl ?? "").replace(/\/+$/, "");
+        console.log(`  ${here ? "\u2192" : " "} ${s.email}  ${s.api_url}  (${orgs})`);
+      }
+      if (resolved.tenant) {
+        console.log(
+          `
+This repository reports to ${resolved.tenant}/${resolved.repo}. ` + (active ? `It uses ${active}.` : resolved.wrongIdentity ? "No identity here belongs to it \u2014 `cycle pair`, or sign in as one that does." : "A pairing or CC_TOKEN answers for it, not a session.")
+        );
+      }
+      console.log(`
+Stored in ${sessionPath()}.
+`);
+      return 0;
+    }
+    case "logout": {
+      const resolved = resolveBoard(root);
+      if (!resolved.apiUrl) {
+        console.error("\nNo board address, so there is nothing to sign out of. Set CC_API_URL or commit .zones/board.json.\n");
+        return 1;
+      }
+      const who = args.find((a) => a.includes("@"));
+      const gone = forgetSessions(resolved.apiUrl, who);
+      if (!gone) {
+        console.log(`
+Nothing to forget: no session for ${who ?? resolved.apiUrl} on this machine.
+`);
+        return 0;
+      }
+      console.log(
+        `
+Forgot ${gone} identit${gone === 1 ? "y" : "ies"} for ${resolved.apiUrl}.
+Pairings are separate and were left alone \u2014 \`cycle pair\` is what undoes those.
+`
+      );
       return 0;
     }
     /* The deploy guard (CC-160). No board, no repository state, no network —
