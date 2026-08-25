@@ -984,13 +984,13 @@ var require_Collection = __commonJS({
 var require_stringifyComment = __commonJS({
   "../../node_modules/.pnpm/yaml@2.9.0/node_modules/yaml/dist/stringify/stringifyComment.js"(exports) {
     "use strict";
-    var stringifyComment = (str2) => str2.replace(/^(?!$)(?: $)?/gm, "#");
+    var stringifyComment = (str3) => str3.replace(/^(?!$)(?: $)?/gm, "#");
     function indentComment(comment, indent) {
       if (/^\n+$/.test(comment))
         return comment.substring(1);
       return indent ? comment.replace(/^(?! *$)/gm, indent) : comment;
     }
-    var lineComment = (str2, indent, comment) => str2.endsWith("\n") ? indentComment(comment, indent) : comment.includes("\n") ? "\n" + indentComment(comment, indent) : (str2.endsWith(" ") ? "" : " ") + comment;
+    var lineComment = (str3, indent, comment) => str3.endsWith("\n") ? indentComment(comment, indent) : comment.includes("\n") ? "\n" + indentComment(comment, indent) : (str3.endsWith(" ") ? "" : " ") + comment;
     exports.indentComment = indentComment;
     exports.lineComment = lineComment;
     exports.stringifyComment = stringifyComment;
@@ -1144,16 +1144,16 @@ var require_stringifyString = __commonJS({
       lineWidth: ctx.options.lineWidth,
       minContentWidth: ctx.options.minContentWidth
     });
-    var containsDocumentMarker = (str2) => /^(%|---|\.\.\.)/m.test(str2);
-    function lineLengthOverLimit(str2, lineWidth, indentLength) {
+    var containsDocumentMarker = (str3) => /^(%|---|\.\.\.)/m.test(str3);
+    function lineLengthOverLimit(str3, lineWidth, indentLength) {
       if (!lineWidth || lineWidth < 0)
         return false;
       const limit = lineWidth - indentLength;
-      const strLen = str2.length;
+      const strLen = str3.length;
       if (strLen <= limit)
         return false;
       for (let i = 0, start = 0; i < strLen; ++i) {
-        if (str2[i] === "\n") {
+        if (str3[i] === "\n") {
           if (i - start > limit)
             return true;
           start = i + 1;
@@ -1170,11 +1170,11 @@ var require_stringifyString = __commonJS({
       const { implicitKey } = ctx;
       const minMultiLineLength = ctx.options.doubleQuotedMinMultiLineLength;
       const indent = ctx.indent || (containsDocumentMarker(value) ? "  " : "");
-      let str2 = "";
+      let str3 = "";
       let start = 0;
       for (let i = 0, ch = json[i]; ch; ch = json[++i]) {
         if (ch === " " && json[i + 1] === "\\" && json[i + 2] === "n") {
-          str2 += json.slice(start, i) + "\\ ";
+          str3 += json.slice(start, i) + "\\ ";
           i += 1;
           start = i;
           ch = "\\";
@@ -1183,38 +1183,38 @@ var require_stringifyString = __commonJS({
           switch (json[i + 1]) {
             case "u":
               {
-                str2 += json.slice(start, i);
+                str3 += json.slice(start, i);
                 const code = json.substr(i + 2, 4);
                 switch (code) {
                   case "0000":
-                    str2 += "\\0";
+                    str3 += "\\0";
                     break;
                   case "0007":
-                    str2 += "\\a";
+                    str3 += "\\a";
                     break;
                   case "000b":
-                    str2 += "\\v";
+                    str3 += "\\v";
                     break;
                   case "001b":
-                    str2 += "\\e";
+                    str3 += "\\e";
                     break;
                   case "0085":
-                    str2 += "\\N";
+                    str3 += "\\N";
                     break;
                   case "00a0":
-                    str2 += "\\_";
+                    str3 += "\\_";
                     break;
                   case "2028":
-                    str2 += "\\L";
+                    str3 += "\\L";
                     break;
                   case "2029":
-                    str2 += "\\P";
+                    str3 += "\\P";
                     break;
                   default:
                     if (code.substr(0, 2) === "00")
-                      str2 += "\\x" + code.substr(2);
+                      str3 += "\\x" + code.substr(2);
                     else
-                      str2 += json.substr(i, 6);
+                      str3 += json.substr(i, 6);
                 }
                 i += 5;
                 start = i + 1;
@@ -1224,14 +1224,14 @@ var require_stringifyString = __commonJS({
               if (implicitKey || json[i + 2] === '"' || json.length < minMultiLineLength) {
                 i += 1;
               } else {
-                str2 += json.slice(start, i) + "\n\n";
+                str3 += json.slice(start, i) + "\n\n";
                 while (json[i + 2] === "\\" && json[i + 3] === "n" && json[i + 4] !== '"') {
-                  str2 += "\n";
+                  str3 += "\n";
                   i += 2;
                 }
-                str2 += indent;
+                str3 += indent;
                 if (json[i + 2] === " ")
-                  str2 += "\\";
+                  str3 += "\\";
                 i += 1;
                 start = i + 1;
               }
@@ -1240,8 +1240,8 @@ var require_stringifyString = __commonJS({
               i += 1;
           }
       }
-      str2 = start ? str2 + json.slice(start) : json;
-      return implicitKey ? str2 : foldFlowLines.foldFlowLines(str2, indent, foldFlowLines.FOLD_QUOTED, getFoldOptions(ctx, false));
+      str3 = start ? str3 + json.slice(start) : json;
+      return implicitKey ? str3 : foldFlowLines.foldFlowLines(str3, indent, foldFlowLines.FOLD_QUOTED, getFoldOptions(ctx, false));
     }
     function singleQuotedString(value, ctx) {
       if (ctx.options.singleQuote === false || ctx.implicitKey && value.includes("\n") || /[ \t]\n|\n[ \t]/.test(value))
@@ -1369,15 +1369,15 @@ ${indent}${start}${value}${end}`;
           return quotedString(value, ctx);
         }
       }
-      const str2 = value.replace(/\n+/g, `$&
+      const str3 = value.replace(/\n+/g, `$&
 ${indent}`);
       if (actualString) {
-        const test = (tag) => tag.default && tag.tag !== "tag:yaml.org,2002:str" && tag.test?.test(str2);
+        const test = (tag) => tag.default && tag.tag !== "tag:yaml.org,2002:str" && tag.test?.test(str3);
         const { compat, tags } = ctx.doc.schema;
         if (tags.some(test) || compat?.some(test))
           return quotedString(value, ctx);
       }
-      return implicitKey ? str2 : foldFlowLines.foldFlowLines(str2, indent, foldFlowLines.FOLD_FLOW, getFoldOptions(ctx, false));
+      return implicitKey ? str3 : foldFlowLines.foldFlowLines(str3, indent, foldFlowLines.FOLD_FLOW, getFoldOptions(ctx, false));
     }
     function stringifyString(item, ctx, onComment, onChompKeep) {
       const { implicitKey, inFlow } = ctx;
@@ -1529,11 +1529,11 @@ var require_stringify = __commonJS({
       const props = stringifyProps(node, tagObj, ctx);
       if (props.length > 0)
         ctx.indentAtStart = (ctx.indentAtStart ?? 0) + props.length + 1;
-      const str2 = typeof tagObj.stringify === "function" ? tagObj.stringify(node, ctx, onComment, onChompKeep) : identity.isScalar(node) ? stringifyString.stringifyString(node, ctx, onComment, onChompKeep) : node.toString(ctx, onComment, onChompKeep);
+      const str3 = typeof tagObj.stringify === "function" ? tagObj.stringify(node, ctx, onComment, onChompKeep) : identity.isScalar(node) ? stringifyString.stringifyString(node, ctx, onComment, onChompKeep) : node.toString(ctx, onComment, onChompKeep);
       if (!props)
-        return str2;
-      return identity.isScalar(node) || str2[0] === "{" || str2[0] === "[" ? `${props} ${str2}` : `${props}
-${ctx.indent}${str2}`;
+        return str3;
+      return identity.isScalar(node) || str3[0] === "{" || str3[0] === "[" ? `${props} ${str3}` : `${props}
+${ctx.indent}${str3}`;
     }
     exports.createStringifyContext = createStringifyContext;
     exports.stringify = stringify;
@@ -1568,8 +1568,8 @@ var require_stringifyPair = __commonJS({
       });
       let keyCommentDone = false;
       let chompKeep = false;
-      let str2 = stringify.stringify(key, ctx, () => keyCommentDone = true, () => chompKeep = true);
-      if (!explicitKey && !ctx.inFlow && str2.length > 1024) {
+      let str3 = stringify.stringify(key, ctx, () => keyCommentDone = true, () => chompKeep = true);
+      if (!explicitKey && !ctx.inFlow && str3.length > 1024) {
         if (simpleKeys)
           throw new Error("With simple keys, single line scalar must not span more than 1024 characters");
         explicitKey = true;
@@ -1578,27 +1578,27 @@ var require_stringifyPair = __commonJS({
         if (allNullValues || value == null) {
           if (keyCommentDone && onComment)
             onComment();
-          return str2 === "" ? "?" : explicitKey ? `? ${str2}` : str2;
+          return str3 === "" ? "?" : explicitKey ? `? ${str3}` : str3;
         }
       } else if (allNullValues && !simpleKeys || value == null && explicitKey) {
-        str2 = `? ${str2}`;
+        str3 = `? ${str3}`;
         if (keyComment && !keyCommentDone) {
-          str2 += stringifyComment.lineComment(str2, ctx.indent, commentString(keyComment));
+          str3 += stringifyComment.lineComment(str3, ctx.indent, commentString(keyComment));
         } else if (chompKeep && onChompKeep)
           onChompKeep();
-        return str2;
+        return str3;
       }
       if (keyCommentDone)
         keyComment = null;
       if (explicitKey) {
         if (keyComment)
-          str2 += stringifyComment.lineComment(str2, ctx.indent, commentString(keyComment));
-        str2 = `? ${str2}
+          str3 += stringifyComment.lineComment(str3, ctx.indent, commentString(keyComment));
+        str3 = `? ${str3}
 ${indent}:`;
       } else {
-        str2 = `${str2}:`;
+        str3 = `${str3}:`;
         if (keyComment)
-          str2 += stringifyComment.lineComment(str2, ctx.indent, commentString(keyComment));
+          str3 += stringifyComment.lineComment(str3, ctx.indent, commentString(keyComment));
       }
       let vsb, vcb, valueComment;
       if (identity.isNode(value)) {
@@ -1614,7 +1614,7 @@ ${indent}:`;
       }
       ctx.implicitKey = false;
       if (!explicitKey && !keyComment && identity.isScalar(value))
-        ctx.indentAtStart = str2.length + 1;
+        ctx.indentAtStart = str3.length + 1;
       chompKeep = false;
       if (!indentSeq && indentStep.length >= 2 && !ctx.inFlow && !explicitKey && identity.isSeq(value) && !value.flow && !value.tag && !value.anchor) {
         ctx.indent = ctx.indent.substring(2);
@@ -1658,16 +1658,16 @@ ${ctx.indent}`;
       } else if (valueStr === "" || valueStr[0] === "\n") {
         ws = "";
       }
-      str2 += ws + valueStr;
+      str3 += ws + valueStr;
       if (ctx.inFlow) {
         if (valueCommentDone && onComment)
           onComment();
       } else if (valueComment && !valueCommentDone) {
-        str2 += stringifyComment.lineComment(str2, ctx.indent, commentString(valueComment));
+        str3 += stringifyComment.lineComment(str3, ctx.indent, commentString(valueComment));
       } else if (chompKeep && onChompKeep) {
         onChompKeep();
       }
-      return str2;
+      return str3;
     }
     exports.stringifyPair = stringifyPair;
   }
@@ -1894,31 +1894,31 @@ var require_stringifyCollection = __commonJS({
           }
         }
         chompKeep = false;
-        let str3 = stringify.stringify(item, itemCtx, () => comment2 = null, () => chompKeep = true);
+        let str4 = stringify.stringify(item, itemCtx, () => comment2 = null, () => chompKeep = true);
         if (comment2)
-          str3 += stringifyComment.lineComment(str3, itemIndent, commentString(comment2));
+          str4 += stringifyComment.lineComment(str4, itemIndent, commentString(comment2));
         if (chompKeep && comment2)
           chompKeep = false;
-        lines.push(blockItemPrefix + str3);
+        lines.push(blockItemPrefix + str4);
       }
-      let str2;
+      let str3;
       if (lines.length === 0) {
-        str2 = flowChars.start + flowChars.end;
+        str3 = flowChars.start + flowChars.end;
       } else {
-        str2 = lines[0];
+        str3 = lines[0];
         for (let i = 1; i < lines.length; ++i) {
           const line = lines[i];
-          str2 += line ? `
+          str3 += line ? `
 ${indent}${line}` : "\n";
         }
       }
       if (comment) {
-        str2 += "\n" + stringifyComment.indentComment(commentString(comment), indent);
+        str3 += "\n" + stringifyComment.indentComment(commentString(comment), indent);
         if (onComment)
           onComment();
       } else if (chompKeep && onChompKeep)
         onChompKeep();
-      return str2;
+      return str3;
     }
     function stringifyFlowCollection({ items }, ctx, { flowChars, itemIndent }) {
       const { indent, indentStep, flowCollectionPadding: fcPadding, options: { commentString } } = ctx;
@@ -1961,21 +1961,21 @@ ${indent}${line}` : "\n";
         }
         if (comment)
           reqNewline = true;
-        let str2 = stringify.stringify(item, itemCtx, () => comment = null);
-        reqNewline || (reqNewline = lines.length > linesAtValue || str2.includes("\n"));
+        let str3 = stringify.stringify(item, itemCtx, () => comment = null);
+        reqNewline || (reqNewline = lines.length > linesAtValue || str3.includes("\n"));
         if (i < items.length - 1) {
-          str2 += ",";
+          str3 += ",";
         } else if (ctx.options.trailingComma) {
           if (ctx.options.lineWidth > 0) {
-            reqNewline || (reqNewline = lines.reduce((sum, line) => sum + line.length + 2, 2) + (str2.length + 2) > ctx.options.lineWidth);
+            reqNewline || (reqNewline = lines.reduce((sum, line) => sum + line.length + 2, 2) + (str3.length + 2) > ctx.options.lineWidth);
           }
           if (reqNewline) {
-            str2 += ",";
+            str3 += ",";
           }
         }
         if (comment)
-          str2 += stringifyComment.lineComment(str2, itemIndent, commentString(comment));
-        lines.push(str2);
+          str3 += stringifyComment.lineComment(str3, itemIndent, commentString(comment));
+        lines.push(str3);
         linesAtValue = lines.length;
       }
       const { start, end } = flowChars;
@@ -1987,11 +1987,11 @@ ${indent}${line}` : "\n";
           reqNewline = ctx.options.lineWidth > 0 && len > ctx.options.lineWidth;
         }
         if (reqNewline) {
-          let str2 = start;
+          let str3 = start;
           for (const line of lines)
-            str2 += line ? `
+            str3 += line ? `
 ${indentStep}${indent}${line}` : "\n";
-          return `${str2}
+          return `${str3}
 ${indent}${end}`;
         } else {
           return `${start}${fcPadding}${lines.join(" ")}${fcPadding}${end}`;
@@ -2323,7 +2323,7 @@ var require_string = __commonJS({
       identify: (value) => typeof value === "string",
       default: true,
       tag: "tag:yaml.org,2002:str",
-      resolve: (str2) => str2,
+      resolve: (str3) => str3,
       stringify(item, ctx, onComment, onChompKeep) {
         ctx = Object.assign({ actualString: true }, ctx);
         return stringifyString.stringifyString(item, ctx, onComment, onChompKeep);
@@ -2361,7 +2361,7 @@ var require_bool = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:bool",
       test: /^(?:[Tt]rue|TRUE|[Ff]alse|FALSE)$/,
-      resolve: (str2) => new Scalar.Scalar(str2[0] === "t" || str2[0] === "T"),
+      resolve: (str3) => new Scalar.Scalar(str3[0] === "t" || str3[0] === "T"),
       stringify({ source, value }, ctx) {
         if (source && boolTag.test.test(source)) {
           const sv = source[0] === "t" || source[0] === "T";
@@ -2413,7 +2413,7 @@ var require_float = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:float",
       test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
-      resolve: (str2) => str2.slice(-3).toLowerCase() === "nan" ? NaN : str2[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
+      resolve: (str3) => str3.slice(-3).toLowerCase() === "nan" ? NaN : str3[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
       stringify: stringifyNumber.stringifyNumber
     };
     var floatExp = {
@@ -2422,7 +2422,7 @@ var require_float = __commonJS({
       tag: "tag:yaml.org,2002:float",
       format: "EXP",
       test: /^[-+]?(?:\.[0-9]+|[0-9]+(?:\.[0-9]*)?)[eE][-+]?[0-9]+$/,
-      resolve: (str2) => parseFloat(str2),
+      resolve: (str3) => parseFloat(str3),
       stringify(node) {
         const num2 = Number(node.value);
         return isFinite(num2) ? num2.toExponential() : stringifyNumber.stringifyNumber(node);
@@ -2433,11 +2433,11 @@ var require_float = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:float",
       test: /^[-+]?(?:\.[0-9]+|[0-9]+\.[0-9]*)$/,
-      resolve(str2) {
-        const node = new Scalar.Scalar(parseFloat(str2));
-        const dot = str2.indexOf(".");
-        if (dot !== -1 && str2[str2.length - 1] === "0")
-          node.minFractionDigits = str2.length - dot - 1;
+      resolve(str3) {
+        const node = new Scalar.Scalar(parseFloat(str3));
+        const dot = str3.indexOf(".");
+        if (dot !== -1 && str3[str3.length - 1] === "0")
+          node.minFractionDigits = str3.length - dot - 1;
         return node;
       },
       stringify: stringifyNumber.stringifyNumber
@@ -2454,7 +2454,7 @@ var require_int = __commonJS({
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     var intIdentify = (value) => typeof value === "bigint" || Number.isInteger(value);
-    var intResolve = (str2, offset, radix, { intAsBigInt }) => intAsBigInt ? BigInt(str2) : parseInt(str2.substring(offset), radix);
+    var intResolve = (str3, offset, radix, { intAsBigInt }) => intAsBigInt ? BigInt(str3) : parseInt(str3.substring(offset), radix);
     function intStringify(node, radix, prefix) {
       const { value } = node;
       if (intIdentify(value) && value >= 0)
@@ -2467,7 +2467,7 @@ var require_int = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "OCT",
       test: /^0o[0-7]+$/,
-      resolve: (str2, _onError, opt) => intResolve(str2, 2, 8, opt),
+      resolve: (str3, _onError, opt) => intResolve(str3, 2, 8, opt),
       stringify: (node) => intStringify(node, 8, "0o")
     };
     var int = {
@@ -2475,7 +2475,7 @@ var require_int = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:int",
       test: /^[-+]?[0-9]+$/,
-      resolve: (str2, _onError, opt) => intResolve(str2, 0, 10, opt),
+      resolve: (str3, _onError, opt) => intResolve(str3, 0, 10, opt),
       stringify: stringifyNumber.stringifyNumber
     };
     var intHex = {
@@ -2484,7 +2484,7 @@ var require_int = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "HEX",
       test: /^0x[0-9a-fA-F]+$/,
-      resolve: (str2, _onError, opt) => intResolve(str2, 2, 16, opt),
+      resolve: (str3, _onError, opt) => intResolve(str3, 2, 16, opt),
       stringify: (node) => intStringify(node, 16, "0x")
     };
     exports.int = int;
@@ -2537,7 +2537,7 @@ var require_schema2 = __commonJS({
         identify: (value) => typeof value === "string",
         default: true,
         tag: "tag:yaml.org,2002:str",
-        resolve: (str2) => str2,
+        resolve: (str3) => str3,
         stringify: stringifyJSON
       },
       {
@@ -2554,7 +2554,7 @@ var require_schema2 = __commonJS({
         default: true,
         tag: "tag:yaml.org,2002:bool",
         test: /^true$|^false$/,
-        resolve: (str2) => str2 === "true",
+        resolve: (str3) => str3 === "true",
         stringify: stringifyJSON
       },
       {
@@ -2562,7 +2562,7 @@ var require_schema2 = __commonJS({
         default: true,
         tag: "tag:yaml.org,2002:int",
         test: /^-?(?:0|[1-9][0-9]*)$/,
-        resolve: (str2, _onError, { intAsBigInt }) => intAsBigInt ? BigInt(str2) : parseInt(str2, 10),
+        resolve: (str3, _onError, { intAsBigInt }) => intAsBigInt ? BigInt(str3) : parseInt(str3, 10),
         stringify: ({ value }) => intIdentify(value) ? value.toString() : JSON.stringify(value)
       },
       {
@@ -2570,7 +2570,7 @@ var require_schema2 = __commonJS({
         default: true,
         tag: "tag:yaml.org,2002:float",
         test: /^-?(?:0|[1-9][0-9]*)(?:\.[0-9]*)?(?:[eE][-+]?[0-9]+)?$/,
-        resolve: (str2) => parseFloat(str2),
+        resolve: (str3) => parseFloat(str3),
         stringify: stringifyJSON
       }
     ];
@@ -2578,9 +2578,9 @@ var require_schema2 = __commonJS({
       default: true,
       tag: "",
       test: /^/,
-      resolve(str2, onError) {
-        onError(`Unresolved plain scalar ${JSON.stringify(str2)}`);
-        return str2;
+      resolve(str3, onError) {
+        onError(`Unresolved plain scalar ${JSON.stringify(str3)}`);
+        return str3;
       }
     };
     var schema = [map.map, seq.seq].concat(jsonScalars, jsonError);
@@ -2612,10 +2612,10 @@ var require_binary = __commonJS({
         if (typeof node_buffer.Buffer === "function") {
           return node_buffer.Buffer.from(src, "base64");
         } else if (typeof atob === "function") {
-          const str2 = atob(src.replace(/[\n\r]/g, ""));
-          const buffer = new Uint8Array(str2.length);
-          for (let i = 0; i < str2.length; ++i)
-            buffer[i] = str2.charCodeAt(i);
+          const str3 = atob(src.replace(/[\n\r]/g, ""));
+          const buffer = new Uint8Array(str3.length);
+          for (let i = 0; i < str3.length; ++i)
+            buffer[i] = str3.charCodeAt(i);
           return buffer;
         } else {
           onError("This environment does not support reading binary tags; either Buffer or atob is required");
@@ -2626,28 +2626,28 @@ var require_binary = __commonJS({
         if (!value)
           return "";
         const buf = value;
-        let str2;
+        let str3;
         if (typeof node_buffer.Buffer === "function") {
-          str2 = buf instanceof node_buffer.Buffer ? buf.toString("base64") : node_buffer.Buffer.from(buf.buffer).toString("base64");
+          str3 = buf instanceof node_buffer.Buffer ? buf.toString("base64") : node_buffer.Buffer.from(buf.buffer).toString("base64");
         } else if (typeof btoa === "function") {
           let s = "";
           for (let i = 0; i < buf.length; ++i)
             s += String.fromCharCode(buf[i]);
-          str2 = btoa(s);
+          str3 = btoa(s);
         } else {
           throw new Error("This environment does not support writing binary tags; either Buffer or btoa is required");
         }
         type ?? (type = Scalar.Scalar.BLOCK_LITERAL);
         if (type !== Scalar.Scalar.QUOTE_DOUBLE) {
           const lineWidth = Math.max(ctx.options.lineWidth - ctx.indent.length, ctx.options.minContentWidth);
-          const n = Math.ceil(str2.length / lineWidth);
+          const n = Math.ceil(str3.length / lineWidth);
           const lines = new Array(n);
           for (let i = 0, o = 0; i < n; ++i, o += lineWidth) {
-            lines[i] = str2.substr(o, lineWidth);
+            lines[i] = str3.substr(o, lineWidth);
           }
-          str2 = lines.join(type === Scalar.Scalar.BLOCK_LITERAL ? "\n" : " ");
+          str3 = lines.join(type === Scalar.Scalar.BLOCK_LITERAL ? "\n" : " ");
         }
-        return stringifyString.stringifyString({ comment, type, value: str2 }, ctx, onComment, onChompKeep);
+        return stringifyString.stringifyString({ comment, type, value: str3 }, ctx, onComment, onChompKeep);
       }
     };
     exports.binary = binary;
@@ -2853,7 +2853,7 @@ var require_float2 = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:float",
       test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
-      resolve: (str2) => str2.slice(-3).toLowerCase() === "nan" ? NaN : str2[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
+      resolve: (str3) => str3.slice(-3).toLowerCase() === "nan" ? NaN : str3[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
       stringify: stringifyNumber.stringifyNumber
     };
     var floatExp = {
@@ -2862,7 +2862,7 @@ var require_float2 = __commonJS({
       tag: "tag:yaml.org,2002:float",
       format: "EXP",
       test: /^[-+]?(?:[0-9][0-9_]*)?(?:\.[0-9_]*)?[eE][-+]?[0-9]+$/,
-      resolve: (str2) => parseFloat(str2.replace(/_/g, "")),
+      resolve: (str3) => parseFloat(str3.replace(/_/g, "")),
       stringify(node) {
         const num2 = Number(node.value);
         return isFinite(num2) ? num2.toExponential() : stringifyNumber.stringifyNumber(node);
@@ -2873,11 +2873,11 @@ var require_float2 = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:float",
       test: /^[-+]?(?:[0-9][0-9_]*)?\.[0-9_]*$/,
-      resolve(str2) {
-        const node = new Scalar.Scalar(parseFloat(str2.replace(/_/g, "")));
-        const dot = str2.indexOf(".");
+      resolve(str3) {
+        const node = new Scalar.Scalar(parseFloat(str3.replace(/_/g, "")));
+        const dot = str3.indexOf(".");
         if (dot !== -1) {
-          const f = str2.substring(dot + 1).replace(/_/g, "");
+          const f = str3.substring(dot + 1).replace(/_/g, "");
           if (f[f.length - 1] === "0")
             node.minFractionDigits = f.length;
         }
@@ -2897,34 +2897,34 @@ var require_int2 = __commonJS({
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     var intIdentify = (value) => typeof value === "bigint" || Number.isInteger(value);
-    function intResolve(str2, offset, radix, { intAsBigInt }) {
-      const sign = str2[0];
+    function intResolve(str3, offset, radix, { intAsBigInt }) {
+      const sign = str3[0];
       if (sign === "-" || sign === "+")
         offset += 1;
-      str2 = str2.substring(offset).replace(/_/g, "");
+      str3 = str3.substring(offset).replace(/_/g, "");
       if (intAsBigInt) {
         switch (radix) {
           case 2:
-            str2 = `0b${str2}`;
+            str3 = `0b${str3}`;
             break;
           case 8:
-            str2 = `0o${str2}`;
+            str3 = `0o${str3}`;
             break;
           case 16:
-            str2 = `0x${str2}`;
+            str3 = `0x${str3}`;
             break;
         }
-        const n2 = BigInt(str2);
+        const n2 = BigInt(str3);
         return sign === "-" ? BigInt(-1) * n2 : n2;
       }
-      const n = parseInt(str2, radix);
+      const n = parseInt(str3, radix);
       return sign === "-" ? -1 * n : n;
     }
     function intStringify(node, radix, prefix) {
       const { value } = node;
       if (intIdentify(value)) {
-        const str2 = value.toString(radix);
-        return value < 0 ? "-" + prefix + str2.substr(1) : prefix + str2;
+        const str3 = value.toString(radix);
+        return value < 0 ? "-" + prefix + str3.substr(1) : prefix + str3;
       }
       return stringifyNumber.stringifyNumber(node);
     }
@@ -2934,7 +2934,7 @@ var require_int2 = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "BIN",
       test: /^[-+]?0b[0-1_]+$/,
-      resolve: (str2, _onError, opt) => intResolve(str2, 2, 2, opt),
+      resolve: (str3, _onError, opt) => intResolve(str3, 2, 2, opt),
       stringify: (node) => intStringify(node, 2, "0b")
     };
     var intOct = {
@@ -2943,7 +2943,7 @@ var require_int2 = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "OCT",
       test: /^[-+]?0[0-7_]+$/,
-      resolve: (str2, _onError, opt) => intResolve(str2, 1, 8, opt),
+      resolve: (str3, _onError, opt) => intResolve(str3, 1, 8, opt),
       stringify: (node) => intStringify(node, 8, "0")
     };
     var int = {
@@ -2951,7 +2951,7 @@ var require_int2 = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:int",
       test: /^[-+]?[0-9][0-9_]*$/,
-      resolve: (str2, _onError, opt) => intResolve(str2, 0, 10, opt),
+      resolve: (str3, _onError, opt) => intResolve(str3, 0, 10, opt),
       stringify: stringifyNumber.stringifyNumber
     };
     var intHex = {
@@ -2960,7 +2960,7 @@ var require_int2 = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "HEX",
       test: /^[-+]?0x[0-9a-fA-F_]+$/,
-      resolve: (str2, _onError, opt) => intResolve(str2, 2, 16, opt),
+      resolve: (str3, _onError, opt) => intResolve(str3, 2, 16, opt),
       stringify: (node) => intStringify(node, 16, "0x")
     };
     exports.int = int;
@@ -3064,9 +3064,9 @@ var require_timestamp = __commonJS({
   "../../node_modules/.pnpm/yaml@2.9.0/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js"(exports) {
     "use strict";
     var stringifyNumber = require_stringifyNumber();
-    function parseSexagesimal(str2, asBigInt) {
-      const sign = str2[0];
-      const parts = sign === "-" || sign === "+" ? str2.substring(1) : str2;
+    function parseSexagesimal(str3, asBigInt) {
+      const sign = str3[0];
+      const parts = sign === "-" || sign === "+" ? str3.substring(1) : str3;
       const num2 = (n) => asBigInt ? BigInt(n) : Number(n);
       const res = parts.replace(/_/g, "").split(":").reduce((res2, p) => res2 * num2(60) + num2(p), num2(0));
       return sign === "-" ? num2(-1) * res : res;
@@ -3103,7 +3103,7 @@ var require_timestamp = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "TIME",
       test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+$/,
-      resolve: (str2, _onError, { intAsBigInt }) => parseSexagesimal(str2, intAsBigInt),
+      resolve: (str3, _onError, { intAsBigInt }) => parseSexagesimal(str3, intAsBigInt),
       stringify: stringifySexagesimal
     };
     var floatTime = {
@@ -3112,7 +3112,7 @@ var require_timestamp = __commonJS({
       tag: "tag:yaml.org,2002:float",
       format: "TIME",
       test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\.[0-9_]*$/,
-      resolve: (str2) => parseSexagesimal(str2, false),
+      resolve: (str3) => parseSexagesimal(str3, false),
       stringify: stringifySexagesimal
     };
     var timestamp = {
@@ -3123,8 +3123,8 @@ var require_timestamp = __commonJS({
       // may be omitted altogether, resulting in a date format. In such a case, the time part is
       // assumed to be 00:00:00Z (start of day, UTC).
       test: RegExp("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})(?:(?:t|T|[ \\t]+)([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}(\\.[0-9]+)?)(?:[ \\t]*(Z|[-+][012]?[0-9](?::[0-9]{2})?))?)?$"),
-      resolve(str2) {
-        const match = str2.match(timestamp.test);
+      resolve(str3) {
+        const match = str3.match(timestamp.test);
         if (!match)
           throw new Error("!!timestamp expects a date, starting with yyyy-mm-dd");
         const [, year, month, day, hour, minute, second] = match.map(Number);
@@ -7579,10 +7579,10 @@ var require_utils = __commonJS({
       REGEX_SPECIAL_CHARS_GLOBAL
     } = require_constants();
     exports.isObject = (val) => val !== null && typeof val === "object" && !Array.isArray(val);
-    exports.hasRegexChars = (str2) => REGEX_SPECIAL_CHARS.test(str2);
-    exports.isRegexChar = (str2) => str2.length === 1 && exports.hasRegexChars(str2);
-    exports.escapeRegex = (str2) => str2.replace(REGEX_SPECIAL_CHARS_GLOBAL, "\\$1");
-    exports.toPosixSlashes = (str2) => str2.replace(REGEX_BACKSLASH, "/");
+    exports.hasRegexChars = (str3) => REGEX_SPECIAL_CHARS.test(str3);
+    exports.isRegexChar = (str3) => str3.length === 1 && exports.hasRegexChars(str3);
+    exports.escapeRegex = (str3) => str3.replace(REGEX_SPECIAL_CHARS_GLOBAL, "\\$1");
+    exports.toPosixSlashes = (str3) => str3.replace(REGEX_BACKSLASH, "/");
     exports.isWindows = () => {
       if (typeof navigator !== "undefined" && navigator.platform) {
         const platform = navigator.platform.toLowerCase();
@@ -7593,8 +7593,8 @@ var require_utils = __commonJS({
       }
       return false;
     };
-    exports.removeBackslashes = (str2) => {
-      return str2.replace(REGEX_REMOVE_BACKSLASH, (match) => {
+    exports.removeBackslashes = (str3) => {
+      return str3.replace(REGEX_REMOVE_BACKSLASH, (match) => {
         return match === "\\" ? "" : match;
       });
     };
@@ -7684,7 +7684,7 @@ var require_scan = __commonJS({
       const slashes = [];
       const tokens = [];
       const parts = [];
-      let str2 = input;
+      let str3 = input;
       let index = -1;
       let start = 0;
       let lastIndex = 0;
@@ -7703,10 +7703,10 @@ var require_scan = __commonJS({
       let code;
       let token = { value: "", depth: 0, isGlob: false };
       const eos = () => index >= length;
-      const peek = () => str2.charCodeAt(index + 1);
+      const peek = () => str3.charCodeAt(index + 1);
       const advance = () => {
         prev = code;
-        return str2.charCodeAt(++index);
+        return str3.charCodeAt(++index);
       };
       while (index < length) {
         code = advance();
@@ -7874,24 +7874,24 @@ var require_scan = __commonJS({
         isExtglob = false;
         isGlob = false;
       }
-      let base = str2;
+      let base = str3;
       let prefix = "";
       let glob = "";
       if (start > 0) {
-        prefix = str2.slice(0, start);
-        str2 = str2.slice(start);
+        prefix = str3.slice(0, start);
+        str3 = str3.slice(start);
         lastIndex -= start;
       }
       if (base && isGlob === true && lastIndex > 0) {
-        base = str2.slice(0, lastIndex);
-        glob = str2.slice(lastIndex);
+        base = str3.slice(0, lastIndex);
+        glob = str3.slice(lastIndex);
       } else if (isGlob === true) {
         base = "";
-        glob = str2;
+        glob = str3;
       } else {
-        base = str2;
+        base = str3;
       }
-      if (base && base !== "" && base !== "/" && base !== str2) {
+      if (base && base !== "" && base !== "/" && base !== str3) {
         if (isPathSeparator(base.charCodeAt(base.length - 1))) {
           base = base.slice(0, -1);
         }
@@ -8938,8 +8938,8 @@ var require_parse = __commonJS({
         if (opts2.noglobstar === true) return star;
         return `(${capture}(?:(?!${START_ANCHOR}${opts2.dot ? DOTS_SLASH : DOT_LITERAL}).)*?)`;
       };
-      const create = (str2) => {
-        switch (str2) {
+      const create = (str3) => {
+        switch (str3) {
           case "*":
             return `${nodot}${ONE_CHAR}${star}`;
           case ".*":
@@ -8957,7 +8957,7 @@ var require_parse = __commonJS({
           case "**/.*":
             return `(?:${nodot}${globstar(opts)}${SLASH_LITERAL})?${DOT_LITERAL}${ONE_CHAR}${star}`;
           default: {
-            const match = /^(.*?)\.(\w+)$/.exec(str2);
+            const match = /^(.*?)\.(\w+)$/.exec(str3);
             if (!match) return;
             const source2 = create(match[1]);
             if (!source2) return;
@@ -8988,9 +8988,9 @@ var require_picomatch = __commonJS({
     var picomatch3 = (glob, options, returnState = false) => {
       if (Array.isArray(glob)) {
         const fns = glob.map((input) => picomatch3(input, options, returnState));
-        const arrayMatcher = (str2) => {
+        const arrayMatcher = (str3) => {
           for (const isMatch of fns) {
-            const state2 = isMatch(str2);
+            const state2 = isMatch(str3);
             if (state2) return state2;
           }
           return false;
@@ -9066,7 +9066,7 @@ var require_picomatch = __commonJS({
       const regex = glob instanceof RegExp ? glob : picomatch3.makeRe(glob, options);
       return regex.test(utils.basename(input, { windows: posix }));
     };
-    picomatch3.isMatch = (str2, patterns, options) => picomatch3(patterns, options)(str2);
+    picomatch3.isMatch = (str3, patterns, options) => picomatch3(patterns, options)(str3);
     picomatch3.parse = (pattern, options) => {
       if (Array.isArray(pattern)) return pattern.map((p) => picomatch3.parse(p, options));
       return parse(pattern, { ...options, fastpaths: false });
@@ -9134,6 +9134,14 @@ var require_picomatch2 = __commonJS({
 });
 
 // ../../apps/mcp/src/tools-list.ts
+function toolsForScope(tools, scope) {
+  const suffix = "error" in scope ? `
+
+SCOPE: this server has not resolved a board. ${scope.error.split("\n")[0]} Until it does, it answers nothing \u2014 and another CommitCycle server registered beside it may still be answering for a board that is not this checkout's (CC-448).` : `
+
+SCOPE: answers for \`${scope.tenant}/${scope.repo}\`` + (scope.apiUrl ? ` at ${scope.apiUrl.replace(/\/+$/, "")}` : "") + (scope.origin ? `, resolved from ${scope.origin}` : "") + ". More than one CommitCycle server can be registered in a session and each answers for whatever board it resolved: read this line before trusting a payload, because task ids are shaped the same on every board (D-49, CC-448).";
+  return tools.map((t) => ({ ...t, description: t.description + suffix }));
+}
 var TOOLS;
 var init_tools_list = __esm({
   "../../apps/mcp/src/tools-list.ts"() {
@@ -9214,6 +9222,49 @@ var init_tools_list = __esm({
   }
 });
 
+// ../../apps/mcp/src/status.ts
+function scopeMismatch(scope, checkout) {
+  if (!checkout?.tenant || !checkout.repo) return null;
+  const here = scopeLabel(scope);
+  const there = `${checkout.tenant}/${checkout.repo}`;
+  const sameUrl = !checkout.apiUrl || !scope.apiUrl || trimUrl(checkout.apiUrl) === trimUrl(scope.apiUrl);
+  if (here === there && sameUrl) return null;
+  return `SCOPE MISMATCH \u2014 this is not the board this checkout reports to. This server answers for ${here}${at(scope.apiUrl)}${scope.origin ? `, resolved from ${scope.origin}` : ""}. The checkout at ${checkout.path} reports to ${there}${at(checkout.apiUrl)}. Task ids are shaped the same on every board (D-49), so what follows will parse and will not be this repository's work \u2014 do not assess collisions, holders or anything else against it. Point the client at \`cycle mcp\` from this checkout, or set CC_API_URL / CC_TENANT / CC_REPO_ID on this server to ${there}.`;
+}
+function statusHeader(scope, checkout) {
+  return {
+    answering_for: scopeLabel(scope),
+    board: {
+      tenant: scope.tenant,
+      repo: scope.repo,
+      api_url: scope.apiUrl ? trimUrl(scope.apiUrl) : null,
+      resolved_from: scope.origin ?? null
+    },
+    checkout: checkout ? {
+      path: checkout.path,
+      reports_to: checkout.tenant && checkout.repo ? `${checkout.tenant}/${checkout.repo}` : null,
+      api_url: checkout.apiUrl ? trimUrl(checkout.apiUrl) : null
+    } : null,
+    scope_warning: scopeMismatch(scope, checkout)
+  };
+}
+function boardStatus(scope, checkout, tasks) {
+  return { ...statusHeader(scope, checkout), in_flight: tasks.length, tasks: [...tasks] };
+}
+function taskStatus(scope, checkout, task) {
+  return { ...statusHeader(scope, checkout), task };
+}
+var scopeLabel, trimUrl, at, noSuchTask;
+var init_status = __esm({
+  "../../apps/mcp/src/status.ts"() {
+    "use strict";
+    scopeLabel = (s) => `${s.tenant}/${s.repo}`;
+    trimUrl = (u) => u.replace(/\/+$/, "");
+    at = (url) => url ? ` at ${trimUrl(url)}` : "";
+    noSuchTask = (scope, id) => `No task ${id} on ${scopeLabel(scope)}${at(scope.apiUrl)}. If that id exists somewhere, it exists on another board \u2014 this server answers for one.`;
+  }
+});
+
 // ../../apps/mcp/src/api.ts
 function scopeFromEnv(env = process.env) {
   const apiUrl = env.CC_API_URL;
@@ -9240,6 +9291,13 @@ async function call2(scope, path, init) {
       const body = await res.json();
       detail = body.failures?.map((f) => f.message).join(" ") ?? body.error ?? detail;
     } catch {
+    }
+    if ((res.status === 401 || res.status === 403) && !scope.token) {
+      throw new Error(
+        `${detail}
+
+This server holds no credential. It was started without CC_TOKEN, which is the only source this entry point reads \u2014 the session \`cycle login\` stores is a file it never opens. Point the client at \`cycle mcp\` instead: it walks the same four sources every other command does (CC_TOKEN, .zones/board.json, this machine's pairing, then the stored session). Setting CC_TOKEN in this server's environment also works, and is the only option when the CLI is absent.`
+      );
     }
     throw new Error(detail);
   }
@@ -9308,16 +9366,48 @@ var init_api = __esm({
   }
 });
 
+// ../../apps/mcp/src/checkout.ts
+import { existsSync as existsSync20, readFileSync as readFileSync22 } from "node:fs";
+import { dirname as dirname8, join as join26, resolve as resolve3 } from "node:path";
+function readCheckoutBinding(from = process.cwd()) {
+  let dir = resolve3(from);
+  for (; ; ) {
+    const file = join26(dir, ".zones", "board.json");
+    if (existsSync20(file)) {
+      try {
+        const j = JSON.parse(readFileSync22(file, "utf8"));
+        return { path: file, tenant: str2(j.tenant), repo: str2(j.repo), apiUrl: str2(j.api_url) };
+      } catch {
+        return { path: file };
+      }
+    }
+    const up = dirname8(dir);
+    if (up === dir) return null;
+    dir = up;
+  }
+}
+function scopeOrigin(env = process.env) {
+  return env.CC_API_URL || env.CC_TENANT || env.CC_REPO_ID ? "this server's own environment (CC_API_URL / CC_TENANT / CC_REPO_ID)" : "the CommitCycle CLI beside it (.zones/board.json, this machine's pairing, then the stored session)";
+}
+var str2;
+var init_checkout = __esm({
+  "../../apps/mcp/src/checkout.ts"() {
+    "use strict";
+    str2 = (v) => typeof v === "string" && v ? v : void 0;
+  }
+});
+
 // ../../apps/mcp/src/server.ts
 var server_exports = {};
 __export(server_exports, {
   TOOLS: () => TOOLS,
   handle: () => handle2,
   main: () => main,
-  runTool: () => runTool
+  runTool: () => runTool,
+  toolsForScope: () => toolsForScope
 });
 import { createInterface as createInterface2 } from "node:readline";
-async function runTool(scope, name, args) {
+async function runTool(scope, name, args, readCheckout = readCheckoutBinding) {
   switch (name) {
     case "cc_zones":
       return JSON.stringify(await board.zones(scope), null, 2);
@@ -9345,11 +9435,24 @@ It cannot start until the four questions are answered. Use cc_interview to draft
       ].filter(Boolean);
       return missing.length ? `Saved ${task.id}. Still unanswered: ${missing.join(", ")}. The gate will refuse until they are.` : `Saved ${task.id}. All four answered \u2014 a person can start it from the board now.`;
     }
+    /* Both shapes are built in `status.ts` and both begin with the board they
+       answer for (CC-448). This used to return `{ in_flight, tasks }` where the
+       Worker returned a bare array, so a parse written against one broke on the
+       other; and neither said which board it had read, which is how 65 tasks
+       from another organization's product came back looking like this
+       repository's. */
     case "cc_status": {
-      if (args.task_id) return JSON.stringify(await board.task(scope, String(args.task_id)), null, 2);
+      const here = announced(scope);
+      const checkout = readCheckout();
+      if (args.task_id) {
+        const id = String(args.task_id);
+        const task = await board.task(scope, id);
+        if (!task) return noSuchTask(here, id);
+        return JSON.stringify(taskStatus(here, checkout, task), null, 2);
+      }
       const tasks = await board.tasks(scope);
       const live = tasks.filter((t) => t.state === "In Progress" || t.state === "In Review");
-      return JSON.stringify({ in_flight: live.length, tasks: live }, null, 2);
+      return JSON.stringify(boardStatus(here, checkout, live), null, 2);
     }
     default:
       return `No such tool: ${name}`;
@@ -9359,7 +9462,7 @@ function reply(id, result) {
   if (id === void 0) return;
   process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id, result }) + "\n");
 }
-async function handle2(msg, resolve3 = scopeFromEnv) {
+async function handle2(msg, resolve5 = scopeFromEnv, readCheckout = readCheckoutBinding) {
   switch (msg.method) {
     case "initialize":
       return reply(msg.id, {
@@ -9367,16 +9470,25 @@ async function handle2(msg, resolve3 = scopeFromEnv) {
         capabilities: { tools: {} },
         serverInfo: SERVER
       });
-    case "tools/list":
-      return reply(msg.id, { tools: TOOLS });
+    /* The list resolves the board so it can say which one it will answer for
+       (CC-448). It is the only place a client shows the caller anything before
+       a call, and two servers publishing the same bytes are two servers a
+       caller cannot tell apart. Resolving here costs no network — every
+       resolver in this product is filesystem-only (D-10). */
+    case "tools/list": {
+      const scope = resolve5();
+      return reply(msg.id, {
+        tools: toolsForScope(TOOLS, "error" in scope ? scope : announced(scope))
+      });
+    }
     case "tools/call": {
       const params = msg.params ?? {};
-      const scope = resolve3();
+      const scope = resolve5();
       if ("error" in scope) {
         return reply(msg.id, { content: [{ type: "text", text: scope.error }], isError: true });
       }
       try {
-        const text = await runTool(scope, String(params.name), params.arguments ?? {});
+        const text = await runTool(scope, String(params.name), params.arguments ?? {}, readCheckout);
         return reply(msg.id, { content: [{ type: "text", text }] });
       } catch (e) {
         return reply(msg.id, {
@@ -9399,7 +9511,7 @@ async function handle2(msg, resolve3 = scopeFromEnv) {
       }
   }
 }
-function main(resolve3 = scopeFromEnv) {
+function main(resolve5 = scopeFromEnv, readCheckout = readCheckoutBinding) {
   const rl = createInterface2({ input: process.stdin });
   rl.on("line", (line) => {
     const text = line.trim();
@@ -9410,26 +9522,34 @@ function main(resolve3 = scopeFromEnv) {
     } catch {
       return;
     }
-    void handle2(msg, resolve3);
+    void handle2(msg, resolve5, readCheckout);
   });
 }
-var MCP_PROTOCOL_VERSION, SERVER;
+var MCP_PROTOCOL_VERSION, SERVER, announced;
 var init_server = __esm({
   "../../apps/mcp/src/server.ts"() {
     "use strict";
     init_api();
+    init_checkout();
+    init_status();
     init_tools_list();
     init_tools_list();
     MCP_PROTOCOL_VERSION = "2024-11-05";
     SERVER = { name: "commitcycle", version: "0.1.0" };
+    announced = (scope) => ({
+      tenant: scope.tenant,
+      repo: scope.repo,
+      apiUrl: scope.apiUrl,
+      origin: scopeOrigin()
+    });
   }
 });
 
 // src/index.ts
 import { createInterface as createInterface3 } from "node:readline/promises";
-import { execFileSync as execFileSync8 } from "node:child_process";
-import { existsSync as existsSync18 } from "node:fs";
-import { dirname as dirname7, join as join25, resolve as resolve2 } from "node:path";
+import { execFileSync as execFileSync11 } from "node:child_process";
+import { existsSync as existsSync21 } from "node:fs";
+import { dirname as dirname9, join as join27, resolve as resolve4 } from "node:path";
 
 // src/branch.ts
 import { readFileSync, statSync } from "node:fs";
@@ -13635,6 +13755,8 @@ var OpenZoneSchema = external_exports.object({
 });
 var GrantSchema = external_exports.object({
   task_id: external_exports.string().min(1),
+  tenant_id: external_exports.string().min(1).optional(),
+  // D-42; the board writes it, D-49 is why it is signed
   repo_id: external_exports.string().min(1),
   // D-32
   branch: external_exports.string().min(1),
@@ -13642,7 +13764,25 @@ var GrantSchema = external_exports.object({
   mode: external_exports.enum(["standard", "spike"]).default("standard"),
   issued_at: external_exports.string().datetime(),
   expires: external_exports.string().datetime(),
-  zones: external_exports.array(OpenZoneSchema).default([])
+  zones: external_exports.array(OpenZoneSchema).default([]),
+  /**
+   * The board's signature over `signedPayload(grant)`, base64 (D-61, CC-471).
+   *
+   * **Declared here and verified nowhere in this file, on purpose.** The
+   * verification needs a public key, and the key belongs to the enforcer rather
+   * than to the shape — `packages/hook` holds it, inside a zone no task may
+   * write. What this field must not be is invisible: a *security* field hidden
+   * from the one implementation the hook, the Action, the CLI and the API all
+   * import would be the drift D-30 bans, and the worst possible place to start
+   * hiding something.
+   *
+   * Optional during the migration and not after. Every grant in existence when
+   * this landed was unsigned, so a hook that refused them outright would deny
+   * every write in every repository. The sequence is: the board signs, hooks
+   * warn, then hooks refuse — and the day it becomes required is a decision on
+   * the record, not a default flipped here.
+   */
+  sig: external_exports.string().min(1).optional()
 });
 function resolveGrant(raw, now = /* @__PURE__ */ new Date()) {
   const parsed = GrantSchema.safeParse(raw);
@@ -13905,7 +14045,23 @@ function renderAgentsBlock(input) {
     "",
     guarded ? "If you are blocked, do not look for another route. Ask for access with a reason\nand an alternative, or carry on with the rest of the task and report the block." : "If a change needs one of these paths, do not just make it. Ask for access with a\nreason and an alternative, or carry on with the rest of the task and say you stopped.",
     "",
-    "Everything not listed above is unprotected \u2014 work there freely.",
+    /* The unprotected rule is a rule about zones, not about now (CC-419).
+     *
+     * This sentence used to be pushed unconditionally, on both sides of the
+     * task/no-task branch above — which put "work there freely" ten lines under
+     * the heading that had just said nothing is open and every write is denied.
+     * The block stated the rule and contradicted it inside one render, in the
+     * exact state where the contradiction bites: an agent with no task reads the
+     * last sentence about unprotected paths and starts typing.
+     *
+     * Undeclared paths are unprotected *inside an active task*. Without one the
+     * hook has no branch → task → grant to resolve (D-11) and refuses wherever
+     * the write lands, zone or not — which is what `.zones/zones.yml` says in
+     * its own last two lines, and now in its header too.
+     *
+     * Still split by `guarded`, for CC-209's reason: only a repository with
+     * something actually installed may say a write "will be denied". */
+    task ? "Everything not listed above is unprotected \u2014 work there freely." : guarded ? "Everything not listed above is unprotected *inside an active task*. There is no\ntask here, so that opens nothing: writes are denied everywhere \u2014 unprotected paths\nincluded \u2014 until a task passes the gate and binds itself to a branch." : "Everything not listed above is unprotected *inside an active task*. There is no\ntask here, so that opens nothing: no write anywhere is authorized until a task\npasses the gate \u2014 nothing is stopping you, so this one is on you.",
     "",
     /* One standing rule, in the block every agent reads (CC-160).
      *
@@ -14095,6 +14251,7 @@ var TEMPLATE_NAMES = Object.keys(TEMPLATES).sort();
 
 // ../../apps/api/src/mcp-http.ts
 init_tools_list();
+init_status();
 
 // ../../apps/api/src/interview/validate.ts
 var DraftSchema = external_exports.object({
@@ -14175,7 +14332,8 @@ function detectEnforcement(root) {
     if (!existsSync(path)) continue;
     try {
       const command = read(readFileSync2(path, "utf8"));
-      if (command && existsSync(isAbsolute2(command) ? command : join2(root, command))) return "on";
+      const resolved2 = command?.replace("$CLAUDE_PROJECT_DIR", root);
+      if (resolved2 && existsSync(isAbsolute2(resolved2) ? resolved2 : join2(root, resolved2))) return "on";
     } catch {
       continue;
     }
@@ -14506,18 +14664,18 @@ function resolveBoard(root) {
     file = JSON.parse(readFileSync5(join5(root, ".zones", "board.json"), "utf8"));
   } catch {
   }
-  const str2 = (v) => typeof v === "string" && v ? v : void 0;
-  const apiUrl = process.env.CC_API_URL ?? str2(file.api_url);
+  const str3 = (v) => typeof v === "string" && v ? v : void 0;
+  const apiUrl = process.env.CC_API_URL ?? str3(file.api_url);
   const tenant = tenantOf(file);
   const choice = apiUrl && tenant ? sessionFor(apiUrl, tenant) : {};
-  const usingSession = !process.env.CC_TOKEN && !str2(file.token) && !(apiUrl && tenant && machineToken(apiUrl, tenant, repoOf(root, file)));
+  const usingSession = !process.env.CC_TOKEN && !str3(file.token) && !(apiUrl && tenant && machineToken(apiUrl, tenant, repoOf(root, file)));
   return {
     apiUrl,
-    tenant: process.env.CC_TENANT ?? str2(file.tenant),
+    tenant: process.env.CC_TENANT ?? str3(file.tenant),
     ...usingSession && "wrongTenant" in choice ? { wrongIdentity: { tenant: choice.wrongTenant.tenant, held: choice.wrongTenant.held.map((s) => s.email) } } : {},
     // Derived last: the directory name is usually right, and being wrong is
     // visible the moment the scope is printed.
-    repo: process.env.CC_REPO_ID ?? str2(file.repo) ?? root.split("/").pop() ?? "repo",
+    repo: process.env.CC_REPO_ID ?? str3(file.repo) ?? root.split("/").pop() ?? "repo",
     /* Last in the chain and first in ordinary use: the session `cycle login`
        stored (CC-147). It comes last so an explicit env var or a committed
        machine token still wins, and it is looked up BY BOARD — a session
@@ -14528,7 +14686,7 @@ function resolveBoard(root) {
        laptop is the ordinary case for a CLI and the session is the one a
        browser holds — and it is scoped to one repository, so it is also the
        narrower of the two (CC-184). */
-    token: process.env.CC_TOKEN ?? str2(file.token) ?? (apiUrl && tenant ? machineToken(apiUrl, tenant, repoOf(root, file)) : void 0) ?? (apiUrl ? savedToken(apiUrl, tenant) : void 0)
+    token: process.env.CC_TOKEN ?? str3(file.token) ?? (apiUrl && tenant ? machineToken(apiUrl, tenant, repoOf(root, file)) : void 0) ?? (apiUrl ? savedToken(apiUrl, tenant) : void 0)
   };
 }
 
@@ -14840,8 +14998,8 @@ function proposedOwner(root) {
   const signedIn = board2.apiUrl ? savedIdentity(board2.apiUrl) : void 0;
   if (signedIn) return { owner: signedIn, from: "the account you are signed in as" };
   try {
-    const git2 = execFileSync2("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim();
-    if (git2) return { owner: git2, from: "your git identity" };
+    const git3 = execFileSync2("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim();
+    if (git3) return { owner: git3, from: "your git identity" };
   } catch {
   }
   return { owner: NO_OWNER, from: "nothing on this machine names you" };
@@ -15024,9 +15182,9 @@ ${line}
 }
 
 // src/doctor.ts
-import { execFileSync as execFileSync3 } from "node:child_process";
-import { existsSync as existsSync5, readdirSync as readdirSync4, readFileSync as readFileSync9, statSync as statSync4 } from "node:fs";
-import { join as join10 } from "node:path";
+import { execFileSync as execFileSync4 } from "node:child_process";
+import { existsSync as existsSync6, readdirSync as readdirSync5, readFileSync as readFileSync10, statSync as statSync5 } from "node:fs";
+import { join as join11 } from "node:path";
 
 // src/pull.ts
 import { existsSync as existsSync4, readdirSync as readdirSync3, readFileSync as readFileSync8, writeFileSync as writeFileSync5 } from "node:fs";
@@ -15285,6 +15443,335 @@ async function runPull(input) {
   return { ...c, status: "ok", adopted, written, unreadable };
 }
 
+// src/enforcement-age.ts
+import { execFileSync as execFileSync3 } from "node:child_process";
+import { createHash } from "node:crypto";
+import { existsSync as existsSync5, readFileSync as readFileSync9, readdirSync as readdirSync4, statSync as statSync4 } from "node:fs";
+import { homedir as homedir3 } from "node:os";
+import { dirname as dirname4, join as join10, resolve } from "node:path";
+var HOOK_SOURCE = ["packages/hook", "packages/contracts"];
+var WORKSPACE_CORE = ["packages", "hook", "dist", "core.js"];
+var COMMITTED_CORE = ["plugin", "hook", "dist", "core.js"];
+function git(root, args) {
+  try {
+    return execFileSync3("git", ["-C", root, ...args], { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+  } catch {
+    return null;
+  }
+}
+function isAncestor(root, a, b) {
+  try {
+    execFileSync3("git", ["-C", root, "merge-base", "--is-ancestor", a, b], { stdio: "ignore" });
+    return true;
+  } catch (err) {
+    const code = err.status;
+    return code === 1 ? false : null;
+  }
+}
+function lastCommit(root, paths) {
+  const out = git(root, ["log", "-1", "--format=%H%x00%cI", "--", ...paths]);
+  if (!out) return null;
+  const [rev, when] = out.split("\0");
+  if (!rev || !when) return null;
+  const at2 = new Date(when);
+  return Number.isNaN(at2.getTime()) ? null : { rev, when: at2 };
+}
+function newestSourceMtime(root) {
+  let newest = null;
+  const walk = (dir, depth) => {
+    if (depth > 8) return;
+    for (const entry of safeReaddir(dir)) {
+      if (entry === "node_modules" || entry === "dist" || entry.startsWith(".")) continue;
+      const full = join10(dir, entry);
+      let stat;
+      try {
+        stat = statSync4(full);
+      } catch {
+        continue;
+      }
+      if (stat.isDirectory()) {
+        walk(full, depth + 1);
+      } else if (!newest || stat.mtime > newest.at) {
+        newest = { path: full, at: stat.mtime };
+      }
+    }
+  };
+  for (const rel of HOOK_SOURCE) walk(join10(root, rel, "src"), 0);
+  return newest;
+}
+function facts(role, path, via) {
+  if (!path || !existsSync5(path)) {
+    return { role, path, exists: false, sha256: null, bytes: null, built: null, via };
+  }
+  try {
+    const stat = statSync4(path);
+    const bytes = readFileSync9(path);
+    return {
+      role,
+      path,
+      exists: true,
+      sha256: createHash("sha256").update(bytes).digest("hex"),
+      bytes: stat.size,
+      built: stat.mtime,
+      via
+    };
+  } catch {
+    return { role, path, exists: false, sha256: null, bytes: null, built: null, via };
+  }
+}
+function safeReaddir(dir) {
+  try {
+    return readdirSync4(dir);
+  } catch {
+    return [];
+  }
+}
+function fromInUseMarker(home, pid) {
+  if (!pid) return null;
+  const cache = join10(home, ".claude", "plugins", "cache");
+  for (const marketplace of safeReaddir(cache)) {
+    for (const plugin of safeReaddir(join10(cache, marketplace))) {
+      for (const version of safeReaddir(join10(cache, marketplace, plugin))) {
+        const root = join10(cache, marketplace, plugin, version);
+        const core = join10(root, "hook", "dist", "core.js");
+        const marker = join10(root, ".in_use", pid);
+        if (!existsSync5(core) || !existsSync5(marker)) continue;
+        let startedAt = null;
+        try {
+          const held = JSON.parse(readFileSync9(marker, "utf8"));
+          if (held.procStart) {
+            const at2 = new Date(held.procStart);
+            if (!Number.isNaN(at2.getTime())) startedAt = at2;
+          }
+        } catch {
+        }
+        return {
+          path: core,
+          via: `the harness's own in-use marker for pid ${pid} \u2014 ${marketplace}/${plugin} ${version}`,
+          startedAt
+        };
+      }
+    }
+  }
+  return null;
+}
+function fromPath(env) {
+  for (const entry of (env.PATH ?? "").split(":")) {
+    if (!entry.includes(`${join10("plugins", "cache")}`) || !entry.endsWith(`${join10("x", "bin")}`.slice(1))) continue;
+    const core = join10(dirname4(entry), "hook", "dist", "core.js");
+    if (existsSync5(core)) {
+      return { path: core, via: `a plugin root on PATH (${dirname4(entry)}) \u2014 no session marker, so this is inference`, startedAt: null };
+    }
+  }
+  return null;
+}
+function fromSettings(root, env) {
+  const settingsPath = join10(root, ".claude", "settings.json");
+  if (!existsSync5(settingsPath)) return null;
+  try {
+    const settings = JSON.parse(readFileSync9(settingsPath, "utf8"));
+    const cmd = settings?.hooks?.PreToolUse?.[0]?.hooks?.[0]?.command;
+    if (!cmd) return null;
+    const wrapper = cmd.replace(/\$\{?CLAUDE_PROJECT_DIR\}?/g, root).replace(/\$\{?CLAUDE_PLUGIN_ROOT\}?/g, env.CLAUDE_PLUGIN_ROOT ?? "").trim();
+    if (!wrapper) return null;
+    return {
+      path: resolve(dirname4(wrapper), "..", "dist", "core.js"),
+      via: `.claude/settings.json \u2192 ${cmd}`,
+      startedAt: null
+    };
+  } catch {
+    return null;
+  }
+}
+function locateEnforcing(root, env, home) {
+  const pinned = env.CC_HOOK_CORE;
+  if (pinned) return { path: pinned, via: "CC_HOOK_CORE, set explicitly", startedAt: null };
+  const marker = fromInUseMarker(home, env.CLAUDE_PID ?? null);
+  if (marker) return marker;
+  const declared = env.CLAUDE_PLUGIN_ROOT;
+  if (declared) {
+    const core = join10(declared, "hook", "dist", "core.js");
+    if (existsSync5(core)) return { path: core, via: "CLAUDE_PLUGIN_ROOT", startedAt: null };
+  }
+  return fromPath(env) ?? fromSettings(root, env) ?? { path: null, via: "nothing on this machine names one", startedAt: null };
+}
+var DAY = 24 * 60 * 60 * 1e3;
+function ageWords(built, now) {
+  if (!built) return "age unknown";
+  const days = Math.floor((now.getTime() - built.getTime()) / DAY);
+  if (days < 0) return "built in the future \u2014 the clock disagrees with itself";
+  if (days === 0) return "built today";
+  return `${days} day${days === 1 ? "" : "s"} old`;
+}
+function short(sha) {
+  return sha ? sha.slice(0, 12) : "unreadable";
+}
+function stamp(d) {
+  return d ? `${d.toISOString().replace("T", " ").slice(0, 16)}Z` : "unknown";
+}
+function describe(b, now) {
+  if (!b.exists) return `${b.path ?? "nowhere"} \u2014 not there`;
+  return `${b.path} \u2014 ${b.bytes} bytes, sha ${short(b.sha256)}, built ${stamp(b.built)} (${ageWords(b.built, now)})`;
+}
+function inspectEnforcement(root, opts = {}) {
+  const env = opts.env ?? process.env;
+  const home = opts.home ?? env.HOME ?? homedir3();
+  const now = opts.now ?? /* @__PURE__ */ new Date();
+  const checks = [];
+  const shallow = git(root, ["rev-parse", "--is-shallow-repository"]) === "true";
+  const src = lastCommit(root, HOOK_SOURCE);
+  const source = { rev: src?.rev ?? null, when: src?.when ?? null, shallow };
+  const located = locateEnforcing(root, env, home);
+  const enforcing = facts("enforcing", located.path, located.via);
+  const workspace = facts("workspace", join10(root, ...WORKSPACE_CORE), "this checkout, built by `pnpm --filter @commitcycle/hook build`");
+  const committed = facts("committed", join10(root, ...COMMITTED_CORE), "committed, and what a marketplace install downloads");
+  if (!enforcing.path) {
+    checks.push({
+      name: "enforcing bundle",
+      status: "warn",
+      detail: "nothing on this machine says which hook bundle is judging this session",
+      fix: "Run this from inside the session you want to know about \u2014 the harness sets CLAUDE_PID and stamps the plugin root it pinned. Outside a session there is nothing first-hand to read, and CC_HOOK_CORE=<path> is how to name one by hand."
+    });
+  } else if (!enforcing.exists) {
+    checks.push({
+      name: "enforcing bundle",
+      status: "fail",
+      detail: `${enforcing.path} does not exist, and that is where the wrapper looks (${enforcing.via})`,
+      fix: "The wrapper is fail-closed, so this denies every tool call in the session, reads included. Build it (`pnpm --filter @commitcycle/hook build`) or reinstall the plugin \u2014 from a terminal, not from inside the session it is denying."
+    });
+  } else {
+    checks.push({
+      name: "enforcing bundle",
+      status: "ok",
+      detail: `${describe(enforcing, now)} \u2014 found via ${enforcing.via}`
+    });
+  }
+  const onDisk = newestSourceMtime(root);
+  const fromGit = source.when ? { at: source.when, said: `the last committed hook source change (${short(source.rev)})` } : null;
+  const fromDisk = onDisk ? { at: onDisk.at, said: `the newest file under the hook sources (${onDisk.path.startsWith(root) ? onDisk.path.slice(root.length + 1) : onDisk.path})` } : null;
+  const effective = fromGit && fromDisk ? fromDisk.at > fromGit.at ? fromDisk : fromGit : fromGit ?? fromDisk;
+  if (!workspace.exists) {
+    checks.push({
+      name: "built bundle vs source",
+      status: "warn",
+      detail: `nothing is built at ${join10(...WORKSPACE_CORE)} in this checkout`,
+      fix: "A session wired to this checkout would be denied every tool call. Run `pnpm --filter @commitcycle/hook build`. (A linked worktree starts this way \u2014 dist/ is gitignored and is not carried across.)"
+    });
+  } else if (effective && workspace.built && workspace.built < effective.at) {
+    checks.push({
+      name: "built bundle vs source",
+      status: "fail",
+      detail: `built ${stamp(workspace.built)}, which is older than ${effective.said} at ${stamp(effective.at)} \u2014 this build predates the rules it is enforcing`,
+      fix: "Run `pnpm --filter @commitcycle/hook build`. Then read the next line: a rebuild does not reach a session that already loaded the old one."
+    });
+  } else if (!effective) {
+    checks.push({
+      name: "built bundle vs source",
+      status: "warn",
+      detail: shallow ? "the clone is shallow, so no commit history can say when the hook source last changed" : "nothing could be read about when the hook source last changed, so the build has nothing to be older than",
+      fix: shallow ? "Fetch the history (`fetch-depth: 0` in CI, `git fetch --unshallow` locally). Without it this check cannot tell a fresh bundle from a stale one." : "Check that this is the repository the hook is built from."
+    });
+  } else {
+    checks.push({
+      name: "built bundle vs source",
+      status: "ok",
+      detail: `built ${stamp(workspace.built)}, after ${effective.said} at ${stamp(effective.at)}`
+    });
+  }
+  if (!committed.exists) {
+    checks.push({
+      name: "shipped bundle vs source",
+      status: "warn",
+      detail: `${join10(...COMMITTED_CORE)} is missing, so a marketplace install has no hook to run`,
+      fix: "Run `sh scripts/package-plugin.sh`. A plugin that claims enforcement and cannot enforce is worse than one that admits it has none."
+    });
+  } else if (workspace.exists && committed.sha256 === workspace.sha256) {
+    checks.push({
+      name: "shipped bundle vs source",
+      status: "ok",
+      detail: `byte-identical to the build in this checkout (sha ${short(committed.sha256)})`
+    });
+  } else {
+    const bundleCommit = lastCommit(root, [join10(...COMMITTED_CORE)]);
+    const verdict = source.rev && bundleCommit ? bundleCommit.rev === source.rev ? "same" : isAncestor(root, bundleCommit.rev, source.rev) === true ? "behind" : isAncestor(root, source.rev, bundleCommit.rev) === true ? "ahead" : "unknown" : "unknown";
+    if (verdict === "behind") {
+      const days = source.when && bundleCommit ? Math.floor((source.when.getTime() - bundleCommit.when.getTime()) / DAY) : null;
+      checks.push({
+        name: "shipped bundle vs source",
+        status: "fail",
+        detail: `last rebuilt by ${short(bundleCommit.rev)} on ${stamp(bundleCommit.when)}; the hook source changed after that, at ${short(source.rev)} on ${stamp(source.when)}${days !== null ? ` \u2014 ${days} day(s) of source it does not contain` : ""}`,
+        fix: "Everyone who installed the plugin is running the older rules. Rebuild and repackage: `pnpm --filter @commitcycle/hook build && pnpm --filter @commitcycle/cli build && sh scripts/package-plugin.sh`, and commit what it writes."
+      });
+    } else if (verdict === "unknown") {
+      checks.push({
+        name: "shipped bundle vs source",
+        status: "warn",
+        detail: shallow ? "the clone is shallow, so the committed bundle's provenance cannot be read" : "the committed bundle and the hook source have no ancestry between them that git can order",
+        fix: shallow ? "Fetch the history (`fetch-depth: 0` in CI). Until then a stale shipped bundle passes here unnoticed, which is the failure this check exists for." : "Rebuild and repackage rather than reason about it: `pnpm -r build && sh scripts/package-plugin.sh`."
+      });
+    } else if (!workspace.exists) {
+      checks.push({
+        name: "shipped bundle vs source",
+        status: "ok",
+        detail: `last rebuilt by ${short(bundleCommit?.rev ?? null)} on ${stamp(bundleCommit?.when ?? null)}, at or after the last hook source change (${short(source.rev)}, ${stamp(source.when)}) \u2014 nothing is built here to compare the bytes against`
+      });
+    } else {
+      checks.push({
+        name: "shipped bundle vs source",
+        status: "warn",
+        detail: `provenance says it is current (${short(bundleCommit?.rev ?? null)}, ${stamp(bundleCommit?.when ?? null)}), but it is not byte-identical to the build in this checkout (${short(committed.sha256)} vs ${short(workspace.sha256)})`,
+        fix: "Either this checkout's build is stale, or the bundle does not rebuild byte-for-byte here. Rebuild and repackage before cutting a release, and if the bytes still differ say so in the release note rather than guessing."
+      });
+    }
+  }
+  const reference = workspace.exists ? workspace : committed;
+  if (!enforcing.exists || !enforcing.sha256) {
+  } else if (!reference.exists || !reference.sha256) {
+    checks.push({
+      name: "session vs bundle",
+      status: "warn",
+      detail: "nothing is built in this checkout to compare the running session against",
+      fix: "Run `pnpm --filter @commitcycle/hook build`, then re-run this. Until then, the age of what is enforcing you is measurable and its correctness is not."
+    });
+  } else if (enforcing.sha256 === reference.sha256) {
+    checks.push({
+      name: "session vs bundle",
+      status: "ok",
+      detail: `this session is running the same artifact this checkout produces (sha ${short(enforcing.sha256)})`
+    });
+  } else {
+    const older = enforcing.built && reference.built && enforcing.built < reference.built;
+    const gap = enforcing.built && reference.built ? Math.abs(Math.floor((reference.built.getTime() - enforcing.built.getTime()) / DAY)) : null;
+    const repoAgrees = committed.exists && workspace.exists && committed.sha256 === workspace.sha256;
+    checks.push({
+      name: "session vs bundle",
+      status: "fail",
+      detail: `the session is enforced by ${enforcing.path} (sha ${short(enforcing.sha256)}, built ${stamp(enforcing.built)}), which is ${older ? "older" : "a different artifact"} than what this checkout produces at ${reference.path} (sha ${short(reference.sha256)}, built ${stamp(reference.built)})${gap !== null && gap > 0 ? ` \u2014 ${gap} day(s) apart` : ""}` + (repoAgrees ? ". The repository agrees with itself \u2014 the drift is between it and what this session loaded" : ""),
+      fix: "Rebuilding will NOT fix this: the harness pinned that copy" + (located.startedAt ? ` when the session started at ${stamp(located.startedAt)}` : " when the session started") + ", and it is outside this repository. Restart the session \u2014 for a plugin install, reinstall or update the plugin first \u2014 and re-run this to confirm. Until then nothing you build here is enforcing anything, and every green test is green about code that is not running."
+    });
+  }
+  return {
+    source,
+    enforcing,
+    workspace,
+    committed,
+    session: { pid: env.CLAUDE_PID ?? null, startedAt: located.startedAt },
+    checks
+  };
+}
+function enforcementChecks(root, opts = {}) {
+  try {
+    return inspectEnforcement(root, opts).checks;
+  } catch (err) {
+    return [{
+      name: "enforcing bundle",
+      status: "warn",
+      detail: `the age of the enforcing bundle could not be measured: ${err.message}`,
+      fix: "Report this \u2014 an unmeasurable guard is the state this check exists to make visible."
+    }];
+  }
+}
+
 // src/doctor.ts
 async function handshakeCheck(apiUrl, fetchImpl = fetch) {
   const url = `${apiUrl.replace(/\/+$/, "")}/health`;
@@ -15469,7 +15956,7 @@ function branchExists(root, branch) {
   if (!branch) return false;
   for (const ref of [branch, `origin/${branch}`]) {
     try {
-      execFileSync3("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
+      execFileSync4("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
       return true;
     } catch {
     }
@@ -15478,16 +15965,16 @@ function branchExists(root, branch) {
 }
 function grantFiles(root) {
   try {
-    return readdirSync4(join10(root, ".zones", "state", "grants")).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
+    return readdirSync5(join11(root, ".zones", "state", "grants")).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
   } catch {
     return [];
   }
 }
 function liveGrant(root, taskId, now) {
-  const path = join10(root, ".zones", "state", "grants", `${taskId}.json`);
-  if (!existsSync5(path)) return false;
+  const path = join11(root, ".zones", "state", "grants", `${taskId}.json`);
+  if (!existsSync6(path)) return false;
   try {
-    return resolveGrant(JSON.parse(readFileSync9(path, "utf8")), now).state === "active";
+    return resolveGrant(JSON.parse(readFileSync10(path, "utf8")), now).state === "active";
   } catch {
     return false;
   }
@@ -15498,10 +15985,10 @@ function deployChecks(root) {
   const unguarded = [];
   let looked = false;
   for (const rel of manifests) {
-    const file = join10(root, rel);
-    if (!existsSync5(file)) continue;
+    const file = join11(root, rel);
+    if (!existsSync6(file)) continue;
     try {
-      const scripts = JSON.parse(readFileSync9(file, "utf8")).scripts ?? {};
+      const scripts = JSON.parse(readFileSync10(file, "utf8")).scripts ?? {};
       looked = true;
       for (const [name, body] of Object.entries(scripts)) {
         if (!DEPLOY_TOOLS.test(body)) continue;
@@ -15521,7 +16008,7 @@ function deployChecks(root) {
 }
 function runDoctor(root, now = /* @__PURE__ */ new Date()) {
   const checks = [];
-  if (!existsSync5(join10(root, ".git"))) {
+  if (!existsSync6(join11(root, ".git"))) {
     return [{
       name: "git repository",
       status: "fail",
@@ -15530,9 +16017,9 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
     }];
   }
   checks.push({ name: "git repository", status: "ok", detail: root });
-  const zonesPath = join10(root, ".zones", "zones.yml");
+  const zonesPath = join11(root, ".zones", "zones.yml");
   let zonesOk = false;
-  if (!existsSync5(zonesPath)) {
+  if (!existsSync6(zonesPath)) {
     checks.push({
       name: "zone map",
       status: "fail",
@@ -15540,7 +16027,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       fix: "Run `cycle init`. Without it CC has no idea what is protected, so writes are denied."
     });
   } else {
-    const parsed = parseZonesFile(readFileSync9(zonesPath, "utf8"));
+    const parsed = parseZonesFile(readFileSync10(zonesPath, "utf8"));
     if (!parsed.ok) {
       checks.push({
         name: "zone map",
@@ -15571,8 +16058,8 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       }
     }
   }
-  const settingsPath = join10(root, ".claude", "settings.json");
-  if (!existsSync5(settingsPath)) {
+  const settingsPath = join11(root, ".claude", "settings.json");
+  if (!existsSync6(settingsPath)) {
     checks.push({
       name: "hook installed",
       status: "fail",
@@ -15581,7 +16068,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
     });
   } else {
     try {
-      const settings = JSON.parse(readFileSync9(settingsPath, "utf8"));
+      const settings = JSON.parse(readFileSync10(settingsPath, "utf8"));
       const cmd = settings?.hooks?.PreToolUse?.[0]?.hooks?.[0]?.command;
       if (!cmd) {
         checks.push({
@@ -15591,23 +16078,28 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
           fix: "Run `cycle init` to write it, or add the hook by hand."
         });
       } else {
-        const resolved = cmd.replace("$CLAUDE_PROJECT_DIR", root);
-        const there = existsSync5(resolved);
+        const resolved2 = cmd.replace("$CLAUDE_PROJECT_DIR", root);
+        const there = existsSync6(resolved2);
         checks.push({
           name: "hook installed",
           status: there ? "ok" : "fail",
-          detail: there ? cmd : `settings.json points at ${cmd}, which does not exist`,
+          /* The wording is deliberate now. This line used to be `cmd` alone,
+             and it was the gap CC-442 measured: three vintages of the core
+             were live on one machine, deciding differently, while this printed
+             `ok` about a path — true, and not the question. It says which path
+             and refers the age of what that path loads to the checks below. */
+          detail: there ? `${cmd} \u2014 the path, which is all this line can see; the age of the core it loads is the next check` : `settings.json points at ${cmd}, which does not exist`,
           fix: there ? void 0 : "The path is wrong or the package is not installed. Nothing is being enforced right now."
         });
         if (there) {
           try {
-            const mode = statSync4(resolved).mode;
+            const mode = statSync5(resolved2).mode;
             if (!(mode & 73)) {
               checks.push({
                 name: "hook executable",
                 status: "fail",
                 detail: "the hook script is not executable",
-                fix: `Run: chmod +x ${resolved}`
+                fix: `Run: chmod +x ${resolved2}`
               });
             }
           } catch {
@@ -15623,6 +16115,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       });
     }
   }
+  checks.push(...enforcementChecks(root, { now }));
   const branch = currentBranch(root);
   const taskId = branch ? /^(?:task|spike|fix|feat)\/([A-Z]+-\d+)/.exec(branch)?.[1] ?? null : null;
   if (!branch) {
@@ -15640,8 +16133,8 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       fix: "Writes are denied here by design. Branch as task/CC-123-something to work."
     });
   } else {
-    const grantPath = join10(root, ".zones", "state", "grants", `${taskId}.json`);
-    if (!existsSync5(grantPath)) {
+    const grantPath = join11(root, ".zones", "state", "grants", `${taskId}.json`);
+    if (!existsSync6(grantPath)) {
       checks.push({
         name: "active task",
         status: "warn",
@@ -15650,7 +16143,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       });
     } else {
       try {
-        const state = resolveGrant(JSON.parse(readFileSync9(grantPath, "utf8")), now);
+        const state = resolveGrant(JSON.parse(readFileSync10(grantPath, "utf8")), now);
         if (state.state === "expired") {
           checks.push({
             name: "active task",
@@ -15689,7 +16182,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
   }
   if (zonesOk) {
     try {
-      execFileSync3("git", ["-C", root, "status", "--porcelain"], { stdio: ["ignore", "pipe", "ignore"] });
+      execFileSync4("git", ["-C", root, "status", "--porcelain"], { stdio: ["ignore", "pipe", "ignore"] });
       checks.push({ name: "guard prerequisites", status: "ok", detail: "the working tree can be read" });
     } catch {
       checks.push({
@@ -15703,7 +16196,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
   let hasTimeout = false;
   for (const bin of ["timeout", "gtimeout"]) {
     try {
-      execFileSync3("command", ["-v", bin], { stdio: "ignore", shell: true });
+      execFileSync4("command", ["-v", bin], { stdio: "ignore", shell: true });
       hasTimeout = true;
       break;
     } catch {
@@ -15742,7 +16235,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
   const signedInAs = board2.apiUrl ? savedIdentity(board2.apiUrl) : void 0;
   let gitIdentity;
   try {
-    gitIdentity = execFileSync3("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || void 0;
+    gitIdentity = execFileSync4("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || void 0;
   } catch {
   }
   if (signedInAs && gitIdentity && signedInAs !== gitIdentity) {
@@ -15789,17 +16282,13 @@ Working, with ${warns} thing(s) worth knowing about.` : "\nEverything checks out
 }
 
 // src/status.ts
-import { existsSync as existsSync6, readFileSync as readFileSync10 } from "node:fs";
-import { join as join11 } from "node:path";
+import { existsSync as existsSync7, readFileSync as readFileSync11 } from "node:fs";
+import { join as join12 } from "node:path";
 function runStatus(root, now = /* @__PURE__ */ new Date()) {
   const out = [];
-  let branch = "(unknown)";
-  try {
-    const head = readFileSync10(join11(root, ".git", "HEAD"), "utf8").trim();
-    branch = head.startsWith("ref:") ? head.slice(4).trim().replace(/^refs\/heads\//, "") : "(detached HEAD)";
-  } catch {
-  }
-  const taskId = /^(?:task|spike|fix|feat)\/([A-Z]+-\d+)/.exec(branch)?.[1] ?? null;
+  const resolved2 = currentBranch(root);
+  const branch = resolved2 ?? "(no branch \u2014 a detached HEAD, or no readable .git)";
+  const taskId = taskIdFrom(resolved2);
   out.push(`Branch   ${branch}`);
   out.push(`Task     ${taskId ?? "none \u2014 writes are denied until you are on a task branch"}`);
   const board2 = resolveBoard(root);
@@ -15809,10 +16298,10 @@ function runStatus(root, now = /* @__PURE__ */ new Date()) {
   let spike = false;
   const deferred = [];
   if (taskId) {
-    const grantPath = join11(root, ".zones", "state", "grants", `${taskId}.json`);
-    if (existsSync6(grantPath)) {
+    const grantPath = join12(root, ".zones", "state", "grants", `${taskId}.json`);
+    if (existsSync7(grantPath)) {
       try {
-        const state = resolveGrant(JSON.parse(readFileSync10(grantPath, "utf8")), now);
+        const state = resolveGrant(JSON.parse(readFileSync11(grantPath, "utf8")), now);
         if (state.state === "active") {
           open = state.open;
           expiresAt = state.grant.expires;
@@ -15840,12 +16329,12 @@ would be attributed to work the grant never covered.`
     out.push(`Mode     spike \u2014 the database schema stays closed whatever is approved`);
   }
   out.push(...deferred);
-  const zonesPath = join11(root, ".zones", "zones.yml");
-  if (!existsSync6(zonesPath)) {
+  const zonesPath = join12(root, ".zones", "zones.yml");
+  if (!existsSync7(zonesPath)) {
     out.push("\nNo zone map. Run `cycle init`.");
     return out.join("\n");
   }
-  const parsed = parseZonesFile(readFileSync10(zonesPath, "utf8"));
+  const parsed = parseZonesFile(readFileSync11(zonesPath, "utf8"));
   if (!parsed.ok) {
     out.push(`
 The zone map is invalid: ${parsed.issues[0]?.message}`);
@@ -15870,13 +16359,13 @@ The zone map is invalid: ${parsed.issues[0]?.message}`);
 
 // src/protect.ts
 var import_yaml2 = __toESM(require_dist(), 1);
-import { readFileSync as readFileSync11, writeFileSync as writeFileSync6 } from "node:fs";
-import { join as join12 } from "node:path";
+import { readFileSync as readFileSync12, writeFileSync as writeFileSync6 } from "node:fs";
+import { join as join13 } from "node:path";
 function loadDoc(root) {
-  const path = join12(root, ".zones", "zones.yml");
+  const path = join13(root, ".zones", "zones.yml");
   let raw;
   try {
-    raw = readFileSync11(path, "utf8");
+    raw = readFileSync12(path, "utf8");
   } catch {
     return { error: "No .zones/zones.yml here. Run `cycle init` first." };
   }
@@ -16002,16 +16491,17 @@ async function runRequestAccess(opts) {
 }
 
 // src/submit.ts
-import { existsSync as existsSync8, rmSync } from "node:fs";
-import { join as join14 } from "node:path";
+import { execFileSync as execFileSync6 } from "node:child_process";
+import { existsSync as existsSync12, rmSync } from "node:fs";
+import { join as join17 } from "node:path";
 
 // src/own-writes.ts
-import { appendFileSync, existsSync as existsSync7, mkdirSync as mkdirSync4 } from "node:fs";
-import { dirname as dirname4, join as join13, relative as relative4, resolve } from "node:path";
-var eventLogPath = (root, taskId) => join13(root, ".zones", "state", "events", `${taskId}.jsonl`);
+import { appendFileSync, existsSync as existsSync8, mkdirSync as mkdirSync4 } from "node:fs";
+import { dirname as dirname5, join as join14, relative as relative4, resolve as resolve2 } from "node:path";
+var eventLogPath = (root, taskId) => join14(root, ".zones", "state", "events", `${taskId}.jsonl`);
 function recordOwnWrites(root, taskId, paths, now = /* @__PURE__ */ new Date()) {
   if (!taskId || !paths.length) return 0;
-  const lines = paths.map((p) => relative4(resolve(root), resolve(root, p)).split("\\").join("/")).filter((p) => p && !p.startsWith("..")).map((path) => JSON.stringify({
+  const lines = paths.map((p) => relative4(resolve2(root), resolve2(root, p)).split("\\").join("/")).filter((p) => p && !p.startsWith("..")).map((path) => JSON.stringify({
     t: now.toISOString(),
     type: "mutation",
     task_id: taskId,
@@ -16020,7 +16510,7 @@ function recordOwnWrites(root, taskId, paths, now = /* @__PURE__ */ new Date()) 
   if (!lines.length) return 0;
   try {
     const log = eventLogPath(root, taskId);
-    if (!existsSync7(dirname4(log))) mkdirSync4(dirname4(log), { recursive: true });
+    if (!existsSync8(dirname5(log))) mkdirSync4(dirname5(log), { recursive: true });
     appendFileSync(log, lines.join("\n") + "\n");
     return lines.length;
   } catch {
@@ -16028,110 +16518,13 @@ function recordOwnWrites(root, taskId, paths, now = /* @__PURE__ */ new Date()) 
   }
 }
 
-// src/submit.ts
-function nextStepAfterSubmit() {
-  return "Handed in. Open the PR when you are ready.\n\nNothing closes it for you: when the work lands, run `cycle verify --close` to check the\ndiff against what the task declared and write its audit record. Until then the task sits\nin In Review and leaves no trail.";
-}
-var runSubmit = (opts) => handOff({ ...opts, to: "In Review" });
-var runPause = (opts) => handOff({ ...opts, to: "Todo" });
-async function handOff(opts) {
-  const { root, apiUrl, token, tenant, repo, actor, to } = opts;
-  const doFetch = opts.fetchImpl ?? fetch;
-  const log = opts.log ?? (() => {
-  });
-  const warnings = [];
-  const branch = currentBranch(root);
-  const taskId = opts.taskId ?? taskIdFrom(branch);
-  if (!taskId) {
-    return {
-      ok: false,
-      taskId: null,
-      branch,
-      grantRemoved: false,
-      warnings,
-      failures: [{
-        field: "branch",
-        message: branch ? `"${branch}" is not a task branch, so there is nothing to hand off. CC binds work to the branch the gate named \u2014 or name the task explicitly.` : "No branch \u2014 a detached HEAD has no task attached to it. Name the task explicitly to act on one anyway."
-      }]
-    };
-  }
-  const base = `${apiUrl.replace(/\/+$/, "")}/v1/${tenant}/${repo}`;
-  const headers = boardHeaders(token);
-  const res = await doFetch(`${base}/tasks/${taskId}/transition`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ to, actor, reason: opts.reason })
-  });
-  const drift = replyDrift(res);
-  if (drift) warnings.push(`protocol: ${drift}`);
-  const upgrade = await upgradeRequired(res);
-  if (upgrade) {
-    return {
-      ok: false,
-      taskId,
-      branch,
-      grantRemoved: false,
-      warnings,
-      failures: [{ field: "protocol", message: upgrade }]
-    };
-  }
-  if (res.status === 422) {
-    const body = await res.json().catch(() => ({}));
-    try {
-      const q = await doFetch(`${base}/tasks/${taskId}`, { headers });
-      if (q.ok) {
-        const { task } = await q.json();
-        if (task?.state) {
-          warnings.push(
-            `the board answering this call sees ${taskId} in "${task.state}"${task.updated_at ? ` (updated ${task.updated_at})` : ""} \u2014 if that is not the state you see elsewhere, you are looking at two different stores`
-          );
-        }
-      }
-    } catch {
-    }
-    return { ok: false, taskId, branch, failures: body.failures ?? [], grantRemoved: false, warnings };
-  }
-  if (!res.ok) {
-    return {
-      ok: false,
-      taskId,
-      branch,
-      grantRemoved: false,
-      warnings,
-      failures: [{ field: "network", message: `The board answered ${res.status}. Nothing was changed.` }]
-    };
-  }
-  log(`  ${taskId} is now ${to}`);
-  const grant = join14(root, ".zones", "state", "grants", `${taskId}.json`);
-  let grantRemoved = false;
-  if (existsSync8(grant)) {
-    try {
-      rmSync(grant, { force: true });
-      grantRemoved = true;
-      log("  the grant is gone \u2014 protected zones are closed again");
-    } catch (err) {
-      warnings.push(
-        `the board revoked the grant but ${grant} could not be removed (${err.message}). Delete it by hand \u2014 until you do, the hook still honours it.`
-      );
-    }
-  }
-  if (taskId === taskIdFrom(branch)) {
-    const zones = readZoneLines(root);
-    if (zones && writeAgentsBlock(root, renderAgentsBlock({ zones, board: readBoardBinding(root), enforcement: detectEnforcement(root) })).changed) {
-      recordOwnWrites(root, taskId, ["AGENTS.md"]);
-      log("  AGENTS.md cleared \u2014 no task is active");
-    }
-  }
-  return { ok: true, taskId, branch, failures: [], grantRemoved, warnings };
-}
-
-// src/feed.ts
-import { readFileSync as readFileSync14, writeFileSync as writeFileSync8 } from "node:fs";
-import { join as join17 } from "node:path";
+// src/record.ts
+import { existsSync as existsSync10, readFileSync as readFileSync14 } from "node:fs";
+import { join as join16 } from "node:path";
 
 // src/playbooks.ts
 var import_yaml3 = __toESM(require_dist(), 1);
-import { existsSync as existsSync9, readdirSync as readdirSync5, readFileSync as readFileSync12, writeFileSync as writeFileSync7 } from "node:fs";
+import { existsSync as existsSync9, readdirSync as readdirSync6, readFileSync as readFileSync13, writeFileSync as writeFileSync7 } from "node:fs";
 import { join as join15 } from "node:path";
 var REQUIRED_SECTIONS = [
   "## What an agent must know",
@@ -16146,10 +16539,10 @@ function scanPlaybooks(root) {
   if (!existsSync9(dir)) return null;
   const warnings = [];
   const books = [];
-  const files = readdirSync5(dir).filter((f) => f.endsWith(".md") && f !== "README.md").sort();
+  const files = readdirSync6(dir).filter((f) => f.endsWith(".md") && f !== "README.md").sort();
   for (const file of files) {
     const rel = `.zones/playbooks/${file}`;
-    const raw = readFileSync12(join15(dir, file), "utf8");
+    const raw = readFileSync13(join15(dir, file), "utf8");
     const fm = parseFrontmatter(raw);
     if (!fm) {
       warnings.push(`${rel} has no frontmatter \u2014 not a playbook the loader can trust`);
@@ -16202,7 +16595,7 @@ function writePlaybooksReadme(root, scan) {
     "`zones.yml`, the gate, or a decision row \u2014 they cite them.",
     ""
   ].join("\n");
-  const current = existsSync9(path) ? readFileSync12(path, "utf8") : "";
+  const current = existsSync9(path) ? readFileSync13(path, "utf8") : "";
   if (current === next) return "unchanged";
   writeFileSync7(path, next);
   return "updated";
@@ -16250,21 +16643,245 @@ function mustKnowBullets(body) {
 }
 
 // src/record.ts
-import { existsSync as existsSync10, readFileSync as readFileSync13 } from "node:fs";
-import { join as join16 } from "node:path";
 function readTaskRecord(root, taskId) {
   const path = join16(root, ".zones", "tasks", `${taskId}.md`);
   if (!existsSync10(path)) return null;
-  const fm = parseFrontmatter(readFileSync13(path, "utf8"));
+  const fm = parseFrontmatter(readFileSync14(path, "utf8"));
   if (!fm) return null;
   const topics = Array.isArray(fm.data.topics) ? fm.data.topics.filter((t) => typeof t === "string") : [];
   return {
     title: typeof fm.data.title === "string" ? fm.data.title : void 0,
-    topics
+    topics,
+    /* Read, never trusted over the board. It is here for the hand-in hint,
+       which is advice about what the close will ask for — the check itself
+       stays the transition's, and a record that disagrees with the board is the
+       record being stale (CC-416). */
+    qualityGate: typeof fm.data.quality_gate === "string" ? fm.data.quality_gate : void 0
   };
 }
 
+// src/worktrees.ts
+import { execFileSync as execFileSync5 } from "node:child_process";
+import { existsSync as existsSync11, realpathSync } from "node:fs";
+function listWorktrees(root) {
+  const out = execFileSync5("git", ["worktree", "list", "--porcelain"], {
+    cwd: root,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+  const found = [];
+  let current = null;
+  for (const raw of out.split("\n")) {
+    const line = raw.trimEnd();
+    const space = line.indexOf(" ");
+    const key = space === -1 ? line : line.slice(0, space);
+    const value = space === -1 ? "" : line.slice(space + 1);
+    if (key === "worktree") {
+      current = { path: value, branch: null, prunable: false, bare: false };
+      found.push(current);
+    } else if (!current) {
+      continue;
+    } else if (key === "branch") {
+      current.branch = value.replace(/^refs\/heads\//, "");
+    } else if (key === "prunable") {
+      current.prunable = true;
+    } else if (key === "bare") {
+      current.bare = true;
+    }
+  }
+  return found;
+}
+var resolved = (p) => {
+  try {
+    return realpathSync(p);
+  } catch {
+    return p;
+  }
+};
+function otherCheckoutHolding(root, taskId) {
+  for (const wt of listWorktrees(root)) {
+    if (wt.bare || !wt.branch) continue;
+    if (taskIdFrom(wt.branch) !== taskId) continue;
+    if (wt.prunable || !existsSync11(wt.path)) continue;
+    if (resolved(wt.path) === resolved(root)) continue;
+    return wt.path;
+  }
+  return null;
+}
+
+// src/submit.ts
+function nextStepAfterSubmit() {
+  return "Handed in. Open the PR when you are ready.\n\nNothing closes it for you: when the work lands, run `cycle verify --close` to check the\ndiff against what the task declared and write its audit record. Until then the task sits\nin In Review and leaves no trail.";
+}
+function captureHint(taskId, gate) {
+  const g = (gate ?? "").trim();
+  if (!g || g.toLowerCase() === "none") return null;
+  return `The quality gate on ${taskId} is "${g}", so \`cycle verify --close\` will ask for evidence
+  and refuse without it. Attach it with --evidence, which takes a URL or a path and repeats:
+
+      cycle verify --close --evidence https://\u2026
+      cycle verify --close --evidence <a path you have committed>
+
+  A path has to be committed in this repository first \u2014 the repo is the source of truth, not
+  object storage, and a capture the record cannot resolve is evidence of nothing. Capture it
+  now while the work is still in front of you.`;
+}
+var runSubmit = (opts) => handOff({ ...opts, to: "In Review" });
+var runPause = (opts) => handOff({ ...opts, to: "Todo" });
+async function handOff(opts) {
+  const { root, apiUrl, token, tenant, repo, actor, to } = opts;
+  const doFetch = opts.fetchImpl ?? fetch;
+  const log = opts.log ?? (() => {
+  });
+  const warnings = [];
+  const branch = currentBranch(root);
+  const taskId = opts.taskId ?? taskIdFrom(branch);
+  if (!taskId) {
+    return {
+      ok: false,
+      taskId: null,
+      branch,
+      grantRemoved: false,
+      warnings,
+      failures: [{
+        field: "branch",
+        message: branch ? `"${branch}" is not a task branch, so there is nothing to hand off. CC binds work to the branch the gate named \u2014 or name the task explicitly.` : "No branch \u2014 a detached HEAD has no task attached to it. Name the task explicitly to act on one anyway."
+      }]
+    };
+  }
+  const standingOn = taskIdFrom(branch);
+  if (taskId !== standingOn) {
+    let heldBy;
+    try {
+      heldBy = otherCheckoutHolding(root, taskId);
+    } catch (err) {
+      return {
+        ok: false,
+        taskId,
+        branch,
+        grantRemoved: false,
+        warnings,
+        failures: [{
+          field: "worktree",
+          message: `${taskId} is not the task on this branch, so this would hand off work belonging to another checkout \u2014 and git could not be asked whether one is standing on it (${err.message.trim()}). Nothing was changed. Run it from the checkout that holds the task, or fix git and try again.`
+        }]
+      };
+    }
+    if (heldBy) {
+      return {
+        ok: false,
+        taskId,
+        branch,
+        grantRemoved: false,
+        warnings,
+        failures: [{
+          field: "worktree",
+          message: `${taskId} is checked out in ${heldBy}, which is a live worktree \u2014 somebody is standing on it. Handing it off from here would revoke that checkout's grant mid-task, and its writes would stop at its next \`cycle sync\` with nothing there saying why. Nothing was changed. Hand it off from that directory, or wait for it to finish.`
+        }]
+      };
+    }
+  }
+  const base = `${apiUrl.replace(/\/+$/, "")}/v1/${tenant}/${repo}`;
+  const headers = boardHeaders(token);
+  const res = await doFetch(`${base}/tasks/${taskId}/transition`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ to, actor, reason: opts.reason })
+  });
+  const drift = replyDrift(res);
+  if (drift) warnings.push(`protocol: ${drift}`);
+  const upgrade = await upgradeRequired(res);
+  if (upgrade) {
+    return {
+      ok: false,
+      taskId,
+      branch,
+      grantRemoved: false,
+      warnings,
+      failures: [{ field: "protocol", message: upgrade }]
+    };
+  }
+  if (res.status === 422) {
+    const body = await res.json().catch(() => ({}));
+    try {
+      const q = await doFetch(`${base}/tasks/${taskId}`, { headers });
+      if (q.ok) {
+        const { task } = await q.json();
+        if (task?.state) {
+          warnings.push(
+            `the board answering this call sees ${taskId} in "${task.state}"${task.updated_at ? ` (updated ${task.updated_at})` : ""} \u2014 if that is not the state you see elsewhere, you are looking at two different stores`
+          );
+        }
+      }
+    } catch {
+    }
+    return { ok: false, taskId, branch, failures: body.failures ?? [], grantRemoved: false, warnings };
+  }
+  if (!res.ok) {
+    return {
+      ok: false,
+      taskId,
+      branch,
+      grantRemoved: false,
+      warnings,
+      failures: [{ field: "network", message: `The board answered ${res.status}. Nothing was changed.` }]
+    };
+  }
+  log(`  ${taskId} is now ${to}`);
+  const moved = await res.json().catch(() => ({}));
+  const grant = join17(root, ".zones", "state", "grants", `${taskId}.json`);
+  let grantRemoved = false;
+  if (existsSync12(grant)) {
+    try {
+      rmSync(grant, { force: true });
+      grantRemoved = true;
+      log("  the grant is gone \u2014 protected zones are closed again");
+    } catch (err) {
+      warnings.push(
+        `the board revoked the grant but ${grant} could not be removed (${err.message}). Delete it by hand \u2014 until you do, the hook still honours it.`
+      );
+    }
+  }
+  if (taskId === taskIdFrom(branch)) {
+    const zones = readZoneLines(root);
+    if (zones && writeAgentsBlock(root, renderAgentsBlock({ zones, board: readBoardBinding(root), enforcement: detectEnforcement(root) })).changed) {
+      recordOwnWrites(root, taskId, ["AGENTS.md"]);
+      log("  AGENTS.md cleared \u2014 no task is active");
+      let identicalToHead = false;
+      try {
+        execFileSync6("git", ["diff", "--quiet", "HEAD", "--", "AGENTS.md"], { cwd: root, stdio: "pipe" });
+        identicalToHead = true;
+      } catch {
+      }
+      if (identicalToHead) {
+        log("  the block was never committed, so the clear leaves nothing to commit");
+      } else {
+        try {
+          execFileSync6(
+            "git",
+            ["commit", "-q", "-m", `${taskId}: clear the CC block on hand-in`, "--", "AGENTS.md"],
+            { cwd: root, stdio: "pipe" }
+          );
+          log("  and committed \u2014 the hand-in carries its own clear");
+        } catch (err) {
+          warnings.push(
+            `AGENTS.md was cleared but the clear could not be committed (${err.message.trim()}). Commit it yourself before pushing, or the task block ships with the work.`
+          );
+        }
+      }
+    }
+  }
+  if (to === "In Review") {
+    const hint = captureHint(taskId, moved.task?.quality_gate ?? readTaskRecord(root, taskId)?.qualityGate);
+    if (hint) log(`
+  ${hint}`);
+  }
+  return { ok: true, taskId, branch, failures: [], grantRemoved, warnings };
+}
+
 // src/feed.ts
+import { readFileSync as readFileSync15, writeFileSync as writeFileSync8 } from "node:fs";
+import { join as join18 } from "node:path";
 var MUST_KNOW = "## What an agent must know";
 function runFeed(root, topic, text, taskId) {
   const scan = scanPlaybooks(root);
@@ -16275,8 +16892,8 @@ function runFeed(root, topic, text, taskId) {
   if (book.status === "archived") {
     return { ok: false, warning: `topic "${topic}" is archived \u2014 its playbook keeps its history and takes no new bullets` };
   }
-  const path = join17(root, book.file);
-  const raw = readFileSync14(path, "utf8");
+  const path = join18(root, book.file);
+  const raw = readFileSync15(path, "utf8");
   const lines = raw.split("\n");
   const start = lines.findIndex((l) => l.startsWith(MUST_KNOW));
   if (start < 0) {
@@ -16304,16 +16921,20 @@ function withProvenance(text, taskId) {
   return `${text} (${taskId})`;
 }
 function feedOffers(root, taskId, touched) {
+  const scan = scanPlaybooks(root);
+  if (!scan) {
+    return [
+      "this repository has no playbooks yet. `cycle seed` drafts them from your own codebase,\n    as choices you accept one at a time:\n\n    cycle seed                       # every topic with something to cite\n    cycle seed --topics backend,qa   # or only these\n\n    Claims cite real files or are dropped, and a topic with nothing to cite is never born.\n    Nothing runs it for you \u2014 what a playbook says is yours to accept."
+    ];
+  }
   const record = readTaskRecord(root, taskId);
   if (!record?.topics.length) return [];
-  const scan = scanPlaybooks(root);
-  if (!scan) return [];
   const offers = [];
   for (const topic of record.topics) {
     const book = scan.books.find((b) => b.topic === topic);
     if (!book || book.status === "archived") continue;
     if (touched?.has(book.file)) continue;
-    const rule = feedRuleLine(join17(root, book.file));
+    const rule = feedRuleLine(join18(root, book.file));
     offers.push(
       `${topic} \u2014 ${rule ?? "one bullet, one citation"}
     cycle feed ${topic} "what this close taught (${taskId})"   # skipping is legal by rule`
@@ -16323,7 +16944,7 @@ function feedOffers(root, taskId, touched) {
 }
 function feedRuleLine(path) {
   try {
-    const lines = readFileSync14(path, "utf8").split("\n");
+    const lines = readFileSync15(path, "utf8").split("\n");
     const start = lines.findIndex((l) => l.startsWith("## Feed rule"));
     if (start < 0) return null;
     const body = lines.slice(start + 1).join(" ").trim();
@@ -16335,9 +16956,9 @@ function feedRuleLine(path) {
 }
 
 // src/seed.ts
-import { execFileSync as execFileSync4 } from "node:child_process";
-import { existsSync as existsSync11, mkdirSync as mkdirSync5, readFileSync as readFileSync15, writeFileSync as writeFileSync9 } from "node:fs";
-import { join as join18 } from "node:path";
+import { execFileSync as execFileSync7 } from "node:child_process";
+import { existsSync as existsSync13, mkdirSync as mkdirSync5, readFileSync as readFileSync16, writeFileSync as writeFileSync9 } from "node:fs";
+import { join as join19 } from "node:path";
 async function runSeed(input) {
   const { root, apiUrl, tenant, repo, token } = input;
   const log = input.log ?? (() => {
@@ -16380,8 +17001,8 @@ async function runSeed(input) {
   const written = [];
   const skipped = [];
   for (const draft of body.drafts) {
-    const rel = join18(".zones", "playbooks", `${draft.topic}.md`);
-    if (existsSync11(join18(root, rel))) {
+    const rel = join19(".zones", "playbooks", `${draft.topic}.md`);
+    if (existsSync13(join19(root, rel))) {
       skipped.push(draft.topic);
       log(`  ${draft.topic}: a playbook already exists \u2014 the seed never overwrites; feed it instead (cycle feed)`);
       continue;
@@ -16392,8 +17013,8 @@ async function runSeed(input) {
       log(`  ${draft.topic}: skipped \u2014 your call, recorded as nothing (a skipped seed is not a decision)`);
       continue;
     }
-    mkdirSync5(join18(root, ".zones", "playbooks"), { recursive: true });
-    writeFileSync9(join18(root, rel), renderPlaybook(draft, repo));
+    mkdirSync5(join19(root, ".zones", "playbooks"), { recursive: true });
+    writeFileSync9(join19(root, rel), renderPlaybook(draft, repo));
     written.push(draft.topic);
     log(`  ${draft.topic}: written \u2014 ${rel}`);
   }
@@ -16448,24 +17069,24 @@ function renderPlaybook(draft, repo) {
   ].join("\n");
 }
 function buildBrief(root) {
-  const git2 = (args) => {
+  const git3 = (args) => {
     try {
-      return execFileSync4("git", args, { cwd: root, stdio: "pipe" }).toString();
+      return execFileSync7("git", args, { cwd: root, stdio: "pipe" }).toString();
     } catch {
       return "";
     }
   };
-  const all = git2(["ls-files"]).split("\n").filter(Boolean);
+  const all = git3(["ls-files"]).split("\n").filter(Boolean);
   const files = all.slice(0, 2e3);
   const parts = [];
-  const readme = join18(root, "README.md");
-  if (existsSync11(readme)) {
-    parts.push("README.md, first lines:", "", readFileSync15(readme, "utf8").split("\n").slice(0, 50).join("\n"));
+  const readme = join19(root, "README.md");
+  if (existsSync13(readme)) {
+    parts.push("README.md, first lines:", "", readFileSync16(readme, "utf8").split("\n").slice(0, 50).join("\n"));
   }
-  const pkg = join18(root, "package.json");
-  if (existsSync11(pkg)) {
+  const pkg = join19(root, "package.json");
+  if (existsSync13(pkg)) {
     try {
-      const p = JSON.parse(readFileSync15(pkg, "utf8"));
+      const p = JSON.parse(readFileSync16(pkg, "utf8"));
       parts.push(
         "",
         "package.json (name, scripts, workspaces):",
@@ -16489,7 +17110,7 @@ function buildBrief(root) {
       ...top.map(([d, n]) => `  ${d}/ \u2014 ${n} file(s)`)
     );
   }
-  const log = git2(["log", "--format=%s", "-n", "20"]).trim();
+  const log = git3(["log", "--format=%s", "-n", "20"]).trim();
   if (log) parts.push("", "Recent commit subjects:", "", log);
   if (all.length > files.length) {
     parts.push("", `(inventory capped at ${files.length} of ${all.length} files)`);
@@ -16498,8 +17119,8 @@ function buildBrief(root) {
 }
 
 // src/challenge.ts
-import { existsSync as existsSync12, mkdirSync as mkdirSync6, readdirSync as readdirSync6, writeFileSync as writeFileSync10 } from "node:fs";
-import { join as join19 } from "node:path";
+import { existsSync as existsSync14, mkdirSync as mkdirSync6, readdirSync as readdirSync7, writeFileSync as writeFileSync10 } from "node:fs";
+import { join as join20 } from "node:path";
 async function runChallenge(input) {
   const { root, apiUrl, tenant, repo, token } = input;
   const log = input.log ?? (() => {
@@ -16577,15 +17198,15 @@ async function runChallenge(input) {
   return { status: "done", accepted, rejected, skipped, proposals: body.proposals };
 }
 function nextDecisionNumber(root) {
-  const dir = join19(root, ".zones", "decisions");
-  if (!existsSync12(dir)) return 1;
-  const max = readdirSync6(dir).map((f) => /^(\d{4})-/.exec(f)?.[1]).filter((n) => !!n).reduce((a, n) => Math.max(a, Number(n)), 0);
+  const dir = join20(root, ".zones", "decisions");
+  if (!existsSync14(dir)) return 1;
+  const max = readdirSync7(dir).map((f) => /^(\d{4})-/.exec(f)?.[1]).filter((n) => !!n).reduce((a, n) => Math.max(a, Number(n)), 0);
   return max + 1;
 }
 var slug = (title) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 function writeDecision(root, n, p, verdict, grounds) {
   const num2 = String(n).padStart(4, "0");
-  const rel = join19(".zones", "decisions", `${num2}-${slug(p.title)}.md`);
+  const rel = join20(".zones", "decisions", `${num2}-${slug(p.title)}.md`);
   const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const lines = [
     `# ${num2} \u2014 ${p.title}`,
@@ -16607,38 +17228,38 @@ function writeDecision(root, n, p, verdict, grounds) {
   if (verdict === "reject") {
     lines.push("## Grounds", "", grounds ?? "not stated", "");
   }
-  mkdirSync6(join19(root, ".zones", "decisions"), { recursive: true });
-  writeFileSync10(join19(root, rel), lines.join("\n"));
+  mkdirSync6(join20(root, ".zones", "decisions"), { recursive: true });
+  writeFileSync10(join20(root, rel), lines.join("\n"));
   return rel;
 }
 
 // src/close.ts
-import { existsSync as existsSync15, mkdirSync as mkdirSync8, readFileSync as readFileSync18, writeFileSync as writeFileSync12 } from "node:fs";
-import { dirname as dirname6, join as join22 } from "node:path";
+import { existsSync as existsSync17, mkdirSync as mkdirSync8, readFileSync as readFileSync19, writeFileSync as writeFileSync12 } from "node:fs";
+import { dirname as dirname7, join as join23 } from "node:path";
 
 // src/verify.ts
-import { execFileSync as execFileSync5 } from "node:child_process";
-import { existsSync as existsSync13, readdirSync as readdirSync7, readFileSync as readFileSync16 } from "node:fs";
-import { join as join20 } from "node:path";
-var git = (root, cmd) => (
+import { execFileSync as execFileSync8 } from "node:child_process";
+import { existsSync as existsSync15, readdirSync as readdirSync8, readFileSync as readFileSync17 } from "node:fs";
+import { join as join21 } from "node:path";
+var git2 = (root, cmd) => (
   // stderr is piped, not inherited: forkPoint probes refs that may not exist,
   // and a repo with no remote would otherwise print two `fatal:` lines on
   // every verify. Failures still throw, with stderr on the error object.
-  execFileSync5("/bin/sh", ["-c", `git ${cmd}`], {
+  execFileSync8("/bin/sh", ["-c", `git ${cmd}`], {
     cwd: root,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"]
   }).replace(/\n+$/, "")
 );
 function forkPoint(root, explicit) {
-  if (explicit) return { sha: git(root, `rev-parse ${explicit}`), how: `the --base you passed (${explicit})` };
+  if (explicit) return { sha: git2(root, `rev-parse ${explicit}`), how: `the --base you passed (${explicit})` };
   for (const candidate of ["origin/main", "origin/master", "main", "master"]) {
     try {
-      return { sha: git(root, `merge-base HEAD ${candidate}`), how: `the merge base with ${candidate}` };
+      return { sha: git2(root, `merge-base HEAD ${candidate}`), how: `the merge base with ${candidate}` };
     } catch {
     }
   }
-  return { sha: git(root, "rev-list --max-parents=0 HEAD | tail -1"), how: "the root commit \u2014 no main or master ref exists" };
+  return { sha: git2(root, "rev-list --max-parents=0 HEAD | tail -1"), how: "the root commit \u2014 no main or master ref exists" };
 }
 function buildManifest(root, base) {
   const files = /* @__PURE__ */ new Map();
@@ -16648,25 +17269,25 @@ function buildManifest(root, base) {
     const s = status.startsWith("A") || status === "??" ? "A" : status.startsWith("D") ? "D" : "M";
     if (!files.has(path) || files.get(path) === "M") files.set(path, s);
   };
-  for (const line of git(root, `diff --name-status ${base}...HEAD`).split("\n")) {
+  for (const line of git2(root, `diff --name-status ${base}...HEAD`).split("\n")) {
     const [status, ...rest] = line.split("	");
     if (status && rest.length) record(status, rest[rest.length - 1]);
   }
-  for (const line of git(root, "status --porcelain --untracked-files=all").split("\n")) {
+  for (const line of git2(root, "status --porcelain --untracked-files=all").split("\n")) {
     if (!line.trim()) continue;
     record(line.slice(0, 2).trim(), line.slice(3).trim());
   }
   return {
-    branch: git(root, "rev-parse --abbrev-ref HEAD"),
+    branch: git2(root, "rev-parse --abbrev-ref HEAD"),
     base,
-    head: git(root, "rev-parse HEAD"),
+    head: git2(root, "rev-parse HEAD"),
     files: [...files].map(([path, status]) => ({ path, status }))
   };
 }
 function trunk(root) {
   for (const ref of ["origin/main", "origin/master", "main", "master"]) {
     try {
-      git(root, `rev-parse --verify ${ref}`);
+      git2(root, `rev-parse --verify ${ref}`);
       return ref;
     } catch {
     }
@@ -16676,7 +17297,7 @@ function trunk(root) {
 function branchOf(root, taskId) {
   let name;
   try {
-    const fm = readFileSync16(join20(root, ".zones", "tasks", `${taskId}.md`), "utf8").slice(0, 2e3);
+    const fm = readFileSync17(join21(root, ".zones", "tasks", `${taskId}.md`), "utf8").slice(0, 2e3);
     name = /^branch:[ \t]*(.+)$/m.exec(fm)?.[1]?.trim();
   } catch {
     return null;
@@ -16684,7 +17305,7 @@ function branchOf(root, taskId) {
   if (!name || name === "null") return null;
   for (const ref of [name, `origin/${name}`]) {
     try {
-      execFileSync5("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
+      execFileSync8("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
       return ref;
     } catch {
     }
@@ -16693,14 +17314,14 @@ function branchOf(root, taskId) {
 }
 function subjectOf(root, sha) {
   try {
-    return git(root, `log -1 --format=%s ${sha}`);
+    return git2(root, `log -1 --format=%s ${sha}`);
   } catch {
     return "(unreadable)";
   }
 }
 function reachableFrom(root, sha, ref) {
   try {
-    execFileSync5("git", ["-C", root, "merge-base", "--is-ancestor", sha, ref], { stdio: "ignore" });
+    execFileSync8("git", ["-C", root, "merge-base", "--is-ancestor", sha, ref], { stdio: "ignore" });
     return true;
   } catch {
     return false;
@@ -16708,7 +17329,7 @@ function reachableFrom(root, sha, ref) {
 }
 function alreadyMerged(root, ref) {
   try {
-    execFileSync5("git", ["-C", root, "merge-base", "--is-ancestor", "HEAD", ref], { stdio: "ignore" });
+    execFileSync8("git", ["-C", root, "merge-base", "--is-ancestor", "HEAD", ref], { stdio: "ignore" });
     return true;
   } catch {
     return false;
@@ -16716,7 +17337,7 @@ function alreadyMerged(root, ref) {
 }
 function historyCommits(root, taskId, ref) {
   try {
-    const out = git(root, `log --no-merges --format=%H%x09%s ${ref}`);
+    const out = git2(root, `log --no-merges --format=%H%x09%s ${ref}`);
     const anchor = new RegExp(`^${taskId}(?![0-9])`);
     const found = [];
     for (const line of out.split("\n")) {
@@ -16733,7 +17354,7 @@ function historyCommits(root, taskId, ref) {
 function buildHistoryManifest(root, taskId, shas) {
   const files = /* @__PURE__ */ new Map();
   for (const sha of [...shas].reverse()) {
-    for (const line of git(root, `show --pretty= --name-status ${sha}`).split("\n")) {
+    for (const line of git2(root, `show --pretty= --name-status ${sha}`).split("\n")) {
       const [status, ...rest] = line.split("	");
       if (!status || !rest.length) continue;
       const path = rest[rest.length - 1];
@@ -16746,7 +17367,7 @@ function buildHistoryManifest(root, taskId, shas) {
   const newest = shas[0];
   let base = oldest;
   try {
-    base = git(root, `rev-parse ${oldest}^`);
+    base = git2(root, `rev-parse ${oldest}^`);
   } catch {
   }
   return {
@@ -16759,27 +17380,33 @@ function buildHistoryManifest(root, taskId, shas) {
   };
 }
 function grantOnDisk(root, taskId) {
-  const path = join20(root, ".zones", "state", "grants", `${taskId}.json`);
-  if (!existsSync13(path)) return { kind: "none" };
+  const path = join21(root, ".zones", "state", "grants", `${taskId}.json`);
+  if (!existsSync15(path)) return { kind: "none" };
   try {
-    const g = JSON.parse(readFileSync16(path, "utf8"));
+    const g = JSON.parse(readFileSync17(path, "utf8"));
     return { kind: "grant", zones: g.zones ?? [] };
   } catch {
     return { kind: "unreadable" };
   }
 }
 function mutatedPaths(root) {
-  const dir = join20(root, ".zones", "state", "events");
-  if (!existsSync13(dir)) return [];
-  const logs = readdirSync7(dir).filter((f) => f.endsWith(".jsonl"));
-  return logs.flatMap((file) => readFileSync16(join20(dir, file), "utf8").split("\n").filter(Boolean).flatMap((line) => {
-    try {
-      const e = JSON.parse(line);
-      return e.type === "mutation" && e.path ? [e.path] : [];
-    } catch {
-      return [];
+  const dir = join21(root, ".zones", "state", "events");
+  if (!existsSync15(dir)) return [];
+  const logs = readdirSync8(dir).filter((f) => f.endsWith(".jsonl"));
+  const observed = [];
+  const selfRecorded = [];
+  for (const file of logs) {
+    for (const line of readFileSync17(join21(dir, file), "utf8").split("\n").filter(Boolean)) {
+      try {
+        const e = JSON.parse(line);
+        if (e.type !== "mutation" || !e.path) continue;
+        (e.tool ? observed : selfRecorded).push(e.path);
+      } catch {
+      }
     }
-  }));
+  }
+  if (!observed.length) return [];
+  return [...observed, ...selfRecorded];
 }
 function runVerify(opts) {
   const { root } = opts;
@@ -16800,8 +17427,8 @@ function runVerify(opts) {
       }]
     };
   }
-  const zonesPath = join20(root, ".zones", "zones.yml");
-  if (!existsSync13(zonesPath)) {
+  const zonesPath = join21(root, ".zones", "zones.yml");
+  if (!existsSync15(zonesPath)) {
     return {
       ok: false,
       taskId,
@@ -16812,7 +17439,7 @@ function runVerify(opts) {
       failures: [{ field: "zones", message: "No .zones/zones.yml. Run `cycle init` first." }]
     };
   }
-  const parsed = parseZonesFile(readFileSync16(zonesPath, "utf8"));
+  const parsed = parseZonesFile(readFileSync17(zonesPath, "utf8"));
   if (!parsed.ok) {
     return {
       ok: false,
@@ -16936,13 +17563,13 @@ ${strays.map((s) => `      ${s.slice(0, 8)} ${subjectOf(root, s).slice(0, 88)}`)
 }
 
 // src/sync.ts
-import { existsSync as existsSync14, mkdirSync as mkdirSync7, readFileSync as readFileSync17, renameSync, rmSync as rmSync2, writeFileSync as writeFileSync11 } from "node:fs";
-import { dirname as dirname5, join as join21 } from "node:path";
+import { existsSync as existsSync16, mkdirSync as mkdirSync7, readFileSync as readFileSync18, renameSync, rmSync as rmSync2, writeFileSync as writeFileSync11 } from "node:fs";
+import { dirname as dirname6, join as join22 } from "node:path";
 async function mirrorTaskEvents(input) {
   const doFetch = input.fetchImpl ?? fetch;
-  const logPath = join21(input.root, ".zones", "state", "events", `${input.taskId}.jsonl`);
-  if (!existsSync14(logPath)) return { pushed: 0 };
-  const lines = readFileSync17(logPath, "utf8").split("\n").filter((l) => l.trim());
+  const logPath = join22(input.root, ".zones", "state", "events", `${input.taskId}.jsonl`);
+  if (!existsSync16(logPath)) return { pushed: 0 };
+  const lines = readFileSync18(logPath, "utf8").split("\n").filter((l) => l.trim());
   const events = lines.flatMap((l) => {
     try {
       return [JSON.parse(l)];
@@ -16984,9 +17611,9 @@ async function runSync(opts) {
   let boardSaw = false;
   let zonesPushed = 0;
   let zoneLines = null;
-  const zonesPath = join21(root, ".zones", "zones.yml");
-  if (existsSync14(zonesPath)) {
-    const parsed = parseZonesFile(readFileSync17(zonesPath, "utf8"));
+  const zonesPath = join22(root, ".zones", "zones.yml");
+  if (existsSync16(zonesPath)) {
+    const parsed = parseZonesFile(readFileSync18(zonesPath, "utf8"));
     if (!parsed.ok) {
       warnings.push(`zones.yml is invalid, so it was not synced: ${parsed.issues[0]?.message}`);
     } else {
@@ -17019,10 +17646,10 @@ async function runSync(opts) {
       try {
         const { policy } = await res.json();
         const value = policy === "reads" || policy === "journal" ? policy : "closed";
-        const target = join21(root, ".zones", "state", "failure-policy");
-        const current = existsSync14(target) ? readFileSync17(target, "utf8").trim() : null;
+        const target = join22(root, ".zones", "state", "failure-policy");
+        const current = existsSync16(target) ? readFileSync18(target, "utf8").trim() : null;
         if (current !== value) {
-          mkdirSync7(dirname5(target), { recursive: true });
+          mkdirSync7(dirname6(target), { recursive: true });
           const tmp = `${target}.tmp`;
           writeFileSync11(tmp, `${value}
 `);
@@ -17064,8 +17691,8 @@ async function runSync(opts) {
         `this board answered 404 to everything \u2014 signed in as ${who ?? "nobody (`cycle login` has not run here)"}, so either ${tenant}/${repo} does not exist or that identity is not a member of it. Nothing local was touched.`
       );
     } else if (res.status === 404) {
-      const stale = join21(root, ".zones", "state", "grants", `${taskId}.json`);
-      if (existsSync14(stale)) {
+      const stale = join22(root, ".zones", "state", "grants", `${taskId}.json`);
+      if (existsSync16(stale)) {
         rmSync2(stale, { force: true });
         grantState = "revoked";
         log(`  removed the grant for ${taskId} \u2014 the board has revoked it`);
@@ -17076,13 +17703,13 @@ async function runSync(opts) {
       warnings.push(`could not fetch the grant (${res.status}) \u2014 the local grant was left alone`);
     } else {
       const { grant } = await res.json();
-      const target = join21(root, ".zones", "state", "grants", `${taskId}.json`);
+      const target = join22(root, ".zones", "state", "grants", `${taskId}.json`);
       const next = JSON.stringify(grant, null, 2) + "\n";
-      const current = existsSync14(target) ? readFileSync17(target, "utf8") : null;
+      const current = existsSync16(target) ? readFileSync18(target, "utf8") : null;
       if (current === next) {
         grantState = "unchanged";
       } else {
-        mkdirSync7(dirname5(target), { recursive: true });
+        mkdirSync7(dirname6(target), { recursive: true });
         const tmp = `${target}.tmp`;
         writeFileSync11(tmp, next);
         renameSync(tmp, target);
@@ -17093,7 +17720,7 @@ async function runSync(opts) {
   }
   if (taskId) {
     try {
-      live = JSON.parse(readFileSync17(join21(root, ".zones", "state", "grants", `${taskId}.json`), "utf8"));
+      live = JSON.parse(readFileSync18(join22(root, ".zones", "state", "grants", `${taskId}.json`), "utf8"));
     } catch {
       live = null;
     }
@@ -17160,7 +17787,25 @@ async function runSync(opts) {
       log(task ? `  AGENTS.md now names ${taskId} and what is open to it` : "  AGENTS.md cleared \u2014 no task is active");
     }
   }
-  return { taskId, zonesPushed, eventsPushed, grant: grantState, agents, warnings };
+  const mentions = [];
+  if (taskId && boardSaw) {
+    try {
+      const res = await doFetch(`${base}/tasks/${taskId}/mentions`, { headers });
+      if (res.ok) {
+        const body = await res.json();
+        for (const m of body.mentions ?? []) {
+          mentions.push(`${m.reason} (from ${m.actor}, ${m.t})`);
+        }
+        if (mentions.length) {
+          log(`  ${mentions.length} unacknowledged mention(s) \u2014 advisory, nothing is blocked:`);
+          for (const line of mentions) log(`    ${line}`);
+          log("    A checkout named above is claimed, not verified \u2014 `git worktree list --porcelain` settles it.");
+        }
+      }
+    } catch {
+    }
+  }
+  return { taskId, zonesPushed, eventsPushed, grant: grantState, agents, mentions, warnings };
 }
 
 // src/close.ts
@@ -17171,7 +17816,14 @@ async function runClose(opts) {
   });
   const local = runVerify({ root, base: opts.base, evidence: opts.evidence, fromHistory: opts.fromHistory, taskId: opts.taskId, log });
   if (!local.ok || !local.taskId || !local.manifest) {
-    return { ok: false, taskId: local.taskId, failures: local.failures, warnings: local.warnings };
+    const failures = [...local.failures];
+    if (opts.override) {
+      failures.push({
+        field: "override",
+        message: "Your --override was not applied: it is recorded by the board with the transition, and the checks above run here, before the board is asked. Fix what they name, or take it up with the check \u2014 an override cannot answer a local refusal."
+      });
+    }
+    return { ok: false, taskId: local.taskId, failures, warnings: local.warnings };
   }
   const base = `${apiUrl.replace(/\/+$/, "")}/v1/${tenant}/${repo}`;
   const headers = boardHeaders(token);
@@ -17217,13 +17869,13 @@ async function runClose(opts) {
   const body = await res.json();
   let auditPath;
   if (body.audit) {
-    auditPath = join22(".zones", "audit", `${local.taskId}.md`);
-    const full = join22(root, auditPath);
-    mkdirSync8(dirname6(full), { recursive: true });
+    auditPath = join23(".zones", "audit", `${local.taskId}.md`);
+    const full = join23(root, auditPath);
+    mkdirSync8(dirname7(full), { recursive: true });
     const written = [auditPath];
-    if (existsSync15(full) && readFileSync18(full, "utf8") !== body.audit) {
+    if (existsSync17(full) && readFileSync19(full, "utf8") !== body.audit) {
       const kept = `${auditPath}.superseded`;
-      writeFileSync12(join22(root, kept), readFileSync18(full, "utf8"));
+      writeFileSync12(join23(root, kept), readFileSync19(full, "utf8"));
       written.push(kept);
       log(`  an audit record was already here \u2014 kept as ${kept}`);
       local.warnings.push({
@@ -17234,27 +17886,37 @@ async function runClose(opts) {
     writeFileSync12(full, body.audit);
     recordOwnWrites(root, local.taskId, written);
     log(`  wrote ${auditPath}`);
+    if (opts.override) {
+      if (/\noverride:\n/.test(body.audit)) {
+        log(`  the override is in it \u2014 signed by ${opts.override.by}, recorded as an exception and not as a pass`);
+      } else {
+        local.warnings.push({
+          field: "override",
+          message: `the board applied your --override but ${auditPath} does not carry it \u2014 this board renders audit records without the override block, so the receipt does not say who signed this close. Restart the board from a current build, or write the signature and the reason into the record by hand before committing it.`
+        });
+      }
+    }
   }
   return { ok: true, taskId: local.taskId, failures: [], warnings: local.warnings, auditPath };
 }
-function parseEvidence(values, by, at = (/* @__PURE__ */ new Date()).toISOString()) {
+function parseEvidence(values, by, at2 = (/* @__PURE__ */ new Date()).toISOString()) {
   return values.map((value) => ({
     kind: /^https?:\/\//.test(value) ? "url" : "capture",
     value,
     by,
-    at
+    at: at2
   }));
 }
-var missingCapture = (root, e) => e.kind === "capture" && !existsSync15(join22(root, e.value));
+var missingCapture = (root, e) => e.kind === "capture" && !existsSync17(join23(root, e.value));
 
 // src/start.ts
-import { execFileSync as execFileSync6 } from "node:child_process";
-import { existsSync as existsSync16, writeFileSync as writeFileSync13 } from "node:fs";
-import { join as join23 } from "node:path";
+import { execFileSync as execFileSync9 } from "node:child_process";
+import { existsSync as existsSync18, readFileSync as readFileSync20, writeFileSync as writeFileSync13 } from "node:fs";
+import { join as join24 } from "node:path";
 var slug2 = (title) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 function uncommittedTracked(root) {
   try {
-    return execFileSync6("git", ["status", "--porcelain"], { cwd: root, stdio: "pipe" }).toString().split("\n").filter((l) => l.trim() && !l.startsWith("??")).map((l) => l.trim());
+    return execFileSync9("git", ["status", "--porcelain"], { cwd: root, stdio: "pipe" }).toString().split("\n").filter((l) => l.trim() && !l.startsWith("??")).map((l) => l.trim());
   } catch {
     return [];
   }
@@ -17336,7 +17998,7 @@ async function runStart(input) {
   const branch = boundBranch ?? `task/${taskId}-${slug2(title)}`;
   const exists = () => {
     try {
-      execFileSync6("git", ["rev-parse", "--verify", `refs/heads/${branch}`], { cwd: root, stdio: "pipe" });
+      execFileSync9("git", ["rev-parse", "--verify", `refs/heads/${branch}`], { cwd: root, stdio: "pipe" });
       return true;
     } catch {
       return false;
@@ -17345,17 +18007,17 @@ async function runStart(input) {
   const repointed = (() => {
     if (!exists()) return false;
     try {
-      execFileSync6("git", ["merge-base", "--is-ancestor", branch, "HEAD"], { cwd: root, stdio: "pipe" });
-      const tip = execFileSync6("git", ["rev-parse", branch], { cwd: root, stdio: "pipe" }).toString().trim();
-      const head = execFileSync6("git", ["rev-parse", "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
+      execFileSync9("git", ["merge-base", "--is-ancestor", branch, "HEAD"], { cwd: root, stdio: "pipe" });
+      const tip = execFileSync9("git", ["rev-parse", branch], { cwd: root, stdio: "pipe" }).toString().trim();
+      const head = execFileSync9("git", ["rev-parse", "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
       if (tip === head) return false;
-      execFileSync6("git", ["branch", "-f", branch, "HEAD"], { cwd: root, stdio: "pipe" });
+      execFileSync9("git", ["branch", "-f", branch, "HEAD"], { cwd: root, stdio: "pipe" });
       return true;
     } catch {
       return false;
     }
   })();
-  execFileSync6("git", exists() ? ["checkout", branch] : ["checkout", "-b", branch], { cwd: root, stdio: "pipe" });
+  execFileSync9("git", exists() ? ["checkout", branch] : ["checkout", "-b", branch], { cwd: root, stdio: "pipe" });
   if (repointed) {
     console.error(`  note: ${branch} pointed at history HEAD already contains \u2014 re-pointed to HEAD instead of rewinding the checkout`);
   }
@@ -17367,6 +18029,7 @@ async function runStart(input) {
   });
   const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const refused = gate.status !== 200 || gate.body.ok === false;
+  const declaredTopics = input.topics.length ? input.topics : onBoard?.topics ?? [];
   writeRecord(root, {
     taskId,
     // The board's title when adopting: a record named differently from the
@@ -17374,10 +18037,9 @@ async function runStart(input) {
     title,
     state: refused ? "Todo" : "In Progress",
     branch,
-    /* What the caller said, and otherwise what the board holds. A field nobody
-       typed is not a field somebody cleared — the same rule the patch above
-       already follows, applied to the file it forgot. */
-    topics: input.topics.length ? input.topics : onBoard?.topics ?? [],
+    /* A field nobody typed is not a field somebody cleared — the same rule the
+       patch above already follows, applied to the file it forgot. */
+    topics: declaredTopics,
     gate: input.gate ?? onBoard?.quality_gate ?? "none",
     priority: input.priority ?? onBoard?.priority ?? "none",
     goal: input.goal ?? onBoard?.goal ?? void 0,
@@ -17388,7 +18050,7 @@ async function runStart(input) {
     today,
     refused
   });
-  recordOwnWrites(root, taskId, [join23(".zones", "tasks", `${taskId}.md`)]);
+  recordOwnWrites(root, taskId, [join24(".zones", "tasks", `${taskId}.md`)]);
   if (refused) {
     return {
       started: false,
@@ -17404,12 +18066,11 @@ async function runStart(input) {
   const byTopic = new Map((scan?.books ?? []).map((b) => [b.topic, b]));
   const playbooks = [];
   const topicWarnings = [];
-  for (const t of input.topics) {
-    const rel = join23(".zones", "playbooks", `${t}.md`);
+  for (const t of declaredTopics) {
     if (byTopic.get(t)?.status === "archived") {
       topicWarnings.push(`topic "${t}" is archived \u2014 its playbook stays for history and no longer loads`);
-    } else if (existsSync16(join23(root, rel))) {
-      playbooks.push(rel);
+    } else if (existsSync18(join24(root, ".zones", "playbooks", `${t}.md`))) {
+      playbooks.push(`.zones/playbooks/${t}.md`);
     } else {
       topicWarnings.push(`topic "${t}" has no playbook \u2014 nothing to load (the birth rule: no cited content, no topic)`);
     }
@@ -17425,7 +18086,33 @@ async function runStart(input) {
     topicWarnings
   };
 }
+function priorRecord(root, taskId) {
+  const path = join24(root, ".zones", "tasks", `${taskId}.md`);
+  if (!existsSync18(path)) return { history: [] };
+  let text;
+  try {
+    text = readFileSync20(path, "utf8");
+  } catch {
+    return { history: [] };
+  }
+  const created = /^created:\s*(\S+)\s*$/m.exec(text)?.[1];
+  const history = [];
+  for (const line of text.split("\n")) {
+    const row = /^\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*([^|]*?)\s*\|\s*(.*?)\s*\|$/.exec(line.trim());
+    if (row) history.push([row[1], row[2], row[3]]);
+  }
+  return { created, history };
+}
 function writeRecord(root, r) {
+  const prior = priorRecord(root, r.taskId);
+  const now = r.refused ? [r.today, "Todo", "**Gate refused In Progress** \u2014 see the failures printed at start; branch kept"] : [r.today, "In Progress", "Gate passed; grant bound to this branch"];
+  const last = prior.history[prior.history.length - 1];
+  const repeats = last && last[0] === now[0] && last[1] === now[1] && last[2] === now[2];
+  const history = prior.history.length ? repeats ? prior.history : [...prior.history, now] : [
+    [r.today, "Triage", "`cycle start`"],
+    [r.today, "Todo", "Scoped in the same command"],
+    now
+  ];
   const body = renderTaskRecord({
     id: r.taskId,
     title: r.title,
@@ -17439,15 +18126,11 @@ function writeRecord(root, r) {
     topics: r.topics,
     priority: r.priority,
     quality_gate: r.gate,
-    created: r.today,
+    created: prior.created ?? r.today,
     writtenBy: "Record written at birth by `cycle start` (CC-111) \u2014 the D-43 orphan pattern\nends where this command begins.",
-    history: [
-      [r.today, "Triage", "`cycle start`"],
-      [r.today, "Todo", "Scoped in the same command"],
-      r.refused ? [r.today, "Todo", "**Gate refused In Progress** \u2014 see the failures printed at start; branch kept"] : [r.today, "In Progress", "Gate passed; grant bound to this branch"]
-    ]
+    history
   });
-  writeFileSync13(join23(root, ".zones", "tasks", `${r.taskId}.md`), body);
+  writeFileSync13(join24(root, ".zones", "tasks", `${r.taskId}.md`), body);
 }
 
 // src/scope.ts
@@ -17505,8 +18188,8 @@ async function runScope(opts) {
 }
 
 // src/decide.ts
-import { existsSync as existsSync17, readFileSync as readFileSync19 } from "node:fs";
-import { join as join24 } from "node:path";
+import { existsSync as existsSync19, readFileSync as readFileSync21 } from "node:fs";
+import { join as join25 } from "node:path";
 async function call(opts, path, init) {
   const doFetch = opts.fetchImpl ?? fetch;
   const warnings = [];
@@ -17542,9 +18225,9 @@ function formatRequest(r, zoneName, owner) {
   ].join("\n");
 }
 function zoneOwners(root) {
-  const path = join24(root, ".zones", "zones.yml");
-  if (!existsSync17(path)) return /* @__PURE__ */ new Map();
-  const parsed = parseZonesFile(readFileSync19(path, "utf8"));
+  const path = join25(root, ".zones", "zones.yml");
+  if (!existsSync19(path)) return /* @__PURE__ */ new Map();
+  const parsed = parseZonesFile(readFileSync21(path, "utf8"));
   if (!parsed.ok) return /* @__PURE__ */ new Map();
   return new Map(parsed.value.zones.map((z) => [z.id, { name: z.name, owner: z.owner }]));
 }
@@ -17613,21 +18296,21 @@ function formatList(tasks) {
 }
 
 // src/deploy-guard.ts
-import { execFileSync as execFileSync7 } from "node:child_process";
+import { execFileSync as execFileSync10 } from "node:child_process";
 function currentBranch2(env = process.env, fromGit = gitBranch) {
   return env.CC_DEPLOY_BRANCH || env.WORKERS_CI_BRANCH || env.GITHUB_REF_NAME || env.VERCEL_GIT_COMMIT_REF || env.BRANCH || env.CI_COMMIT_REF_NAME || env.BUILDKITE_BRANCH || fromGit() || null;
 }
 var headIsTrunkTip = (trunk2) => {
   try {
-    execFileSync7("git", ["fetch", "--quiet", "origin", trunk2], {
+    execFileSync10("git", ["fetch", "--quiet", "origin", trunk2], {
       stdio: ["ignore", "ignore", "ignore"],
       timeout: 2e4
     });
-    const head = execFileSync7("git", ["rev-parse", "HEAD"], {
+    const head = execFileSync10("git", ["rev-parse", "HEAD"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
-    const tip = execFileSync7("git", ["rev-parse", `origin/${trunk2}`], {
+    const tip = execFileSync10("git", ["rev-parse", `origin/${trunk2}`], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
@@ -17638,7 +18321,7 @@ var headIsTrunkTip = (trunk2) => {
 };
 var gitBranch = () => {
   try {
-    const name = execFileSync7("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+    const name = execFileSync10("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
@@ -17700,12 +18383,299 @@ function runGuard(env = process.env, log = console.log, err = console.error, fro
   return 0;
 }
 
+// src/help.ts
+var VALUE_FLAGS = {
+  login: ["--email"],
+  pair: ["--board"],
+  connect: ["--board"],
+  approve: ["--hours"],
+  start: ["--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate"],
+  scope: ["--title", "--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--mode", "--state"],
+  pause: ["--reason"],
+  "request-access": ["--zone", "--mode", "--reason", "--alternative"],
+  verify: ["--base", "--evidence", "--override"],
+  seed: ["--topics"],
+  protect: ["--zone"]
+};
+var KNOWN_FLAGS = {
+  start: ["--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--help", "-h"],
+  submit: ["--help", "-h"],
+  pause: ["--reason", "--help", "-h"],
+  verify: ["--base", "--evidence", "--from-history", "--close", "--override", "--help", "-h"],
+  // `--state` stays in the allowed set so it reaches runScope, whose refusal
+  // names the gate and its edges (E15) — the dispatch's "not a flag this
+  // command takes" would bury the better sentence. Recognised, then refused
+  // with the reason, is not the same as accepted.
+  scope: ["--title", "--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--mode", "--state", "--help", "-h"]
+};
+function wantsHelp(command, args) {
+  const takesValue = new Set(VALUE_FLAGS[command] ?? []);
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a === "--help" || a === "-h") return true;
+    if (takesValue.has(a)) i++;
+  }
+  return false;
+}
+function unknownFlag(command, args) {
+  const known = KNOWN_FLAGS[command];
+  if (!known) return void 0;
+  const allowed = new Set(known);
+  const takesValue = new Set(VALUE_FLAGS[command] ?? []);
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a === "--") break;
+    if (!a.startsWith("-")) continue;
+    if (!allowed.has(a)) return a;
+    if (takesValue.has(a)) i++;
+  }
+  return void 0;
+}
+var COMMAND_HELP = {
+  submit: `cycle submit \u2014 hand the work in
+
+  cycle submit
+
+  Asks the gate to move this branch's task In Progress -> In Review. If the gate
+  says yes it then removes the local grant, so protected zones close again in the
+  same breath the board revokes them; rewrites the CC block in AGENTS.md to say no
+  task is active; and commits that change.
+
+  It takes no flags and no task id \u2014 the branch names the task (D-11).
+  It does not close anything: In Review -> Done is \`cycle verify --close\`.`,
+  pause: `cycle pause \u2014 stop without giving up
+
+  cycle pause [task] --reason "..."
+
+  Asks the gate to move a task In Progress -> Todo and hands the grant back:
+  protected zones close again here, and are re-earned at the gate when the work
+  starts again. The branch keeps the work; nothing is discarded.
+
+  --reason is required. A pause that does not say "until what" is
+  indistinguishable from work that quietly stopped.
+
+  The optional task id acts on a task you are NOT standing on \u2014 \`cycle pause
+  CC-123\` pauses CC-123 from any checkout, which revokes that task's grant at
+  the board while somebody else may be working it. Given no id, it pauses the
+  task this branch is bound to, which is what you almost always mean.`,
+  start: `cycle start \u2014 intake, scope, branch, gate, grant and record, in one command
+
+  cycle start "what this task does" --goal ... --non-goals ... --criteria ...
+  cycle start CC-55 [--goal ...]      adopts a task the board already holds
+
+  Files the task, scopes it, creates the branch, asks the gate to move it to In
+  Progress, writes the grant this machine reads, and writes .zones/tasks/<id>.md.
+  Nothing else in this repository creates branches, so the branch it checks out is
+  the branch the grant binds.
+
+  It refuses to run with uncommitted changes, and the branch is cut from HEAD \u2014
+  detach onto the trunk first, or the task inherits another task's commits.
+  A refusal at the gate leaves the task in Todo and this shell on the new branch.
+
+  --zone id:write  ask for a protected zone     --topics a,b     load the playbooks
+  --priority high  how it is ranked             --gate none      the quality gate`,
+  scope: `cycle scope \u2014 correct what a task says without moving it
+
+  cycle scope CC-12 [--title "..."] [--goal "..."] [--non-goals "..."] [--gate g]
+                    [--criteria "..."]... [--zone id:mode]... [--topics a,b]
+                    [--priority p] [--mode m]
+
+  Rewrites the named fields of that task's record at the board \u2014 and only the
+  named ones: an absent flag leaves its field alone. The task id is required,
+  and it can name any task, not just the one this branch is bound to.
+
+  It cannot move a task. --state is refused before the call is made, with the
+  same rule the board enforces (E15): the gate is the only way between states \u2014
+  \`cycle start\`, \`cycle submit\` and \`cycle pause\` are the edges.`,
+  verify: `cycle verify \u2014 the closing checks, and the close itself
+
+  cycle verify [--base <ref>] [--from-history] [task]
+  cycle verify --close [--evidence <url|path>]... [--override "reason"] [task]
+
+  Without --close it changes NOTHING, locally or at the board: it runs the same
+  checks the close runs, in the same words, so a refusal costs no round trip.
+  Rehearse with it before every close.
+
+  With --close it asks the gate to move the task In Review -> Done, submits the
+  manifest, mirrors this task's events to the board, and writes the audit record
+  under .zones/audit \u2014 commit that record with the work.
+
+  --from-history  check the task's own commits in main, for work that merged
+                  before it closed, instead of this branch
+  --evidence      a URL, or a path that must already be committed here
+  --override      recorded by the board with the transition. It cannot answer a
+                  local refusal: the local checks run before the board is asked.`,
+  login: `cycle login \u2014 sign in to the board
+
+  cycle login [--email you@example.com]
+
+  An address, a six-digit code, done. Writes a session to ~/.commitcycle; nothing
+  is written into the repository. More than one address is fine \u2014 each repository
+  uses the identity its organization knows.`,
+  logout: `cycle logout \u2014 forget an identity on this machine
+
+  cycle logout [email]
+
+  Removes one session for this board, or all of them, from ~/.commitcycle. It
+  changes nothing at the board and nothing in the repository. Pairings are
+  separate and are left alone \u2014 \`cycle pair\` is what undoes those.`,
+  accounts: `cycle accounts \u2014 who this machine is
+
+  cycle accounts
+
+  Read-only. Lists every identity signed in on this machine, the board each one
+  belongs to, its organizations, and which one this repository would use. The
+  question it answers is not "am I logged in" but "which of me is about to act".`,
+  pair: `cycle pair \u2014 join this machine to a board
+
+  cycle pair [--board <url>]
+
+  A code here, confirmed in your browser. Writes .zones/board.json into this
+  repository, naming the board, the organization and the repo; the key itself
+  goes to ~/.commitcycle and stays out of the repository.`,
+  connect: `cycle connect \u2014 the same pairing, started from the board
+
+  cycle connect <ticket> [--board <url>]
+
+  Paste the line the console gave you. Writes .zones/board.json into this
+  repository; the key goes to ~/.commitcycle and stays out of the repository.`,
+  init: `cycle init \u2014 set this repository up
+
+  cycle init [--yes]
+
+  Proposes zones from what is actually in this repository, installs the hook, and
+  writes .zones/zones.yml, the hook settings and the CC block in AGENTS.md. It
+  asks before protecting anything; --yes accepts every proposal without asking,
+  and is required when there is no terminal to ask in.
+
+  It does not invent an organization, and it never moves a task.`,
+  status: `cycle status \u2014 what is active here
+
+  cycle status
+
+  Read-only, no board call. What task this branch is bound to, what the grant
+  currently opens, and which board this repository reports to.`,
+  show: `cycle show \u2014 read a task as the board holds it
+
+  cycle show [task]
+
+  Read-only. One task, or the board's list. Triage tasks have no record file on
+  disk, which is the case this exists for.`,
+  sync: `cycle sync \u2014 push the map and events up, pull the grant down
+
+  cycle sync
+
+  Sends this repository's zone map and this task's local events to the board, and
+  writes down whatever grant the board holds for this branch \u2014 including a
+  revocation, which is the one outcome that changes what you may touch. It never
+  moves a task between states.`,
+  pull: `cycle pull \u2014 reconcile the record files against the board
+
+  cycle pull [--adopt] [--write-missing]
+
+  With no flags it writes nothing and reports the disagreements. --adopt catches
+  stale record files up to the board's task states; --write-missing materialises
+  a record for a task the board holds and disk does not. A record AHEAD of the
+  board is left alone in both cases \u2014 that is evidence, not staleness (D-49).
+  Commit whatever it writes with the task that ran it.`,
+  "request-access": `cycle request-access \u2014 ask for a zone that is closed
+
+  cycle request-access [task] --zone <id> --mode read|write --reason "..." --alternative "..."
+
+  Files the ask at the board for the zone's owner to answer. It grants nothing by
+  itself and changes no files here. --alternative is not politeness: it is what
+  turns a demand into a decision, and about half the time writing it down shows
+  the access was not needed. Use --mode read if reading is enough.
+
+  Then carry on with the rest of the task. Working around the block is worse than
+  the block, and it is the exact failure this product exists to catch (D-14, D-21).`,
+  requests: `cycle requests \u2014 what is waiting on you
+
+  cycle requests
+
+  Read-only. Every access request you can answer: the zone, the task, the reason,
+  and what they said they would do instead.`,
+  approve: `cycle approve \u2014 answer a request with yes
+
+  cycle approve <id> [--hours N]
+
+  Opens the zone for that task at the board, optionally for N hours. Refused here
+  if the zone is not yours: an approval attributed to somebody who did not give it
+  is worth less than no approval. The trail records that a session answered it,
+  which it distinguishes from a click in the console.`,
+  deny: `cycle deny \u2014 answer a request with no
+
+  cycle deny <id>
+
+  Records the refusal at the board and closes the request. Nothing here changes.
+  The requester sees it on their next \`cycle sync\`.`,
+  protect: `cycle protect \u2014 answer "should this be protected?" with yes
+
+  cycle protect <glob> --zone <id>
+
+  Adds the path to that zone in .zones/zones.yml \u2014 a local file edit, in your
+  diff, committed with your work. It talks to no board and grants nothing.`,
+  dismiss: `cycle dismiss \u2014 answer it with no
+
+  cycle dismiss <glob>
+
+  Records the path as reviewed-and-left-open so the closing gate stops asking
+  about it. A local file edit, in your diff. It protects nothing and grants
+  nothing.`,
+  feed: `cycle feed \u2014 append what a close taught to a playbook
+
+  cycle feed <topic> "one bullet (CC-xxx)"
+
+  Appends one bullet to .zones/playbooks/<topic>.md \u2014 a local file edit, in your
+  diff, committed with the close. Always optional: skipping is legal by rule, and
+  a required feed would be a mandatory checklist arriving from a fourth side
+  (D-45). The sync lint judges the citation, not this command.`,
+  seed: `cycle seed \u2014 draft playbooks from this codebase
+
+  cycle seed [--topics a,b] [--yes]
+
+  Offers a draft playbook per topic and writes the ones you accept into
+  .zones/playbooks. Claims cite real files or are dropped, and a topic with
+  nothing to cite is not born. --yes accepts every draft without asking.`,
+  challenge: `cycle challenge \u2014 the seed's counterweight (D-46)
+
+  cycle challenge
+
+  Proposals for what this repository lacks, each with a market source. Accepting
+  or rejecting one writes a decision file into the repository \u2014 both answers do,
+  because a refusal that leaves no record is indistinguishable from never having
+  looked. There is no --yes: deciding is yours.`,
+  doctor: `cycle doctor \u2014 why is CC behaving like this?
+
+  cycle doctor
+
+  Read-only diagnosis: the zone map, the hook installation, the branch and its
+  task, whether the board answers, and whether the record files on disk still
+  agree with the board. It changes nothing. Exit 1 if any check failed.`,
+  "guard-deploy": `cycle guard-deploy \u2014 refuse a deploy that is not from the trunk
+
+  cycle guard-deploy && <your deploy command>
+
+  Answers from the environment alone: no board, no repository state, no network,
+  because it runs inside somebody else's CI where nothing else of ours exists.
+  Never remove it from a deploy command, and never set CC_ALLOW_BRANCH_DEPLOY=1
+  to make a build pass \u2014 a deploy that needs it gone is the deploy it was
+  written for.`,
+  mcp: `cycle mcp \u2014 serve the MCP tools over stdio
+
+  cycle mcp
+
+  For a client's .mcp.json, not for a terminal: stdout is a newline-delimited
+  JSON-RPC stream and it never returns. The tools it serves file and scope work
+  against the board; the gate is still the only thing that moves a task.`
+};
+
 // src/index.ts
 function branchTouched(root) {
   for (const base of ["origin/main", "main"]) {
     try {
-      const mb = execFileSync8("git", ["merge-base", base, "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
-      const out = execFileSync8("git", ["diff", "--name-only", `${mb}..HEAD`], { cwd: root, stdio: "pipe" }).toString();
+      const mb = execFileSync11("git", ["merge-base", base, "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
+      const out = execFileSync11("git", ["diff", "--name-only", `${mb}..HEAD`], { cwd: root, stdio: "pipe" }).toString();
       return new Set(out.split("\n").filter(Boolean));
     } catch {
     }
@@ -17713,10 +18683,18 @@ function branchTouched(root) {
   return void 0;
 }
 function repoRoot(from = process.cwd()) {
-  let cur = resolve2(from);
+  try {
+    const out = execFileSync11("git", ["rev-parse", "--show-toplevel"], {
+      cwd: from,
+      stdio: ["ignore", "pipe", "ignore"]
+    }).toString().trim();
+    if (out) return out;
+  } catch {
+  }
+  let cur = resolve4(from);
   for (; ; ) {
-    if (existsSync18(join25(cur, ".git"))) return cur;
-    const parent = dirname7(cur);
+    if (existsSync21(join27(cur, ".git"))) return cur;
+    const parent = dirname9(cur);
     if (parent === cur) return null;
     cur = parent;
   }
@@ -17775,37 +18753,43 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
   cycle challenge    The seed's counterweight (D-46): proposals for what this repo
                   lacks, each with a market source. Accept or reject \u2014 both become
                   decision files; there is no --yes, deciding is yours
-  cycle doctor       Why is CC behaving like this?
+  cycle doctor [--enforcement]
+                  Why is CC behaving like this? --enforcement answers one
+                  question only \u2014 how old is the bundle actually enforcing
+                  this session, measured against the source it claims to be
+                  built from \u2014 and exits non-zero when the answer is "older"
 
   --help          This
+  cycle <command> --help
+                  What that one command changes, before it changes it
 
 Not built yet: discard and promote (Phase 2).
 They will tell you so rather than fail oddly.`;
 function boardEnv(root) {
-  const resolved = resolveBoard(root);
-  const apiUrl = resolved.apiUrl;
+  const resolved2 = resolveBoard(root);
+  const apiUrl = resolved2.apiUrl;
   if (!apiUrl) {
     console.error(
       'No board address. Set CC_API_URL, or commit .zones/board.json with\n{"api_url": ..., "tenant": ...} so nobody has to export anything.\nUntil a board is reachable a grant cannot be issued \u2014 the CLI cannot mint one.'
     );
     return null;
   }
-  const tenant = resolved.tenant;
+  const tenant = resolved2.tenant;
   if (!tenant) {
     console.error(
       'Set CC_TENANT \u2014 or add "tenant" to .zones/board.json \u2014 for the organization\nthis repository belongs to.\nThere is no default worth having: a guess writes into a tenant nobody\ncreated, and the board you are looking at never sees any of it.\nIt is the first half of the address in the console \u2014 `pow/commitcycle`\nmeans CC_TENANT=pow.'
     );
     return null;
   }
-  if (resolved.wrongIdentity) {
-    const { held } = resolved.wrongIdentity;
+  if (resolved2.wrongIdentity) {
+    const { held } = resolved2.wrongIdentity;
     console.error(
       `
 Signed in here as ${held.join(", ")} \u2014 and ${tenant} is not an organization ${held.length > 1 ? "any of them belong" : "that identity belongs"} to.
 Every call would come back 404, which reads exactly like "no grant" and is not.
 
 Three ways on, narrowest first:
-  cycle pair                     join this machine to ${tenant}/${resolved.repo} \u2014 scoped to this repository,
+  cycle pair                     join this machine to ${tenant}/${resolved2.repo} \u2014 scoped to this repository,
                                  and it outranks every session on this laptop
   cycle login                    as an address that is a member of ${tenant}; the others stay,
                                  each repository uses the identity its organization knows
@@ -17817,8 +18801,8 @@ first half of the address in the console.
     );
     return null;
   }
-  console.log(`  board  ${apiUrl} \xB7 ${tenant}/${resolved.repo}`);
-  return { apiUrl, token: resolved.token, tenant, repo: resolved.repo };
+  console.log(`  board  ${apiUrl} \xB7 ${tenant}/${resolved2.repo}`);
+  return { apiUrl, token: resolved2.token, tenant, repo: resolved2.repo };
 }
 var NOT_YET = {
   discard: "Phase 2.",
@@ -17829,6 +18813,22 @@ async function main2() {
   if (!command || command === "--help" || command === "-h" || command === "help") {
     console.log(HELP);
     return 0;
+  }
+  if (wantsHelp(command, args) && command in COMMAND_HELP) {
+    console.log(COMMAND_HELP[command]);
+    return 0;
+  }
+  const stray = unknownFlag(command, args);
+  if (stray) {
+    console.error(
+      `
+cycle ${command}: ${stray} is not a flag this command takes, and it will not be ignored.
+  it accepts  ${KNOWN_FLAGS[command].filter((f) => f !== "-h").join(" ")}
+
+Nothing was done. \`cycle ${command} --help\` says what this command changes.
+`
+    );
+    return 1;
   }
   if (command in NOT_YET) {
     console.error(`\`cycle ${command}\` is not built yet \u2014 ${NOT_YET[command]}`);
@@ -17844,18 +18844,18 @@ async function main2() {
        command that must work when nothing else does, and it needs only an
        address for the board — not a tenant, not a repo, not a token. */
     case "login": {
-      const resolved = resolveBoard(root);
-      const apiUrl = resolved.apiUrl;
+      const resolved2 = resolveBoard(root);
+      const apiUrl = resolved2.apiUrl;
       if (!apiUrl) {
         console.error(
           '\nNo board address. Set CC_API_URL, or commit .zones/board.json with\n{"api_url": "https://dash.commitcycle.com"} so nobody has to type it.\n'
         );
         return 1;
       }
-      const at = args.indexOf("--email");
+      const at2 = args.indexOf("--email");
       const result = await runLogin({
         apiUrl,
-        email: at === -1 ? void 0 : args[at + 1],
+        email: at2 === -1 ? void 0 : args[at2 + 1],
         log: (l) => console.log(l)
       });
       if (!result.ok) {
@@ -17873,24 +18873,24 @@ The session is in ${sessionPath()}, beside any other address this machine holds.
        not "am I logged in" but "which of me is about to be used here", which is
        the one nobody could ask before. */
     case "accounts": {
-      const resolved = resolveBoard(root);
+      const resolved2 = resolveBoard(root);
       const held = allSessions();
       if (!held.length) {
         console.log("\nNo identity on this machine. `cycle login`, or `cycle pair` to join one repository.\n");
         return 0;
       }
-      const chosen = resolved.apiUrl ? sessionFor(resolved.apiUrl, resolved.tenant) : {};
+      const chosen = resolved2.apiUrl ? sessionFor(resolved2.apiUrl, resolved2.tenant) : {};
       const active = "session" in chosen ? chosen.session.email : void 0;
       console.log("");
       for (const s of held) {
         const orgs = s.organizations?.length ? s.organizations.join(", ") : s.organizations ? "no organizations" : "organizations unknown \u2014 signed in before they were recorded, so it is tried rather than ruled out";
-        const here = s.email === active && s.api_url.replace(/\/+$/, "") === (resolved.apiUrl ?? "").replace(/\/+$/, "");
+        const here = s.email === active && s.api_url.replace(/\/+$/, "") === (resolved2.apiUrl ?? "").replace(/\/+$/, "");
         console.log(`  ${here ? "\u2192" : " "} ${s.email}  ${s.api_url}  (${orgs})`);
       }
-      if (resolved.tenant) {
+      if (resolved2.tenant) {
         console.log(
           `
-This repository reports to ${resolved.tenant}/${resolved.repo}. ` + (active ? `It uses ${active}.` : resolved.wrongIdentity ? "No identity here belongs to it \u2014 `cycle pair`, or sign in as one that does." : "A pairing or CC_TOKEN answers for it, not a session.")
+This repository reports to ${resolved2.tenant}/${resolved2.repo}. ` + (active ? `It uses ${active}.` : resolved2.wrongIdentity ? "No identity here belongs to it \u2014 `cycle pair`, or sign in as one that does." : "A pairing or CC_TOKEN answers for it, not a session.")
         );
       }
       console.log(`
@@ -17899,22 +18899,22 @@ Stored in ${sessionPath()}.
       return 0;
     }
     case "logout": {
-      const resolved = resolveBoard(root);
-      if (!resolved.apiUrl) {
+      const resolved2 = resolveBoard(root);
+      if (!resolved2.apiUrl) {
         console.error("\nNo board address, so there is nothing to sign out of. Set CC_API_URL or commit .zones/board.json.\n");
         return 1;
       }
       const who = args.find((a) => a.includes("@"));
-      const gone = forgetSessions(resolved.apiUrl, who);
+      const gone = forgetSessions(resolved2.apiUrl, who);
       if (!gone) {
         console.log(`
-Nothing to forget: no session for ${who ?? resolved.apiUrl} on this machine.
+Nothing to forget: no session for ${who ?? resolved2.apiUrl} on this machine.
 `);
         return 0;
       }
       console.log(
         `
-Forgot ${gone} identit${gone === 1 ? "y" : "ies"} for ${resolved.apiUrl}.
+Forgot ${gone} identit${gone === 1 ? "y" : "ies"} for ${resolved2.apiUrl}.
 Pairings are separate and were left alone \u2014 \`cycle pair\` is what undoes those.
 `
       );
@@ -17943,7 +18943,7 @@ Looking at ${root}
         root,
         acceptAll,
         log: (l) => console.log(l),
-        hookPath: existsSync18(join25(root, "packages/hook/bin/cc-hook.sh")) ? "$CLAUDE_PROJECT_DIR/packages/hook/bin/cc-hook.sh" : void 0,
+        hookPath: existsSync21(join27(root, "packages/hook/bin/cc-hook.sh")) ? "$CLAUDE_PROJECT_DIR/packages/hook/bin/cc-hook.sh" : void 0,
         /* An abandoned question is a no, not a crash (CC-181).
          *
          * `rl.question` rejects when stdin ends — a pipe running dry, a closed
@@ -17993,7 +18993,7 @@ Next: set a real owner for each zone in .zones/zones.yml \u2014 that is who gets
 asked when someone needs access. Then run \`cycle doctor\` to confirm it is live.
 `
       );
-      if (!existsSync18(join25(root, ".zones", "playbooks"))) {
+      if (!existsSync21(join27(root, ".zones", "playbooks"))) {
         console.log(
           `No playbooks yet. Once the board is connected, \`cycle seed\` drafts them from
 this codebase \u2014 offered as choices, claims citing real files, topics with
@@ -18035,8 +19035,8 @@ nothing to cite not born (docs/07). Or write them by hand; the contract holds.
       const topics = (take("topics") ?? "").split(",").map((t) => t.trim()).filter(Boolean);
       let actor = "solo";
       try {
-        const { execFileSync: execFileSync9 } = await import("node:child_process");
-        actor = execFileSync9("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || actor;
+        const { execFileSync: execFileSync12 } = await import("node:child_process");
+        actor = execFileSync12("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || actor;
       } catch {
       }
       actor = savedIdentity(board2.apiUrl) ?? actor;
@@ -18186,8 +19186,8 @@ ${result.taskId} is In Progress on \`${result.branch}\``);
         console.error("  An approval attributed to somebody who did not give it is worth less than no approval.\n");
         return 1;
       }
-      const at = args.indexOf("--hours");
-      const ttl = at === -1 ? null : Number(args[at + 1]);
+      const at2 = args.indexOf("--hours");
+      const ttl = at2 === -1 ? null : Number(args[at2 + 1]);
       const r = await decideRequest(
         board2,
         id,
@@ -18212,8 +19212,8 @@ ${id} ${command === "approve" ? "approved" : "denied"} as ${me}.`);
        `cycle login`: pairing is what a repository with no board.json does, and
        requiring one first would be the loop it exists to break. */
     case "pair": {
-      const at = args.indexOf("--board");
-      const apiUrl = (at === -1 ? void 0 : args[at + 1]) ?? resolveBoard(root).apiUrl ?? "https://dash.commitcycle.com";
+      const at2 = args.indexOf("--board");
+      const apiUrl = (at2 === -1 ? void 0 : args[at2 + 1]) ?? resolveBoard(root).apiUrl ?? "https://dash.commitcycle.com";
       const result = await runPair({ root, apiUrl, log: (l) => console.log(l) });
       if (!result.ok) {
         console.error("");
@@ -18299,8 +19299,8 @@ ${taskId} updated: ${Object.keys(patch).join(", ")}.`);
         console.error("cycle connect needs the ticket from the board: cycle connect <ticket>");
         return 1;
       }
-      const at = args.indexOf("--board");
-      const apiUrl = (at === -1 ? void 0 : args[at + 1]) ?? resolveBoard(root).apiUrl ?? "https://dash.commitcycle.com";
+      const at2 = args.indexOf("--board");
+      const apiUrl = (at2 === -1 ? void 0 : args[at2 + 1]) ?? resolveBoard(root).apiUrl ?? "https://dash.commitcycle.com";
       const result = await runConnect({ root, apiUrl, ticket, log: (l) => console.log(l) });
       if (!result.ok) {
         console.error("");
@@ -18315,11 +19315,16 @@ ${taskId} updated: ${Object.keys(patch).join(", ")}.`);
       return 0;
     }
     case "doctor": {
+      if (args.includes("--enforcement")) {
+        const only = enforcementChecks(root);
+        console.log("\n" + formatDoctor(only) + "\n");
+        return only.some((c) => c.status === "fail") ? 1 : 0;
+      }
       const checks = runDoctor(root);
-      const resolved = resolveBoard(root);
-      if (resolved.apiUrl) checks.push(await handshakeCheck(resolved.apiUrl));
-      if (resolved.apiUrl && resolved.tenant) {
-        checks.push(...await recordDriftCheck(root, { ...resolved, apiUrl: resolved.apiUrl }));
+      const resolved2 = resolveBoard(root);
+      if (resolved2.apiUrl) checks.push(await handshakeCheck(resolved2.apiUrl));
+      if (resolved2.apiUrl && resolved2.tenant) {
+        checks.push(...await recordDriftCheck(root, { ...resolved2, apiUrl: resolved2.apiUrl }));
       }
       console.log("\n" + formatDoctor(checks) + "\n");
       return checks.some((c) => c.status === "fail") ? 1 : 0;
@@ -18374,8 +19379,8 @@ ${did}.` + (r.ahead.length ? ` ${r.ahead.length} left alone \u2014 a file ahead 
       const board2 = boardEnv(root);
       if (!board2) return 1;
       const named = args.find((a) => /^[A-Z]+-\d+$/.test(a));
-      const at = args.indexOf("--reason");
-      const reason = (at === -1 ? "" : args[at + 1]) ?? "";
+      const at2 = args.indexOf("--reason");
+      const reason = (at2 === -1 ? "" : args[at2 + 1]) ?? "";
       if (!reason.trim()) {
         console.error('cycle pause needs --reason "...". A pause that does not say "until what" is indistinguishable from work that quietly stopped.');
         return 1;
