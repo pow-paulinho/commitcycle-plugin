@@ -16,4 +16,4 @@ at the tool call — before they land. Repositories without a `.zones/zones.yml`
 are ignored entirely, so the plugin is safe to install user-wide.
 
 Everything in here is a built artefact, published from the CommitCycle
-repository by `scripts/publish-plugin.sh`. Version: v0.1.10.
+repository by `scripts/publish-plugin.sh`. Version: v0.1.11.
