@@ -26,7 +26,7 @@ esac
 DIR="$(cd "$DIR" && pwd)"
 CORE="$DIR/../dist/core.js"
 
-# The denial, with the cause and an exit that works (CC-233).
+# The denial, with the cause, the repair FIRST, and an exit that works (CC-233).
 #
 # The first live install produced the deadlock this now avoids naming: the
 # harness runs hooks with a stripped PATH, node lived in ~/.local/node/bin, the
@@ -35,10 +35,23 @@ CORE="$DIR/../dist/core.js"
 # denies EVERY tool in the session, reads included. A remedy has to work from
 # outside the thing that is broken.
 #
+# Three rules about this text, all measured (CC-561):
+#   - The repair leads. The old message led with diagnosis (`cycle doctor`)
+#     and offered disabling the plugin as the working alternative — so the
+#     one remedy that always "worked" was turning the enforcement off, which
+#     is the worst advice a guard can print about itself.
+#   - Local and cloud are different repairs, and the message says so: `cycle
+#     doctor` on your machine does not fix a cloud container. A remote
+#     session is repaired by provisioning in the container itself, which is
+#     what the SessionStart hook (cc-provision.sh) is wired to do.
+#   - Disabling the plugin is not offered. It is not a repair; it is the
+#     failure-policy decision made unilaterally, and that decision belongs to
+#     a person on the board (D-58), not to a denial message.
+#
 # $1 is always one of the fixed strings below — never input — so it is safe to
 # interpolate into JSON.
 deny() {
-  printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"CC hook unavailable — denying by default (%s). Fix it from OUTSIDE this session: run `cycle doctor` in a terminal, or disable the commitcycle plugin and open a new session to work unenforced while you do."}}' "$1"
+  printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"CC hook unavailable — denying by default (%s). Repair it, from OUTSIDE this session: in a checkout, run `sh packages/hook/bin/cc-provision.sh` from the repository root — it seeds the core from the committed plugin bundle, no install and no network — or `pnpm --filter @commitcycle/hook build`; for a marketplace plugin install, reinstall or update the plugin. Local and cloud are different repairs: `cycle doctor` on your machine does not fix a cloud container — the container itself must provision, which is what the SessionStart hook in .claude/settings.json does at boot. If sessions should stay usable through an outage like this, that is the failure policy: a person sets it on the board Settings and `cycle sync` carries it down."}}' "$1"
 }
 
 allow_degraded() {

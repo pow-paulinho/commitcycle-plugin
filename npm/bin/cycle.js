@@ -4000,10 +4000,10 @@ var require_resolve_block_map = __commonJS({
       let offset = bm.offset;
       let commentEnd = null;
       for (const collItem of bm.items) {
-        const { start, key, sep, value } = collItem;
+        const { start, key, sep: sep2, value } = collItem;
         const keyProps = resolveProps.resolveProps(start, {
           indicator: "explicit-key-ind",
-          next: key ?? sep?.[0],
+          next: key ?? sep2?.[0],
           offset,
           onError,
           parentIndent: bm.indent,
@@ -4017,7 +4017,7 @@ var require_resolve_block_map = __commonJS({
             else if ("indent" in key && key.indent !== bm.indent)
               onError(offset, "BAD_INDENT", startColMsg);
           }
-          if (!keyProps.anchor && !keyProps.tag && !sep) {
+          if (!keyProps.anchor && !keyProps.tag && !sep2) {
             commentEnd = keyProps.end;
             if (keyProps.comment) {
               if (map.comment)
@@ -4041,7 +4041,7 @@ var require_resolve_block_map = __commonJS({
         ctx.atKey = false;
         if (utilMapIncludes.mapIncludes(ctx, map.items, keyNode))
           onError(keyStart, "DUPLICATE_KEY", "Map keys must be unique");
-        const valueProps = resolveProps.resolveProps(sep ?? [], {
+        const valueProps = resolveProps.resolveProps(sep2 ?? [], {
           indicator: "map-value-ind",
           next: value,
           offset: keyNode.range[2],
@@ -4057,7 +4057,7 @@ var require_resolve_block_map = __commonJS({
             if (ctx.options.strict && keyProps.start < valueProps.found.offset - 1024)
               onError(keyNode.range, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit block mapping key");
           }
-          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : composeEmptyNode(ctx, offset, sep, null, valueProps, onError);
+          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : composeEmptyNode(ctx, offset, sep2, null, valueProps, onError);
           if (ctx.schema.compat)
             utilFlowIndentCheck.flowIndentCheck(bm.indent, value, onError);
           offset = valueNode.range[2];
@@ -4148,7 +4148,7 @@ var require_resolve_end = __commonJS({
       let comment = "";
       if (end) {
         let hasSpace = false;
-        let sep = "";
+        let sep2 = "";
         for (const token of end) {
           const { source, type } = token;
           switch (type) {
@@ -4162,13 +4162,13 @@ var require_resolve_end = __commonJS({
               if (!comment)
                 comment = cb;
               else
-                comment += sep + cb;
-              sep = "";
+                comment += sep2 + cb;
+              sep2 = "";
               break;
             }
             case "newline":
               if (comment)
-                sep += source;
+                sep2 += source;
               hasSpace = true;
               break;
             default:
@@ -4211,18 +4211,18 @@ var require_resolve_flow_collection = __commonJS({
       let offset = fc.offset + fc.start.source.length;
       for (let i = 0; i < fc.items.length; ++i) {
         const collItem = fc.items[i];
-        const { start, key, sep, value } = collItem;
+        const { start, key, sep: sep2, value } = collItem;
         const props = resolveProps.resolveProps(start, {
           flow: fcName,
           indicator: "explicit-key-ind",
-          next: key ?? sep?.[0],
+          next: key ?? sep2?.[0],
           offset,
           onError,
           parentIndent: fc.indent,
           startOnNewline: false
         });
         if (!props.found) {
-          if (!props.anchor && !props.tag && !sep && !value) {
+          if (!props.anchor && !props.tag && !sep2 && !value) {
             if (i === 0 && props.comma)
               onError(props.comma, "UNEXPECTED_TOKEN", `Unexpected , in ${fcName}`);
             else if (i < fc.items.length - 1)
@@ -4276,8 +4276,8 @@ var require_resolve_flow_collection = __commonJS({
             }
           }
         }
-        if (!isMap && !sep && !props.found) {
-          const valueNode = value ? composeNode(ctx, value, props, onError) : composeEmptyNode(ctx, props.end, sep, null, props, onError);
+        if (!isMap && !sep2 && !props.found) {
+          const valueNode = value ? composeNode(ctx, value, props, onError) : composeEmptyNode(ctx, props.end, sep2, null, props, onError);
           coll.items.push(valueNode);
           offset = valueNode.range[2];
           if (isBlock(value))
@@ -4289,7 +4289,7 @@ var require_resolve_flow_collection = __commonJS({
           if (isBlock(key))
             onError(keyNode.range, "BLOCK_IN_FLOW", blockMsg);
           ctx.atKey = false;
-          const valueProps = resolveProps.resolveProps(sep ?? [], {
+          const valueProps = resolveProps.resolveProps(sep2 ?? [], {
             flow: fcName,
             indicator: "map-value-ind",
             next: value,
@@ -4300,8 +4300,8 @@ var require_resolve_flow_collection = __commonJS({
           });
           if (valueProps.found) {
             if (!isMap && !props.found && ctx.options.strict) {
-              if (sep)
-                for (const st of sep) {
+              if (sep2)
+                for (const st of sep2) {
                   if (st === valueProps.found)
                     break;
                   if (st.type === "newline") {
@@ -4318,7 +4318,7 @@ var require_resolve_flow_collection = __commonJS({
             else
               onError(valueProps.start, "MISSING_CHAR", `Missing , or : between ${fcName} items`);
           }
-          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : valueProps.found ? composeEmptyNode(ctx, valueProps.end, sep, null, valueProps, onError) : null;
+          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : valueProps.found ? composeEmptyNode(ctx, valueProps.end, sep2, null, valueProps, onError) : null;
           if (valueNode) {
             if (isBlock(value))
               onError(valueNode.range, "BLOCK_IN_FLOW", blockMsg);
@@ -4498,7 +4498,7 @@ var require_resolve_block_scalar = __commonJS({
           chompStart = i + 1;
       }
       let value = "";
-      let sep = "";
+      let sep2 = "";
       let prevMoreIndented = false;
       for (let i = 0; i < contentStart; ++i)
         value += lines[i][0].slice(trimIndent) + "\n";
@@ -4515,24 +4515,24 @@ var require_resolve_block_scalar = __commonJS({
           indent = "";
         }
         if (type === Scalar.Scalar.BLOCK_LITERAL) {
-          value += sep + indent.slice(trimIndent) + content;
-          sep = "\n";
+          value += sep2 + indent.slice(trimIndent) + content;
+          sep2 = "\n";
         } else if (indent.length > trimIndent || content[0] === "	") {
-          if (sep === " ")
-            sep = "\n";
-          else if (!prevMoreIndented && sep === "\n")
-            sep = "\n\n";
-          value += sep + indent.slice(trimIndent) + content;
-          sep = "\n";
+          if (sep2 === " ")
+            sep2 = "\n";
+          else if (!prevMoreIndented && sep2 === "\n")
+            sep2 = "\n\n";
+          value += sep2 + indent.slice(trimIndent) + content;
+          sep2 = "\n";
           prevMoreIndented = true;
         } else if (content === "") {
-          if (sep === "\n")
+          if (sep2 === "\n")
             value += "\n";
           else
-            sep = "\n";
+            sep2 = "\n";
         } else {
-          value += sep + content;
-          sep = " ";
+          value += sep2 + content;
+          sep2 = " ";
           prevMoreIndented = false;
         }
       }
@@ -4714,25 +4714,25 @@ var require_resolve_flow_scalar = __commonJS({
       if (!match)
         return source;
       let res = match[1];
-      let sep = " ";
+      let sep2 = " ";
       let pos = first.lastIndex;
       line.lastIndex = pos;
       while (match = line.exec(source)) {
         if (match[1] === "") {
-          if (sep === "\n")
-            res += sep;
+          if (sep2 === "\n")
+            res += sep2;
           else
-            sep = "\n";
+            sep2 = "\n";
         } else {
-          res += sep + match[1];
-          sep = " ";
+          res += sep2 + match[1];
+          sep2 = " ";
         }
         pos = line.lastIndex;
       }
       const last = /[ \t]*(.*)/sy;
       last.lastIndex = pos;
       match = last.exec(source);
-      return res + sep + (match?.[1] ?? "");
+      return res + sep2 + (match?.[1] ?? "");
     }
     function doubleQuotedValue(source, onError) {
       let res = "";
@@ -5542,14 +5542,14 @@ var require_cst_stringify = __commonJS({
         }
       }
     }
-    function stringifyItem({ start, key, sep, value }) {
+    function stringifyItem({ start, key, sep: sep2, value }) {
       let res = "";
       for (const st of start)
         res += st.source;
       if (key)
         res += stringifyToken(key);
-      if (sep)
-        for (const st of sep)
+      if (sep2)
+        for (const st of sep2)
           res += st.source;
       if (value)
         res += stringifyToken(value);
@@ -6716,18 +6716,18 @@ var require_parser = __commonJS({
         if (this.type === "map-value-ind") {
           const prev = getPrevProps(this.peek(2));
           const start = getFirstKeyStartProps(prev);
-          let sep;
+          let sep2;
           if (scalar.end) {
-            sep = scalar.end;
-            sep.push(this.sourceToken);
+            sep2 = scalar.end;
+            sep2.push(this.sourceToken);
             delete scalar.end;
           } else
-            sep = [this.sourceToken];
+            sep2 = [this.sourceToken];
           const map = {
             type: "block-map",
             offset: scalar.offset,
             indent: scalar.indent,
-            items: [{ start, key: scalar, sep }]
+            items: [{ start, key: scalar, sep: sep2 }]
           };
           this.onKeyLine = true;
           this.stack[this.stack.length - 1] = map;
@@ -6880,15 +6880,15 @@ var require_parser = __commonJS({
                 } else if (isFlowToken(it.key) && !includesToken(it.sep, "newline")) {
                   const start2 = getFirstKeyStartProps(it.start);
                   const key = it.key;
-                  const sep = it.sep;
-                  sep.push(this.sourceToken);
+                  const sep2 = it.sep;
+                  sep2.push(this.sourceToken);
                   delete it.key;
                   delete it.sep;
                   this.stack.push({
                     type: "block-map",
                     offset: this.offset,
                     indent: this.indent,
-                    items: [{ start: start2, key, sep }]
+                    items: [{ start: start2, key, sep: sep2 }]
                   });
                 } else if (start.length > 0) {
                   it.sep = it.sep.concat(start, this.sourceToken);
@@ -7082,13 +7082,13 @@ var require_parser = __commonJS({
             const prev = getPrevProps(parent);
             const start = getFirstKeyStartProps(prev);
             fixFlowSeqItems(fc);
-            const sep = fc.end.splice(1, fc.end.length);
-            sep.push(this.sourceToken);
+            const sep2 = fc.end.splice(1, fc.end.length);
+            sep2.push(this.sourceToken);
             const map = {
               type: "block-map",
               offset: fc.offset,
               indent: fc.indent,
-              items: [{ start, key: fc, sep }]
+              items: [{ start, key: fc, sep: sep2 }]
             };
             this.onKeyLine = true;
             this.stack[this.stack.length - 1] = map;
@@ -9211,10 +9211,17 @@ var init_tools_list = __esm({
       },
       {
         name: "cc_status",
-        description: "What is on the board: a single task by id, or everything in flight. Read-only. For what is open to you on this machine right now, run `cycle status` \u2014 the grant is local and this server deliberately cannot see it.",
+        description: "What is on the board. With a task_id: that one task, as a full record. With none: a projection of what is in flight \u2014 id, title, state, branch, affected_zones and updated_at per task, not the full records (each is one `cc_status task_id` call away). Pass `state` to narrow the whole-board read to a single state. Read-only. For what is open to you on this machine right now, run `cycle status` \u2014 the grant is local and this server deliberately cannot see it.",
         inputSchema: {
           type: "object",
-          properties: { task_id: { type: "string" } },
+          properties: {
+            task_id: { type: "string", description: "One task, returned as a full record." },
+            state: {
+              type: "string",
+              enum: ["Triage", "Todo", "In Progress", "In Review", "Done", "Canceled"],
+              description: "Whole-board read only: narrow the projection to one state. Ignored when task_id is given. Default is what is in flight \u2014 In Progress and In Review."
+            }
+          },
           additionalProperties: false
         }
       }
@@ -9248,11 +9255,22 @@ function statusHeader(scope, checkout) {
     scope_warning: scopeMismatch(scope, checkout)
   };
 }
-function boardStatus(scope, checkout, tasks) {
-  return { ...statusHeader(scope, checkout), in_flight: tasks.length, tasks: [...tasks] };
+function boardStatus(scope, checkout, tasks, queriedAt) {
+  const { answering_for, ...rest } = statusHeader(scope, checkout);
+  return { answering_for, queried_at: queriedAt, ...rest, in_flight: tasks.length, tasks: [...tasks] };
 }
 function taskStatus(scope, checkout, task) {
   return { ...statusHeader(scope, checkout), task };
+}
+function projectTask(t) {
+  return {
+    id: t.id,
+    title: t.title,
+    state: t.state,
+    branch: t.branch,
+    affected_zones: t.affected_zones,
+    updated_at: t.updated_at
+  };
 }
 var scopeLabel, trimUrl, at, noSuchTask;
 var init_status = __esm({
@@ -9277,10 +9295,15 @@ function scopeFromEnv(env = process.env) {
       error: "CC_TENANT is not set. There is no default worth having: a guess writes into a tenant nobody created. It is the first half of the address in the console \u2014 `pow/commitcycle` means CC_TENANT=pow."
     };
   }
-  const repo = env.CC_REPO_ID ?? "commitcycle";
+  const repo = env.CC_REPO_ID;
+  if (!repo) {
+    return {
+      error: "CC_REPO_ID is not set. There is no default worth having: a guess writes into a repository nobody created, and defaulting to this product's own is how a customer's tasks land on a board that reads back empty. It is the second half of the address in the console \u2014 `pow/commitcycle` means CC_REPO_ID=commitcycle. Or point the client at `cycle mcp`, which resolves the repository from the checkout beside it."
+    };
+  }
   return { apiUrl: apiUrl.replace(/\/+$/, ""), tenant, repo, token: env.CC_TOKEN };
 }
-async function call2(scope, path, init) {
+async function call(scope, path, init) {
   const headers = { "content-type": "application/json" };
   if (scope.token) headers.authorization = `Bearer ${scope.token}`;
   const url = `${scope.apiUrl}/v1/${scope.tenant}/${scope.repo}${path}`;
@@ -9289,43 +9312,52 @@ async function call2(scope, path, init) {
     let detail = `${res.status}`;
     try {
       const body = await res.json();
-      detail = body.failures?.map((f) => f.message).join(" ") ?? body.error ?? detail;
+      detail = joinMessages(body.failures) ?? joinMessages(body.problems) ?? body.error ?? body.message ?? detail;
     } catch {
     }
     if ((res.status === 401 || res.status === 403) && !scope.token) {
-      throw new Error(
+      throw new BoardError(
         `${detail}
 
-This server holds no credential. It was started without CC_TOKEN, which is the only source this entry point reads \u2014 the session \`cycle login\` stores is a file it never opens. Point the client at \`cycle mcp\` instead: it walks the same four sources every other command does (CC_TOKEN, .zones/board.json, this machine's pairing, then the stored session). Setting CC_TOKEN in this server's environment also works, and is the only option when the CLI is absent.`
+This server holds no credential. It was started without CC_TOKEN, which is the only source this entry point reads \u2014 the session \`cycle login\` stores is a file it never opens. Point the client at \`cycle mcp\` instead: it walks the same four sources every other command does (CC_TOKEN, .zones/board.json, this machine's pairing, then the stored session). Setting CC_TOKEN in this server's environment also works, and is the only option when the CLI is absent.`,
+        res.status
       );
     }
-    throw new Error(detail);
+    throw new BoardError(detail, res.status);
   }
   return await res.json();
 }
-var board;
+var BoardError, joinMessages, board;
 var init_api = __esm({
   "../../apps/mcp/src/api.ts"() {
     "use strict";
+    BoardError = class extends Error {
+      constructor(message, status) {
+        super(message);
+        this.status = status;
+        this.name = "BoardError";
+      }
+    };
+    joinMessages = (items) => items && items.length ? items.map((m) => m.message).join(" ") : void 0;
     board = {
       /** One line in, one unscoped task in Triage out. */
       async intake(scope, title, requestedBy) {
-        const { task } = await call2(scope, "/tasks", {
+        const { task } = await call(scope, "/tasks", {
           method: "POST",
           body: JSON.stringify({ title, requested_by: requestedBy })
         });
         return task;
       },
       async task(scope, id) {
-        const { task } = await call2(scope, `/tasks/${id}`);
+        const { task } = await call(scope, `/tasks/${id}`);
         return task;
       },
       async tasks(scope) {
-        const { tasks } = await call2(scope, "/tasks");
+        const { tasks } = await call(scope, "/tasks");
         return tasks;
       },
       async zones(scope) {
-        const { zones } = await call2(scope, "/zones");
+        const { zones } = await call(scope, "/zones");
         return zones;
       },
       /**
@@ -9333,7 +9365,7 @@ var init_api = __esm({
        * cannot start work however it is called — the gate stays the only way in.
        */
       async scope(scope, id, patch) {
-        const { task } = await call2(scope, `/tasks/${id}`, {
+        const { task } = await call(scope, `/tasks/${id}`, {
           method: "PUT",
           body: JSON.stringify(patch)
         });
@@ -9345,7 +9377,7 @@ var init_api = __esm({
        * real zone map — this file must not "help" by patching it.
        */
       async interview(scope, request) {
-        return call2(scope, "/interview", {
+        return call(scope, "/interview", {
           /* `request`, which is what the route reads (CC-124).
            *
            * This sent `{ title }`, so every call was refused with "request is
@@ -9367,21 +9399,21 @@ var init_api = __esm({
 });
 
 // ../../apps/mcp/src/checkout.ts
-import { existsSync as existsSync20, readFileSync as readFileSync22 } from "node:fs";
-import { dirname as dirname8, join as join26, resolve as resolve3 } from "node:path";
+import { existsSync as existsSync24, readFileSync as readFileSync28 } from "node:fs";
+import { dirname as dirname15, join as join31, resolve as resolve5 } from "node:path";
 function readCheckoutBinding(from = process.cwd()) {
-  let dir = resolve3(from);
+  let dir = resolve5(from);
   for (; ; ) {
-    const file = join26(dir, ".zones", "board.json");
-    if (existsSync20(file)) {
+    const file = join31(dir, ".zones", "board.json");
+    if (existsSync24(file)) {
       try {
-        const j = JSON.parse(readFileSync22(file, "utf8"));
+        const j = JSON.parse(readFileSync28(file, "utf8"));
         return { path: file, tenant: str2(j.tenant), repo: str2(j.repo), apiUrl: str2(j.api_url) };
       } catch {
         return { path: file };
       }
     }
-    const up = dirname8(dir);
+    const up = dirname15(dir);
     if (up === dir) return null;
     dir = up;
   }
@@ -9420,7 +9452,19 @@ async function runTool(scope, name, args, readCheckout = readCheckoutBinding) {
 It cannot start until the four questions are answered. Use cc_interview to draft them, then confirm each answer with the person before cc_scope.`;
     }
     case "cc_interview": {
-      const title = args.title ? String(args.title) : (await board.task(scope, String(args.task_id))).title;
+      let title;
+      if (args.title) {
+        title = String(args.title);
+      } else {
+        const id = String(args.task_id ?? "").trim();
+        if (!id) return "Which task? cc_interview needs a task_id, or a title to draft from.";
+        try {
+          title = (await board.task(scope, id)).title;
+        } catch (e) {
+          if (e instanceof BoardError && e.status === 404) return noSuchTask(announced(scope), id);
+          throw e;
+        }
+      }
       const draft = await board.interview(scope, title);
       return JSON.stringify(draft, null, 2) + "\n\nThese are suggestions, already checked against the real zone map. Offer them as options with a free-text alternative rather than saving them as they are.";
     }
@@ -9446,13 +9490,22 @@ It cannot start until the four questions are answered. Use cc_interview to draft
       const checkout = readCheckout();
       if (args.task_id) {
         const id = String(args.task_id);
-        const task = await board.task(scope, id);
-        if (!task) return noSuchTask(here, id);
-        return JSON.stringify(taskStatus(here, checkout, task), null, 2);
+        try {
+          const task = await board.task(scope, id);
+          return JSON.stringify(taskStatus(here, checkout, task), null, 2);
+        } catch (e) {
+          if (e instanceof BoardError && e.status === 404) return noSuchTask(here, id);
+          throw e;
+        }
       }
       const tasks = await board.tasks(scope);
-      const live = tasks.filter((t) => t.state === "In Progress" || t.state === "In Review");
-      return JSON.stringify(boardStatus(here, checkout, live), null, 2);
+      const wanted = typeof args.state === "string" ? args.state : null;
+      const live = tasks.filter((t) => wanted ? t.state === wanted : t.state === "In Progress" || t.state === "In Review");
+      return JSON.stringify(
+        boardStatus(here, checkout, live.map(projectTask), (/* @__PURE__ */ new Date()).toISOString()),
+        null,
+        2
+      );
     }
     default:
       return `No such tool: ${name}`;
@@ -9462,7 +9515,7 @@ function reply(id, result) {
   if (id === void 0) return;
   process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id, result }) + "\n");
 }
-async function handle2(msg, resolve5 = scopeFromEnv, readCheckout = readCheckoutBinding) {
+async function handle2(msg, resolve7 = scopeFromEnv, readCheckout = readCheckoutBinding) {
   switch (msg.method) {
     case "initialize":
       return reply(msg.id, {
@@ -9476,14 +9529,14 @@ async function handle2(msg, resolve5 = scopeFromEnv, readCheckout = readCheckout
        caller cannot tell apart. Resolving here costs no network — every
        resolver in this product is filesystem-only (D-10). */
     case "tools/list": {
-      const scope = resolve5();
+      const scope = resolve7();
       return reply(msg.id, {
         tools: toolsForScope(TOOLS, "error" in scope ? scope : announced(scope))
       });
     }
     case "tools/call": {
       const params = msg.params ?? {};
-      const scope = resolve5();
+      const scope = resolve7();
       if ("error" in scope) {
         return reply(msg.id, { content: [{ type: "text", text: scope.error }], isError: true });
       }
@@ -9511,7 +9564,7 @@ async function handle2(msg, resolve5 = scopeFromEnv, readCheckout = readCheckout
       }
   }
 }
-function main(resolve5 = scopeFromEnv, readCheckout = readCheckoutBinding) {
+function main(resolve7 = scopeFromEnv, readCheckout = readCheckoutBinding) {
   const rl = createInterface2({ input: process.stdin });
   rl.on("line", (line) => {
     const text = line.trim();
@@ -9522,7 +9575,7 @@ function main(resolve5 = scopeFromEnv, readCheckout = readCheckoutBinding) {
     } catch {
       return;
     }
-    void handle2(msg, resolve5, readCheckout);
+    void handle2(msg, resolve7, readCheckout);
   });
 }
 var MCP_PROTOCOL_VERSION, SERVER, announced;
@@ -9547,9 +9600,9 @@ var init_server = __esm({
 
 // src/index.ts
 import { createInterface as createInterface3 } from "node:readline/promises";
-import { execFileSync as execFileSync11 } from "node:child_process";
-import { existsSync as existsSync21 } from "node:fs";
-import { dirname as dirname9, join as join27, resolve as resolve4 } from "node:path";
+import { execFileSync as execFileSync13 } from "node:child_process";
+import { existsSync as existsSync25 } from "node:fs";
+import { dirname as dirname16, join as join32, resolve as resolve6 } from "node:path";
 
 // src/branch.ts
 import { readFileSync, statSync } from "node:fs";
@@ -9586,11 +9639,11 @@ var taskIdFrom = taskIdFromBranch;
 var taskOnBranch = (root) => taskIdFrom(currentBranch(root));
 
 // src/init.ts
-import { execFileSync as execFileSync2 } from "node:child_process";
-import { existsSync as existsSync3, mkdirSync as mkdirSync3, readFileSync as readFileSync7, writeFileSync as writeFileSync4 } from "node:fs";
+import { execFileSync as execFileSync3 } from "node:child_process";
+import { existsSync as existsSync4, mkdirSync as mkdirSync3, readFileSync as readFileSync9, writeFileSync as writeFileSync6 } from "node:fs";
 
 // src/agents.ts
-import { existsSync, readFileSync as readFileSync2, writeFileSync } from "node:fs";
+import { existsSync, readFileSync as readFileSync2, rmSync, writeFileSync } from "node:fs";
 import { isAbsolute as isAbsolute2, join as join2 } from "node:path";
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/external.js
@@ -13753,6 +13806,10 @@ var OpenZoneSchema = external_exports.object({
   /** Per-zone expiry, independent of the grant's own. JIT access expires by itself. */
   expires: external_exports.string().datetime().optional()
 });
+var HolderSchema = external_exports.object({
+  path: external_exports.string().min(1),
+  branch: external_exports.string().min(1)
+});
 var GrantSchema = external_exports.object({
   task_id: external_exports.string().min(1),
   tenant_id: external_exports.string().min(1).optional(),
@@ -13765,6 +13822,14 @@ var GrantSchema = external_exports.object({
   issued_at: external_exports.string().datetime(),
   expires: external_exports.string().datetime(),
   zones: external_exports.array(OpenZoneSchema).default([]),
+  /**
+   * Which checkout holds this grant (CC-50). Optional during the migration —
+   * grants issued before this landed, and transitions from callers that do not
+   * send a checkout path (the console), carry none. Signed with the rest of the
+   * grant so a checkout cannot claim to hold what it does not; see
+   * `signedPayload`.
+   */
+  holder: HolderSchema.optional(),
   /**
    * The board's signature over `signedPayload(grant)`, base64 (D-61, CC-471).
    *
@@ -13962,124 +14027,109 @@ function hoursUntil(iso, now) {
   if (mins <= 0) return "already expired";
   return mins < 60 ? `about ${mins} minutes` : `about ${Math.round(mins / 60)} hours`;
 }
-function renderAgentsBlock(input) {
-  const { zones, task } = input;
-  const now = input.now ?? /* @__PURE__ */ new Date();
-  const exists = input.playbookExists ?? (() => false);
-  const enforcement = input.enforcement ?? "unknown";
-  const guarded = enforcement === "on";
-  const lines = [CC_BEGIN, "## CommitCycle", ""];
-  if (task) {
-    const openIds = new Set(task.open.map((z) => z.id));
-    lines.push(
-      `### You are working on ${task.id} \u2014 ${task.title}`,
-      "",
-      `Branch \`${task.branch}\`. Access expires in ${hoursUntil(task.expires, now)}.`,
-      ""
-    );
-    if (task.goal) lines.push(`**What it should do.** ${task.goal}`, "");
-    if (task.non_goals) lines.push(`**What it must NOT do.** ${task.non_goals}`, "");
-    lines.push(
-      task.open.length ? "**Open to you right now**, and nothing else:" : "**No protected zone is open to this task.** Everything below is closed.",
-      ""
-    );
-    for (const z of task.open) {
-      const zone = zones.find((x) => x.id === z.id);
-      lines.push(`- \`${z.id}\` \u2014 ${z.mode}: ${(zone?.paths ?? []).join(", ")}`);
-    }
-    if (task.open.length) lines.push("");
-    if (task.topics?.length) {
-      const books = task.topics.map((t) => `.zones/playbooks/${t}.md`).filter((rel) => exists(rel));
-      if (books.length) {
-        lines.push("**Read before working** \u2014 the playbooks for this task's topics:", "");
-        for (const b of books) lines.push(`- ${b}`);
-        lines.push("");
-      }
-    }
-    const closed = zones.filter((z) => !openIds.has(z.id));
-    if (closed.length) {
-      lines.push(guarded ? "**Closed to this task.** You can read the list; you cannot write there:" : "**Closed to this task.** You may not write there \u2014 nothing is stopping you, so this one is on you:", "");
-      for (const z of closed) lines.push(`- \`${z.id}\` (${z.default_policy}): ${z.paths.join(", ")}`);
+function taskLines(task, zones, guarded, now, exists) {
+  const openIds = new Set(task.open.map((z) => z.id));
+  const lines = [
+    `### You are working on ${task.id} \u2014 ${task.title}`,
+    "",
+    `Branch \`${task.branch}\`. Access expires in ${hoursUntil(task.expires, now)}.`,
+    ""
+  ];
+  if (task.goal) lines.push(`**What it should do.** ${task.goal}`, "");
+  if (task.non_goals) lines.push(`**What it must NOT do.** ${task.non_goals}`, "");
+  lines.push(
+    task.open.length ? "**Open to you right now**, and nothing else:" : "**No protected zone is open to this task.** Everything below is closed.",
+    ""
+  );
+  for (const z of task.open) {
+    const zone = zones.find((x) => x.id === z.id);
+    lines.push(`- \`${z.id}\` \u2014 ${z.mode}: ${(zone?.paths ?? []).join(", ")}`);
+  }
+  if (task.open.length) lines.push("");
+  if (task.topics?.length) {
+    const books = task.topics.map((t) => `.zones/playbooks/${t}.md`).filter((rel) => exists(rel));
+    if (books.length) {
+      lines.push("**Read before working** \u2014 the playbooks for this task's topics:", "");
+      for (const b of books) lines.push(`- ${b}`);
       lines.push("");
     }
-  } else {
-    lines.push(
-      "### No task is active",
-      "",
-      guarded ? "Nothing is open. Writes to the paths below will be denied until a task passes\nthe gate and binds itself to a branch." : "Nothing is open. Work here needs a task that has passed the gate \u2014 see below for\nwhat is enforcing that, and what is not.",
-      ""
-    );
   }
-  if (!guarded) {
-    lines.push(
-      "### Nothing here is enforcing this",
-      "",
-      enforcement === "off" ? "The zone map below is policy this repository agreed. **No software on this machine is\nchecking it** \u2014 there is no CommitCycle binary installed, so no write will be blocked." : "The zone map below is policy this repository agreed. Whether anything on this machine\nis checking it could not be determined, so assume nothing is.",
-      "",
-      "Treat it as binding anyway. The policy is real, the record is real, and the diff is",
-      "checked against what the task declared when it closes \u2014 so a write outside the map",
-      "is not stopped here, it is found there. Install the binary from the board to have it",
-      "stopped at the write instead.",
-      ""
-    );
+  const closed = zones.filter((z) => !openIds.has(z.id));
+  if (closed.length) {
+    lines.push(guarded ? "**Closed to this task.** You can read the list; you cannot write there:" : "**Closed to this task.** You may not write there \u2014 nothing is stopping you, so this one is on you:", "");
+    for (const z of closed) lines.push(`- \`${z.id}\` (${z.default_policy}): ${z.paths.join(", ")}`);
+    lines.push("");
   }
-  if (input.board) {
-    lines.push(
-      "### Where the tasks are",
-      "",
-      `This repository answers to the board \`${input.board.tenant}/${input.board.repo}\` at`,
-      `${input.board.url}. Tasks, their specs and the record of what was decided live there,`,
-      "not in this repository \u2014 `.zones/board.json` is the binding.",
-      "",
-      "Nothing starts by editing files: a task is filed, scoped with four answers, and passes",
-      "the gate, which is what issues the branch and opens whatever it is allowed to touch.",
-      ""
-    );
-  }
-  lines.push("### Protected zones", "");
+  return lines;
+}
+function enforcementLines(enforcement, guarded) {
+  if (guarded) return [];
+  return [
+    "### Nothing here is enforcing this",
+    "",
+    enforcement === "off" ? "The zone map below is policy this repository agreed. **No software on this machine is\nchecking it** \u2014 there is no CommitCycle binary installed, so no write will be blocked." : "The zone map below is policy this repository agreed. Whether anything on this machine\nis checking it could not be determined, so assume nothing is.",
+    "",
+    "Treat it as binding anyway. The policy is real, the record is real, and the diff is",
+    "checked against what the task declared when it closes \u2014 so a write outside the map",
+    "is not stopped here, it is found there. Install the binary from the board to have it",
+    "stopped at the write instead.",
+    ""
+  ];
+}
+function boardLines(board2) {
+  if (!board2) return [];
+  return [
+    "### Where the tasks are",
+    "",
+    `This repository answers to the board \`${board2.tenant}/${board2.repo}\` at`,
+    `${board2.url}. Tasks, their specs and the record of what was decided live there,`,
+    "not in this repository \u2014 `.zones/board.json` is the binding.",
+    "",
+    "Nothing starts by editing files: a task is filed, scoped with four answers, and passes",
+    "the gate, which is what issues the branch and opens whatever it is allowed to touch.",
+    ""
+  ];
+}
+function zonesListLines(zones) {
+  const lines = ["### Protected zones", ""];
   for (const z of zones) {
     const why = z.reason ? ` \u2014 ${z.reason}` : "";
     lines.push(`- **${z.name}** (\`${z.id}\`, ${z.default_policy}): ${z.paths.join(", ")}${why}`);
   }
-  lines.push(
-    "",
-    guarded ? "If you are blocked, do not look for another route. Ask for access with a reason\nand an alternative, or carry on with the rest of the task and report the block." : "If a change needs one of these paths, do not just make it. Ask for access with a\nreason and an alternative, or carry on with the rest of the task and say you stopped.",
-    "",
-    /* The unprotected rule is a rule about zones, not about now (CC-419).
-     *
-     * This sentence used to be pushed unconditionally, on both sides of the
-     * task/no-task branch above — which put "work there freely" ten lines under
-     * the heading that had just said nothing is open and every write is denied.
-     * The block stated the rule and contradicted it inside one render, in the
-     * exact state where the contradiction bites: an agent with no task reads the
-     * last sentence about unprotected paths and starts typing.
-     *
-     * Undeclared paths are unprotected *inside an active task*. Without one the
-     * hook has no branch → task → grant to resolve (D-11) and refuses wherever
-     * the write lands, zone or not — which is what `.zones/zones.yml` says in
-     * its own last two lines, and now in its header too.
-     *
-     * Still split by `guarded`, for CC-209's reason: only a repository with
-     * something actually installed may say a write "will be denied". */
-    task ? "Everything not listed above is unprotected \u2014 work there freely." : guarded ? "Everything not listed above is unprotected *inside an active task*. There is no\ntask here, so that opens nothing: writes are denied everywhere \u2014 unprotected paths\nincluded \u2014 until a task passes the gate and binds itself to a branch." : "Everything not listed above is unprotected *inside an active task*. There is no\ntask here, so that opens nothing: no write anywhere is authorized until a task\npasses the gate \u2014 nothing is stopping you, so this one is on you.",
-    "",
-    /* One standing rule, in the block every agent reads (CC-160).
-     *
-     * The playbooks are topic-scoped, and this rule is needed by an agent whose
-     * task was never tagged `release` — which is exactly the agent who is about
-     * to touch a deploy script without knowing the trap. Four production
-     * incidents in one afternoon came from a default nobody chose; two lines
-     * here are cheaper than the fifth.
-     *
-     * It stays two lines. A standing-rules section that grows becomes the part
-     * everybody scrolls past. */
-    "### Deploys",
-    "",
-    "Never remove `cycle guard-deploy` from a deploy command, and never set",
-    "`CC_ALLOW_BRANCH_DEPLOY=1` to make a build pass \u2014 it exists so a branch cannot",
-    "reach production, and a deploy that needs it gone is the deploy it was written for.",
-    CC_END
-  );
+  return lines;
+}
+function blockedLine(guarded) {
+  return guarded ? "If you are blocked, do not look for another route. Ask for access with a reason\nand an alternative, or carry on with the rest of the task and report the block." : "If a change needs one of these paths, do not just make it. Ask for access with a\nreason and an alternative, or carry on with the rest of the task and say you stopped.";
+}
+function unprotectedLine(hasTask, guarded) {
+  return hasTask ? "Everything not listed above is unprotected \u2014 work there freely." : guarded ? "Everything not listed above is unprotected *inside an active task*. There is no\ntask here, so that opens nothing: writes are denied everywhere \u2014 unprotected paths\nincluded \u2014 until a task passes the gate and binds itself to a branch." : "Everything not listed above is unprotected *inside an active task*. There is no\ntask here, so that opens nothing: no write anywhere is authorized until a task\npasses the gate \u2014 nothing is stopping you, so this one is on you.";
+}
+var DEPLOYS_LINES = [
+  "### Deploys",
+  "",
+  "Never remove `cycle guard-deploy` from a deploy command, and never set",
+  "`CC_ALLOW_BRANCH_DEPLOY=1` to make a build pass \u2014 it exists so a branch cannot",
+  "reach production, and a deploy that needs it gone is the deploy it was written for."
+];
+function renderDurableBlock(input) {
+  const { zones } = input;
+  const enforcement = input.enforcement ?? "unknown";
+  const guarded = enforcement === "on";
+  const lines = [CC_BEGIN, "## CommitCycle", ""];
+  lines.push(...enforcementLines(enforcement, guarded));
+  lines.push(...boardLines(input.board));
+  lines.push(...zonesListLines(zones));
+  lines.push("", blockedLine(guarded), "", ...DEPLOYS_LINES, CC_END);
+  return lines.join("\n");
+}
+function renderEphemeralBlock(input) {
+  const { zones, task } = input;
+  const now = input.now ?? /* @__PURE__ */ new Date();
+  const exists = input.playbookExists ?? (() => false);
+  const guarded = (input.enforcement ?? "unknown") === "on";
+  const lines = [CC_BEGIN, "## CommitCycle", ""];
+  lines.push(...taskLines(task, zones, guarded, now, exists));
+  lines.push(unprotectedLine(true, guarded), CC_END);
   return lines.join("\n");
 }
 
@@ -14134,6 +14184,24 @@ function renderTaskRecord(r) {
     ""
   ].join("\n");
 }
+
+// ../../apps/api/src/store.ts
+var TOPICS = [
+  "product",
+  "design",
+  "backend",
+  "db",
+  "frontend",
+  "qa",
+  "security",
+  "release",
+  "docs",
+  "changelog",
+  "enforcement"
+];
+
+// ../../apps/api/src/escalation.ts
+var MAX_TTL_HOURS = 24 * 7;
 
 // ../../apps/api/src/identity.ts
 var enc = new TextEncoder();
@@ -14299,7 +14367,7 @@ var ChallengeAnswerSchema = external_exports.object({
 });
 
 // ../../apps/api/src/routes.ts
-var STARTED_AT = (/* @__PURE__ */ new Date()).toISOString();
+var startedAt = Date.now() > 0 ? (/* @__PURE__ */ new Date()).toISOString() : null;
 
 // src/agents.ts
 var BLOCK = CC_BLOCK;
@@ -14362,18 +14430,267 @@ function writeAgentsBlock(root, block) {
   writeFileSync(path, next);
   return { path, changed: true };
 }
+var LOCAL_CONTEXT_FILE = "CLAUDE.local.md";
+var LOCAL_PREAMBLE = "<!-- CommitCycle writes your active task here and removes it on hand-in.\n     Gitignored, so it never conflicts; keep your own notes outside the markers. -->";
+function writeLocalBlock(root, block) {
+  const path = join2(root, LOCAL_CONTEXT_FILE);
+  const existing = existsSync(path) ? readFileSync2(path, "utf8") : "";
+  const next = BLOCK.test(existing) ? existing.replace(BLOCK, block) : (existing ? existing.trimEnd() + "\n\n" : LOCAL_PREAMBLE + "\n\n") + block + "\n";
+  if (next === existing) return { path, changed: false };
+  writeFileSync(path, next);
+  return { path, changed: true };
+}
+function clearLocalBlock(root) {
+  const path = join2(root, LOCAL_CONTEXT_FILE);
+  if (!existsSync(path)) return { path, changed: false };
+  const existing = readFileSync2(path, "utf8");
+  if (!BLOCK.test(existing)) return { path, changed: false };
+  const rest = existing.replace(BLOCK, "").replace(LOCAL_PREAMBLE, "").trim();
+  if (rest === "") {
+    rmSync(path);
+    return { path, changed: true };
+  }
+  writeFileSync(path, rest + "\n");
+  return { path, changed: true };
+}
+
+// src/heal.ts
+import { execFileSync } from "node:child_process";
+import { existsSync as existsSync2, readFileSync as readFileSync4, writeFileSync as writeFileSync3 } from "node:fs";
+import { join as join4 } from "node:path";
+
+// ../../scripts/merge-agents.mjs
+import { spawnSync } from "node:child_process";
+import { readFileSync as readFileSync3, writeFileSync as writeFileSync2, rmSync as rmSync2 } from "node:fs";
+import { dirname, basename, join as join3 } from "node:path";
+var CC_BLOCK2 = /<!-- cc:begin -->[\s\S]*?<!-- cc:end -->/;
+var PLACEHOLDER = "<!-- cc-merge-driver:placeholder -->";
+function extractBlock(text) {
+  const m = text.match(CC_BLOCK2);
+  return m ? m[0] : null;
+}
+function neutralize(text) {
+  return CC_BLOCK2.test(text) ? text.replace(CC_BLOCK2, PLACEHOLDER) : text;
+}
+function mergeNeutralized(oursN, baseN, theirsN, scratchDir) {
+  const tag = `${process.pid}.${Math.random().toString(36).slice(2)}`;
+  const stem = `AGENTS.md.cc-merge.${tag}`;
+  const oursFile = join3(scratchDir, `${stem}.ours`);
+  const baseFile = join3(scratchDir, `${stem}.base`);
+  const theirsFile = join3(scratchDir, `${stem}.theirs`);
+  try {
+    writeFileSync2(oursFile, oursN);
+    writeFileSync2(baseFile, baseN);
+    writeFileSync2(theirsFile, theirsN);
+    const res = spawnSync(
+      "git",
+      ["merge-file", "-p", "-L", "ours", "-L", "base", "-L", "theirs", oursFile, baseFile, theirsFile],
+      { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }
+    );
+    if (res.error || res.status === null || res.status < 0) {
+      return { merged: null, conflict: true, ran: false };
+    }
+    return { merged: res.stdout, conflict: res.status !== 0, ran: true };
+  } finally {
+    for (const f of [oursFile, baseFile, theirsFile]) rmSync2(f, { force: true });
+  }
+}
+function mergeAgents({ base, ours, theirs }, scratchDir) {
+  const oursBlock = extractBlock(ours);
+  const { merged, conflict, ran } = mergeNeutralized(
+    neutralize(ours),
+    neutralize(base),
+    neutralize(theirs),
+    scratchDir
+  );
+  if (!ran || merged === null) return { text: ours, conflict: true };
+  const text = merged.split(PLACEHOLDER).join(oursBlock ?? "");
+  return { text, conflict };
+}
+function runMergeDriver(basePath, oursPath, theirsPath) {
+  const base = readFileSync3(basePath, "utf8");
+  const ours = readFileSync3(oursPath, "utf8");
+  const theirs = readFileSync3(theirsPath, "utf8");
+  const { text, conflict } = mergeAgents({ base, ours, theirs }, dirname(oursPath) || ".");
+  writeFileSync2(oursPath, text);
+  return conflict ? 1 : 0;
+}
+var invokedDirectly = process.argv[1] && basename(process.argv[1]) === "merge-agents.mjs";
+if (invokedDirectly) {
+  const [, , basePath, oursPath, theirsPath] = process.argv;
+  if (!basePath || !oursPath || !theirsPath) {
+    process.stderr.write(
+      "merge-agents: expected three paths (git passes %O %A %B). This is the cc-agents merge driver; git invokes it \u2014 you do not.\n"
+    );
+    process.exit(2);
+  }
+  process.exit(runMergeDriver(basePath, oursPath, theirsPath));
+}
+
+// src/heal.ts
+var CC_AGENTS_MAPPING = /^\s*AGENTS\.md\s+.*\bmerge=cc-agents\b/m;
+var CC_AGENTS_ATTRIBUTE = "AGENTS.md merge=cc-agents";
+function driverCommand(root) {
+  return existsSync2(join4(root, "scripts", "merge-agents.mjs")) ? "node scripts/merge-agents.mjs %O %A %B" : "cycle merge-driver %O %A %B";
+}
+function ensureMergeDriver(root) {
+  const attrsPath = join4(root, ".gitattributes");
+  let mapped = false;
+  try {
+    mapped = existsSync2(attrsPath) && CC_AGENTS_MAPPING.test(readFileSync4(attrsPath, "utf8"));
+  } catch {
+    return { status: "no-mapping" };
+  }
+  if (!mapped) return { status: "no-mapping" };
+  try {
+    const current = execFileSync("git", ["-C", root, "config", "--get", "merge.cc-agents.driver"], {
+      stdio: ["ignore", "pipe", "ignore"]
+    }).toString().trim();
+    if (current) return { status: "present", command: current };
+  } catch {
+  }
+  const command = driverCommand(root);
+  try {
+    execFileSync("git", ["-C", root, "config", "merge.cc-agents.driver", command], { stdio: "ignore" });
+    try {
+      execFileSync("git", ["-C", root, "config", "--get", "merge.cc-agents.name"], { stdio: "ignore" });
+    } catch {
+      execFileSync("git", [
+        "-C",
+        root,
+        "config",
+        "merge.cc-agents.name",
+        "keep AGENTS.md's cc-managed block from conflicting (CC-543)"
+      ], { stdio: "ignore" });
+    }
+    return { status: "registered", command };
+  } catch {
+    return { status: "failed" };
+  }
+}
+var NO_HEAL = {
+  changed: false,
+  resolvedHunks: 0,
+  humanHunks: 0,
+  collapsedBlocks: 0,
+  placeholdersRemoved: 0,
+  unbalanced: false
+};
+function resolveCcHunks(text) {
+  const lines = text.split("\n");
+  const out = [];
+  let resolved2 = 0;
+  let human = 0;
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.startsWith("<<<<<<< ")) {
+      out.push(line);
+      i++;
+      continue;
+    }
+    const start = i;
+    i++;
+    const ours = [];
+    const theirs = [];
+    let section = "ours";
+    let closed = false;
+    for (; i < lines.length; i++) {
+      const l = lines[i];
+      if (section === "ours" && l.startsWith("||||||| ")) {
+        section = "base";
+        continue;
+      }
+      if ((section === "ours" || section === "base") && l === "=======") {
+        section = "theirs";
+        continue;
+      }
+      if (section === "theirs" && l.startsWith(">>>>>>> ")) {
+        closed = true;
+        i++;
+        break;
+      }
+      if (section === "ours") ours.push(l);
+      else if (section === "theirs") theirs.push(l);
+    }
+    if (!closed) {
+      out.push(...lines.slice(start));
+      break;
+    }
+    const oursText = ours.join("\n");
+    if (neutralize(oursText) === neutralize(theirs.join("\n"))) {
+      out.push(...ours);
+      resolved2++;
+    } else {
+      out.push(...lines.slice(start, i));
+      human++;
+    }
+  }
+  return { text: out.join("\n"), resolved: resolved2, human };
+}
+function healAgentsFile(root) {
+  const path = join4(root, "AGENTS.md");
+  if (!existsSync2(path)) return NO_HEAL;
+  const original = readFileSync4(path, "utf8");
+  let text = original;
+  const hunks = text.includes("<<<<<<< ") ? resolveCcHunks(text) : { text, resolved: 0, human: 0 };
+  text = hunks.text;
+  let placeholdersRemoved = 0;
+  while (text.includes(PLACEHOLDER + "\n")) {
+    text = text.replace(PLACEHOLDER + "\n", "");
+    placeholdersRemoved++;
+  }
+  while (text.includes(PLACEHOLDER)) {
+    text = text.replace(PLACEHOLDER, "");
+    placeholdersRemoved++;
+  }
+  const begins = text.split("<!-- cc:begin -->").length - 1;
+  const ends = text.split("<!-- cc:end -->").length - 1;
+  if (begins !== ends) {
+    if (text !== original) writeFileSync3(path, text);
+    return {
+      changed: text !== original,
+      resolvedHunks: hunks.resolved,
+      humanHunks: hunks.human,
+      collapsedBlocks: 0,
+      placeholdersRemoved,
+      unbalanced: true
+    };
+  }
+  const all = [...text.matchAll(new RegExp(CC_BLOCK.source, "g"))];
+  let collapsedBlocks = 0;
+  for (let k = all.length - 1; k >= 1; k--) {
+    const m = all[k];
+    const before = text.slice(0, m.index);
+    const after = text.slice(m.index + m[0].length);
+    text = before.replace(/\n{2,}$/, "\n\n") + after.replace(/^\n+/, "\n");
+    collapsedBlocks++;
+  }
+  if (text === original) {
+    return { ...NO_HEAL, humanHunks: hunks.human };
+  }
+  writeFileSync3(path, text);
+  return {
+    changed: true,
+    resolvedHunks: hunks.resolved,
+    humanHunks: hunks.human,
+    collapsedBlocks,
+    placeholdersRemoved,
+    unbalanced: false
+  };
+}
 
 // src/init.ts
-import { dirname as dirname3, join as join8, relative as relative3 } from "node:path";
+import { dirname as dirname4, join as join10, relative as relative3 } from "node:path";
 
 // src/board-config.ts
-import { readFileSync as readFileSync5 } from "node:fs";
-import { join as join5 } from "node:path";
+import { readFileSync as readFileSync7 } from "node:fs";
+import { join as join7 } from "node:path";
 
 // src/login.ts
-import { chmodSync, mkdirSync, readFileSync as readFileSync3, writeFileSync as writeFileSync2 } from "node:fs";
+import { chmodSync, mkdirSync, readFileSync as readFileSync5, writeFileSync as writeFileSync4 } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join as join3 } from "node:path";
+import { dirname as dirname2, join as join5 } from "node:path";
 import { createInterface } from "node:readline/promises";
 
 // src/protocol.ts
@@ -14405,14 +14722,35 @@ async function upgradeRequired(res) {
   const body = await res.json().catch(() => ({}));
   return body.error ?? `the board requires a newer CLI (426) \u2014 upgrade and retry`;
 }
+async function boardCall(opts, path, init) {
+  const doFetch = opts.fetchImpl ?? fetch;
+  const warnings = [];
+  const res = await doFetch(`${opts.apiUrl.replace(/\/+$/, "")}/v1/${opts.tenant}/${opts.repo}${path}`, {
+    ...init,
+    headers: boardHeaders(opts.token)
+  });
+  const drift = replyDrift(res);
+  if (drift) warnings.push(drift);
+  const tooOld = await upgradeRequired(res);
+  if (tooOld) return { ok: false, message: tooOld, warnings };
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    return {
+      ok: false,
+      message: body.failures?.map((f) => f.message).join(" ") ?? body.error ?? `the board answered ${res.status}`,
+      warnings
+    };
+  }
+  return { ok: true, body: await res.json(), warnings };
+}
 
 // src/login.ts
-var sessionPath = () => join3(homedir(), ".commitcycle", "session.json");
+var sessionPath = () => join5(homedir(), ".commitcycle", "session.json");
 var norm = (apiUrl) => apiUrl.replace(/\/+$/, "");
 function allSessions() {
   let raw;
   try {
-    raw = JSON.parse(readFileSync3(sessionPath(), "utf8"));
+    raw = JSON.parse(readFileSync5(sessionPath(), "utf8"));
   } catch {
     return [];
   }
@@ -14433,8 +14771,8 @@ function rememberSession(entry) {
   const sessions = {};
   for (const s of [...kept, entry]) sessions[`${norm(s.api_url)}|${s.email}`] = s;
   const file = sessionPath();
-  mkdirSync(dirname(file), { recursive: true });
-  writeFileSync2(file, `${JSON.stringify({ sessions }, null, 2)}
+  mkdirSync(dirname2(file), { recursive: true });
+  writeFileSync4(file, `${JSON.stringify({ sessions }, null, 2)}
 `);
   try {
     chmodSync(file, 384);
@@ -14450,8 +14788,8 @@ function forgetSessions(apiUrl, email) {
   const sessions = {};
   for (const s of kept) sessions[`${norm(s.api_url)}|${s.email}`] = s;
   const file = sessionPath();
-  mkdirSync(dirname(file), { recursive: true });
-  writeFileSync2(file, `${JSON.stringify({ sessions }, null, 2)}
+  mkdirSync(dirname2(file), { recursive: true });
+  writeFileSync4(file, `${JSON.stringify({ sessions }, null, 2)}
 `);
   try {
     chmodSync(file, 384);
@@ -14538,15 +14876,15 @@ async function runLogin(opts) {
 }
 
 // src/pair.ts
-import { execFileSync } from "node:child_process";
-import { chmodSync as chmodSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync4, writeFileSync as writeFileSync3 } from "node:fs";
+import { execFileSync as execFileSync2 } from "node:child_process";
+import { chmodSync as chmodSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync6, writeFileSync as writeFileSync5 } from "node:fs";
 import { homedir as homedir2 } from "node:os";
-import { dirname as dirname2, join as join4 } from "node:path";
-var machinePath = () => join4(homedir2(), ".commitcycle", "machines.json");
+import { dirname as dirname3, join as join6 } from "node:path";
+var machinePath = () => join6(homedir2(), ".commitcycle", "machines.json");
 function label(root) {
   const dir = root.split("/").pop() ?? "repo";
   try {
-    const host = execFileSync("hostname", { stdio: "pipe" }).toString().trim().replace(/\.local$/, "");
+    const host = execFileSync2("hostname", { stdio: "pipe" }).toString().trim().replace(/\.local$/, "");
     return `${host} \xB7 ${dir}`;
   } catch {
     return dir;
@@ -14554,20 +14892,20 @@ function label(root) {
 }
 function remember(apiUrl, tenant, repo, token) {
   const path = machinePath();
-  mkdirSync2(dirname2(path), { recursive: true });
+  mkdirSync2(dirname3(path), { recursive: true });
   let all = {};
   try {
-    all = JSON.parse(readFileSync4(path, "utf8"));
+    all = JSON.parse(readFileSync6(path, "utf8"));
   } catch {
   }
   all[`${apiUrl.replace(/\/+$/, "")}|${tenant}/${repo}`] = { token, paired_at: (/* @__PURE__ */ new Date()).toISOString() };
-  writeFileSync3(path, `${JSON.stringify(all, null, 2)}
+  writeFileSync5(path, `${JSON.stringify(all, null, 2)}
 `);
   chmodSync2(path, 384);
 }
 function machineToken(apiUrl, tenant, repo) {
   try {
-    const all = JSON.parse(readFileSync4(machinePath(), "utf8"));
+    const all = JSON.parse(readFileSync6(machinePath(), "utf8"));
     return all[`${apiUrl.replace(/\/+$/, "")}|${tenant}/${repo}`]?.token;
   } catch {
     return void 0;
@@ -14610,9 +14948,9 @@ async function runPair(opts) {
       const body = await res.json();
       if (!body.pending && body.token && body.tenant && body.repo) {
         remember(base, body.tenant, body.repo, body.token);
-        const boardPath = join4(opts.root, ".zones", "board.json");
-        mkdirSync2(dirname2(boardPath), { recursive: true });
-        writeFileSync3(boardPath, `${JSON.stringify({ api_url: base, tenant: body.tenant, repo: body.repo }, null, 2)}
+        const boardPath = join6(opts.root, ".zones", "board.json");
+        mkdirSync2(dirname3(boardPath), { recursive: true });
+        writeFileSync5(boardPath, `${JSON.stringify({ api_url: base, tenant: body.tenant, repo: body.repo }, null, 2)}
 `);
         return { ok: true, tenant: body.tenant, repo: body.repo, failures: [] };
       }
@@ -14648,9 +14986,9 @@ async function runConnect(opts) {
     };
   }
   remember(base, body.tenant, body.repo, body.token);
-  const boardPath = join4(opts.root, ".zones", "board.json");
-  mkdirSync2(dirname2(boardPath), { recursive: true });
-  writeFileSync3(boardPath, `${JSON.stringify({ api_url: base, tenant: body.tenant, repo: body.repo }, null, 2)}
+  const boardPath = join6(opts.root, ".zones", "board.json");
+  mkdirSync2(dirname3(boardPath), { recursive: true });
+  writeFileSync5(boardPath, `${JSON.stringify({ api_url: base, tenant: body.tenant, repo: body.repo }, null, 2)}
 `);
   return { ok: true, tenant: body.tenant, repo: body.repo, failures: [] };
 }
@@ -14661,7 +14999,7 @@ var repoOf = (root, file) => process.env.CC_REPO_ID ?? (typeof file.repo === "st
 function resolveBoard(root) {
   let file = {};
   try {
-    file = JSON.parse(readFileSync5(join5(root, ".zones", "board.json"), "utf8"));
+    file = JSON.parse(readFileSync7(join7(root, ".zones", "board.json"), "utf8"));
   } catch {
   }
   const str3 = (v) => typeof v === "string" && v ? v : void 0;
@@ -14691,8 +15029,8 @@ function resolveBoard(root) {
 }
 
 // src/propose.ts
-import { existsSync as existsSync2, readFileSync as readFileSync6, readdirSync, statSync as statSync2 } from "node:fs";
-import { join as join6, relative } from "node:path";
+import { existsSync as existsSync3, readFileSync as readFileSync8, readdirSync, statSync as statSync2 } from "node:fs";
+import { join as join8, relative } from "node:path";
 var SKIP_DIRS = /* @__PURE__ */ new Set([
   "node_modules",
   ".git",
@@ -14720,7 +15058,7 @@ function walkDirs(root, maxDepth = 4) {
     }
     for (const entry of entries) {
       if (SKIP_DIRS.has(entry) || entry.startsWith(".")) continue;
-      const full = join6(dir, entry);
+      const full = join8(dir, entry);
       try {
         if (!statSync2(full).isDirectory()) continue;
       } catch {
@@ -14778,7 +15116,7 @@ function schemaZone(root) {
     "**/schema.sql"
   ].filter((p) => {
     if (p.includes("*")) return true;
-    return existsSync2(join6(root, p));
+    return existsSync3(join8(root, p));
   });
   return {
     id: "schema",
@@ -14796,16 +15134,16 @@ function schemaZone(root) {
 function fileMentions(root, dir, keywords) {
   let entries;
   try {
-    entries = readdirSync(join6(root, dir));
+    entries = readdirSync(join8(root, dir));
   } catch {
     return null;
   }
   for (const entry of entries.slice(0, 40)) {
-    const full = join6(root, dir, entry);
+    const full = join8(root, dir, entry);
     try {
       if (statSync2(full).isDirectory()) continue;
       if (!/\.(ts|tsx|js|jsx|mjs|py|rb|go|java|php)$/.test(entry)) continue;
-      const text = readFileSync6(full, "utf8").slice(0, 2e4).toLowerCase();
+      const text = readFileSync8(full, "utf8").slice(0, 2e4).toLowerCase();
       for (const kw of keywords) if (text.includes(kw)) return kw;
     } catch {
     }
@@ -14842,7 +15180,7 @@ function proposeFromHeuristics(root) {
       source: "heuristic"
     });
   }
-  const envFiles = [".env", ".env.local", ".env.production"].filter((f) => existsSync2(join6(root, f)));
+  const envFiles = [".env", ".env.local", ".env.production"].filter((f) => existsSync3(join8(root, f)));
   if (envFiles.length) {
     found.push({
       id: "secrets",
@@ -14858,11 +15196,11 @@ function proposeFromHeuristics(root) {
   return found;
 }
 function proposeFromKnowledgeGraph(root) {
-  const file = join6(root, ".ua", "knowledge-graph.json");
-  if (!existsSync2(file)) return [];
+  const file = join8(root, ".ua", "knowledge-graph.json");
+  if (!existsSync3(file)) return [];
   let graph;
   try {
-    graph = JSON.parse(readFileSync6(file, "utf8"));
+    graph = JSON.parse(readFileSync8(file, "utf8"));
   } catch {
     return [];
   }
@@ -14903,7 +15241,7 @@ function proposeZones(root) {
 // src/validate.ts
 var import_picomatch2 = __toESM(require_picomatch2(), 1);
 import { readdirSync as readdirSync2, statSync as statSync3 } from "node:fs";
-import { join as join7, relative as relative2 } from "node:path";
+import { join as join9, relative as relative2 } from "node:path";
 var SKIP = /* @__PURE__ */ new Set(["node_modules", ".git", "dist", "build", ".next", "coverage", ".turbo"]);
 function listFiles(root, limit = 2e4) {
   const out = [];
@@ -14917,7 +15255,7 @@ function listFiles(root, limit = 2e4) {
     }
     for (const entry of entries) {
       if (SKIP.has(entry)) continue;
-      const full = join7(dir, entry);
+      const full = join9(dir, entry);
       try {
         if (statSync3(full).isDirectory()) visit(full);
         else out.push(relative2(root, full).split("\\").join("/"));
@@ -14998,7 +15336,7 @@ function proposedOwner(root) {
   const signedIn = board2.apiUrl ? savedIdentity(board2.apiUrl) : void 0;
   if (signedIn) return { owner: signedIn, from: "the account you are signed in as" };
   try {
-    const git3 = execFileSync2("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim();
+    const git3 = execFileSync3("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim();
     if (git3) return { owner: git3, from: "your git identity" };
   } catch {
   }
@@ -15066,6 +15404,28 @@ function codexHooksJson(hookPath) {
     2
   ) + "\n";
 }
+function configureAgentsMergeDriver(root, log) {
+  const wrote = [];
+  const attrsPath = join10(root, ".gitattributes");
+  const current = existsSync4(attrsPath) ? readFileSync9(attrsPath, "utf8") : "";
+  if (!CC_AGENTS_MAPPING.test(current)) {
+    writeFileSync6(attrsPath, (current ? current.trimEnd() + "\n" : "") + CC_AGENTS_ATTRIBUTE + "\n");
+    wrote.push(relative3(root, attrsPath));
+  }
+  if (ensureMergeDriver(root).status === "failed") {
+    log("\n  Could not register the AGENTS.md merge driver in git config \u2014 `cycle doctor` has the one-liner.");
+  }
+  return wrote;
+}
+function ensureClaudeImportsAgents(root) {
+  const path = join10(root, "CLAUDE.md");
+  const existing = existsSync4(path) ? readFileSync9(path, "utf8") : "";
+  if (/^\s*@\.?\/?AGENTS\.md\s*$/m.test(existing)) return [];
+  const preamble = "# Agent guide\n\nThe durable agent guide \u2014 the zone map, the board and the deploy rule \u2014 lives in\nAGENTS.md so every tool reads one copy. Claude Code loads it through the import\nbelow. Your active task is written to CLAUDE.local.md by `cycle start`.\n\n";
+  const next = existing ? existing.trimEnd() + "\n\n@AGENTS.md\n" : preamble + "@AGENTS.md\n";
+  writeFileSync6(path, next);
+  return [relative3(root, path)];
+}
 async function runInit(opts) {
   const { root, acceptAll = false, log = () => {
   } } = opts;
@@ -15101,36 +15461,36 @@ async function runInit(opts) {
   }
   const zonesYml = yaml(accepted, owner);
   const wrote = [];
-  const zonesPath = join8(root, ".zones", "zones.yml");
-  mkdirSync3(dirname3(zonesPath), { recursive: true });
-  writeFileSync4(zonesPath, zonesYml);
+  const zonesPath = join10(root, ".zones", "zones.yml");
+  mkdirSync3(dirname4(zonesPath), { recursive: true });
+  writeFileSync6(zonesPath, zonesYml);
   wrote.push(relative3(root, zonesPath));
   const hookPath = opts.hookPath ?? "$CLAUDE_PROJECT_DIR/node_modules/@commitcycle/hook/bin/cc-hook.sh";
-  const settingsPath = join8(root, ".claude", "settings.json");
-  mkdirSync3(dirname3(settingsPath), { recursive: true });
-  if (existsSync3(settingsPath)) {
+  const settingsPath = join10(root, ".claude", "settings.json");
+  mkdirSync3(dirname4(settingsPath), { recursive: true });
+  if (existsSync4(settingsPath)) {
     wrote.push(`${relative3(root, settingsPath)} (already exists \u2014 left alone, add the hook yourself)`);
   } else {
-    writeFileSync4(settingsPath, settingsJson(hookPath));
+    writeFileSync6(settingsPath, settingsJson(hookPath));
     wrote.push(relative3(root, settingsPath));
   }
-  const codexPath = join8(root, ".codex", "hooks.json");
-  mkdirSync3(dirname3(codexPath), { recursive: true });
-  if (existsSync3(codexPath)) {
+  const codexPath = join10(root, ".codex", "hooks.json");
+  mkdirSync3(dirname4(codexPath), { recursive: true });
+  if (existsSync4(codexPath)) {
     wrote.push(`${relative3(root, codexPath)} (already exists \u2014 left alone, add the hook yourself)`);
   } else {
-    writeFileSync4(codexPath, codexHooksJson(hookPath.replace("$CLAUDE_PROJECT_DIR/", "./")));
+    writeFileSync6(codexPath, codexHooksJson(hookPath.replace("$CLAUDE_PROJECT_DIR/", "./")));
     wrote.push(relative3(root, codexPath));
   }
-  const mcpPath = join8(root, ".mcp.json");
-  const cliPath = existsSync3(join8(root, "packages", "cli", "dist", "index.js")) ? "packages/cli/dist/index.js" : "node_modules/@commitcycle/cli/dist/index.js";
-  if (existsSync3(mcpPath)) {
+  const mcpPath = join10(root, ".mcp.json");
+  const cliPath = existsSync4(join10(root, "packages", "cli", "dist", "index.js")) ? "packages/cli/dist/index.js" : "node_modules/@commitcycle/cli/dist/index.js";
+  if (existsSync4(mcpPath)) {
     wrote.push(`${relative3(root, mcpPath)} (already exists \u2014 left alone, add the server yourself)`);
   } else {
-    writeFileSync4(mcpPath, mcpJson(cliPath));
+    writeFileSync6(mcpPath, mcpJson(cliPath));
     wrote.push(relative3(root, mcpPath));
   }
-  const agents = writeAgentsBlock(root, renderAgentsBlock({
+  const agents = writeAgentsBlock(root, renderDurableBlock({
     zones: accepted,
     // Written a few lines above this point, so Layer 1 can name the board from
     // the moment it exists rather than at the next `cycle sync` (CC-202).
@@ -15141,26 +15501,32 @@ async function runInit(opts) {
     enforcement: detectEnforcement(root)
   }));
   wrote.push(relative3(root, agents.path));
-  const gitignore = join8(root, ".gitignore");
-  const line = ".zones/state/";
-  const current = existsSync3(gitignore) ? readFileSync7(gitignore, "utf8") : "";
-  if (!current.includes(line)) {
-    writeFileSync4(gitignore, current.trimEnd() + `
-
-# CC runtime state \u2014 grants, events, guard snapshots
+  wrote.push(...ensureClaudeImportsAgents(root));
+  wrote.push(...configureAgentsMergeDriver(root, log));
+  const gitignore = join10(root, ".gitignore");
+  const current = existsSync4(gitignore) ? readFileSync9(gitignore, "utf8") : "";
+  let ignore = current;
+  const ensureIgnored = (line, why) => {
+    if (ignore.split("\n").some((l) => l.trim() === line)) return;
+    ignore = (ignore ? ignore.trimEnd() + "\n\n" : "") + `# ${why}
 ${line}
-`);
+`;
+  };
+  ensureIgnored(".zones/state/", "CC runtime state \u2014 grants, events, guard snapshots");
+  ensureIgnored("CLAUDE.local.md", "CC ephemeral task context \u2014 written by `cycle start`, never committed");
+  if (ignore !== current) {
+    writeFileSync6(gitignore, ignore);
     wrote.push(".gitignore");
   }
-  const boardPath = join8(root, ".zones", "board.json");
-  if (opts.askText && !existsSync3(boardPath)) try {
+  const boardPath = join10(root, ".zones", "board.json");
+  if (opts.askText && !existsSync4(boardPath)) try {
     const existing = resolveBoard(root);
     const apiUrl = (await opts.askText("Which board does this repository report to?", existing.apiUrl ?? "https://dash.commitcycle.com")).trim();
     const tenant = apiUrl ? (await opts.askText("Which organization? (the first half of the address in the console)", existing.tenant)).trim() : "";
     if (apiUrl && tenant) {
       const repoId = (await opts.askText("And the repo id?", root.split("/").pop() ?? "repo")).trim() || (root.split("/").pop() ?? "repo");
-      mkdirSync3(dirname3(boardPath), { recursive: true });
-      writeFileSync4(boardPath, `${JSON.stringify({ api_url: apiUrl, tenant, repo: repoId }, null, 2)}
+      mkdirSync3(dirname4(boardPath), { recursive: true });
+      writeFileSync6(boardPath, `${JSON.stringify({ api_url: apiUrl, tenant, repo: repoId }, null, 2)}
 `);
       wrote.push(relative3(root, boardPath));
     } else {
@@ -15182,16 +15548,41 @@ ${line}
 }
 
 // src/doctor.ts
-import { execFileSync as execFileSync4 } from "node:child_process";
-import { existsSync as existsSync6, readdirSync as readdirSync5, readFileSync as readFileSync10, statSync as statSync5 } from "node:fs";
-import { join as join11 } from "node:path";
+import { execFileSync as execFileSync7 } from "node:child_process";
+import { existsSync as existsSync11, readdirSync as readdirSync6, readFileSync as readFileSync14, statSync as statSync5 } from "node:fs";
+import { dirname as dirname10, join as join16, resolve as resolve3, sep } from "node:path";
 
 // src/pull.ts
-import { existsSync as existsSync4, readdirSync as readdirSync3, readFileSync as readFileSync8, writeFileSync as writeFileSync5 } from "node:fs";
-import { join as join9 } from "node:path";
+import { existsSync as existsSync6, mkdirSync as mkdirSync5, readdirSync as readdirSync3, readFileSync as readFileSync10, writeFileSync as writeFileSync7 } from "node:fs";
+import { dirname as dirname6, join as join12 } from "node:path";
+
+// src/own-writes.ts
+import { appendFileSync, existsSync as existsSync5, mkdirSync as mkdirSync4 } from "node:fs";
+import { dirname as dirname5, join as join11, relative as relative4, resolve } from "node:path";
+var eventLogPath = (root, taskId) => join11(root, ".zones", "state", "events", `${taskId}.jsonl`);
+function recordOwnWrites(root, taskId, paths, now = /* @__PURE__ */ new Date()) {
+  if (!taskId || !paths.length) return 0;
+  const lines = paths.map((p) => relative4(resolve(root), resolve(root, p)).split("\\").join("/")).filter((p) => p && !p.startsWith("..")).map((path) => JSON.stringify({
+    t: now.toISOString(),
+    type: "mutation",
+    task_id: taskId,
+    path
+  }));
+  if (!lines.length) return 0;
+  try {
+    const log = eventLogPath(root, taskId);
+    if (!existsSync5(dirname5(log))) mkdirSync4(dirname5(log), { recursive: true });
+    appendFileSync(log, lines.join("\n") + "\n");
+    return lines.length;
+  } catch {
+    return 0;
+  }
+}
+
+// src/pull.ts
 var STATE_ORDER = ["Triage", "Todo", "In Progress", "In Review", "Done"];
 function scanRecords(root) {
-  const dir = join9(root, ".zones", "tasks");
+  const dir = join12(root, ".zones", "tasks");
   const records = /* @__PURE__ */ new Map();
   const unreadable = [];
   let names;
@@ -15201,11 +15592,11 @@ function scanRecords(root) {
     return { records, unreadable };
   }
   for (const name of names.sort()) {
-    if (name === "README.md" || name === "TEMPLATE.md") continue;
-    const path = join9(dir, name);
+    if (name === "README.md" || name === "TEMPLATE.md" || name.startsWith("_")) continue;
+    const path = join12(dir, name);
     let head;
     try {
-      head = readFileSync8(path, "utf8").slice(0, 2e3);
+      head = readFileSync10(path, "utf8").slice(0, 2e3);
     } catch {
       unreadable.push(path);
       continue;
@@ -15224,6 +15615,33 @@ function scanRecords(root) {
   }
   return { records, unreadable };
 }
+function normalise(title) {
+  let t = title.trim();
+  if (t.startsWith('"') && t.endsWith('"') || t.startsWith("'") && t.endsWith("'")) t = t.slice(1, -1);
+  return t.replace(/\\(["'])/g, "$1").replace(/\s+/g, " ").trim().toLowerCase();
+}
+var NOISE = /* @__PURE__ */ new Set(["the", "and", "that", "with", "for", "from", "its", "has", "had", "was", "not", "one", "this", "but", "are", "you", "can", "all", "which", "what", "when", "where", "into", "out", "off"]);
+function sameSubject(a, b) {
+  const words = (s) => new Set(normalise(s).split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !NOISE.has(w)));
+  const x = words(a);
+  const y = words(b);
+  if (!x.size || !y.size) return x.size === y.size;
+  const [small, large] = x.size <= y.size ? [x, y] : [y, x];
+  let shared = 0;
+  for (const w of small) if (large.has(w)) shared++;
+  return shared / small.size >= 0.5;
+}
+function collisions(local, board2) {
+  const onBoard = new Map(board2.map((t) => [t.id, t.title]));
+  const collided = [];
+  for (const [id, rec] of local) {
+    const theirs = onBoard.get(id);
+    if (theirs === void 0) continue;
+    if (!sameSubject(rec.title, theirs)) collided.push(id);
+  }
+  return collided;
+}
+var taskNum = (id) => Number(/-(\d+)$/.exec(id)?.[1] ?? 0);
 function classifyRecords(local, board2) {
   const rank = (s) => STATE_ORDER.indexOf(s);
   const byId = new Map(board2.map((t) => [t.id, t]));
@@ -15247,14 +15665,13 @@ function classifyRecords(local, board2) {
       out.unrecorded.push({ id: t.id, state: t.state, title: t.title });
     }
   }
-  const num2 = (id) => Number(/-(\d+)$/.exec(id)?.[1] ?? 0);
-  for (const list of [out.behind, out.ahead, out.rewound, out.offLadder]) list.sort((x, y) => num2(x.id) - num2(y.id));
-  out.unrecorded.sort((x, y) => num2(x.id) - num2(y.id));
-  out.orphaned.sort((x, y) => num2(x) - num2(y));
+  for (const list of [out.behind, out.ahead, out.rewound, out.offLadder]) list.sort((x, y) => taskNum(x.id) - taskNum(y.id));
+  out.unrecorded.sort((x, y) => taskNum(x.id) - taskNum(y.id));
+  out.orphaned.sort((x, y) => taskNum(x) - taskNum(y));
   return out;
 }
 function setRecordState(path, state) {
-  const text = readFileSync8(path, "utf8");
+  const text = readFileSync10(path, "utf8");
   if (!text.startsWith("---\n")) return false;
   const end = text.indexOf("\n---", 4);
   if (end < 0) return false;
@@ -15262,10 +15679,10 @@ function setRecordState(path, state) {
   const rest = text.slice(end);
   const next = head.replace(/^state:[ \t]*.*$/m, `state: ${state}`);
   if (next === head) return false;
-  writeFileSync5(path, next + rest);
+  writeFileSync7(path, next + rest);
   return true;
 }
-function renderRecord(t, today) {
+function renderRecord(t, today, by) {
   const list = (v) => {
     if (Array.isArray(v)) return v.filter((x) => typeof x === "string");
     if (typeof v === "string" && v.trim()) {
@@ -15297,7 +15714,7 @@ function renderRecord(t, today) {
     "",
     `# ${t.id} \xB7 ${t.title}`,
     "",
-    `> **Materialised from the board by \`cycle pull --write-missing\` on ${today}.**`,
+    `> **Materialised from the board by ${by} on ${today}.**`,
     `> This task reached **${t.state}** without a record file \u2014 the board held it`,
     "> and disk did not, so nothing on disk could audit it. Every field below is",
     "> the board's own; nothing here was reconstructed. There is no Result",
@@ -15356,17 +15773,17 @@ async function runPull(input) {
     );
   } catch {
     log("  the board is unreachable \u2014 nothing was read and nothing was written");
-    return { ...empty, status: "unavailable", adopted: [], written: [], unreadable: [] };
+    return { ...empty, status: "unavailable", adopted: [], written: [], unreadable: [], contested: [] };
   }
   const drift = replyDrift(res);
   if (drift) log(`  note: ${drift}`);
   if (res.status === 401 || res.status === 403) {
     log("  the board refused this session \u2014 run `cycle login`. Nothing was written.");
-    return { ...empty, status: "unauthorized", adopted: [], written: [], unreadable: [] };
+    return { ...empty, status: "unauthorized", adopted: [], written: [], unreadable: [], contested: [] };
   }
   if (!res.ok) {
     log(`  the board answered ${res.status} \u2014 nothing was written`);
-    return { ...empty, status: "unavailable", adopted: [], written: [], unreadable: [] };
+    return { ...empty, status: "unavailable", adopted: [], written: [], unreadable: [], contested: [] };
   }
   const board2 = (await res.json()).tasks;
   const { records: local, unreadable } = scanRecords(input.root);
@@ -15374,6 +15791,17 @@ async function runPull(input) {
   for (const path of unreadable) {
     log(`  ${path}: no \`id:\` in its frontmatter \u2014 nothing here can tell which task it belongs to`);
   }
+  const contestedIds = new Set(collisions(local, board2));
+  const contested = [];
+  const sieve = (rows) => rows.filter((row) => {
+    if (!contestedIds.has(row.id)) return true;
+    contested.push(row);
+    log(`  ${row.id}: record says ${row.file}, board says ${row.board} \u2014 but the file and the board describe different work under this id; not touched. \`cycle doctor\` says how to decide which record is real.`);
+    return false;
+  });
+  c.behind = sieve(c.behind);
+  c.ahead = sieve(c.ahead);
+  contested.sort((x, y) => taskNum(x.id) - taskNum(y.id));
   const adopted = [];
   for (const row of c.behind) {
     const rec = local.get(row.id);
@@ -15426,42 +15854,312 @@ async function runPull(input) {
   const byId = new Map(board2.map((t) => [t.id, t]));
   const written = [];
   const today = input.today ?? (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+  const frozen = Boolean(input.writeMissing) && unreadable.length > 0;
+  if (frozen) {
+    log(`  nothing was materialised: ${unreadable.length} file(s) in .zones/tasks/ carry no \`id:\`, and any of them could be a record a new file would fork`);
+  }
   for (const t of c.unrecorded) {
-    if (!input.writeMissing) {
+    if (!input.writeMissing || frozen) {
       log(`  ${t.id}: ${t.state} on the board with no record file \u2014 ${t.title.slice(0, 60)}`);
       continue;
     }
-    const path = join9(input.root, ".zones", "tasks", `${t.id}.md`);
-    if (existsSync4(path)) continue;
-    writeFileSync5(path, renderRecord(byId.get(t.id), today));
+    const path = join12(input.root, ".zones", "tasks", `${t.id}.md`);
+    if (existsSync6(path)) continue;
+    mkdirSync5(dirname6(path), { recursive: true });
+    writeFileSync7(path, renderRecord(byId.get(t.id), today, "`cycle pull --write-missing`"));
     written.push(t.id);
     log(`  ${t.id}: record written from the board \u2014 ${t.state}`);
   }
   for (const id of c.orphaned) {
     log(`  ${id}: a record file for a task this board has never held`);
   }
-  return { ...c, status: "ok", adopted, written, unreadable };
+  recordOwnWrites(input.root, taskOnBranch(input.root), [
+    ...adopted.map((id) => local.get(id).path),
+    ...written.map((id) => join12(".zones", "tasks", `${id}.md`))
+  ]);
+  return { ...c, status: "ok", adopted, written, unreadable, contested };
+}
+
+// src/reconcile.ts
+import { execFileSync as execFileSync5 } from "node:child_process";
+import { existsSync as existsSync8, mkdirSync as mkdirSync6, readdirSync as readdirSync4, readFileSync as readFileSync11, rmSync as rmSync3, writeFileSync as writeFileSync8 } from "node:fs";
+import { dirname as dirname7, join as join13 } from "node:path";
+
+// src/worktrees.ts
+import { execFileSync as execFileSync4 } from "node:child_process";
+import { existsSync as existsSync7, realpathSync } from "node:fs";
+function listWorktrees(root) {
+  const out = execFileSync4("git", ["worktree", "list", "--porcelain"], {
+    cwd: root,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+  const found = [];
+  let current = null;
+  for (const raw of out.split("\n")) {
+    const line = raw.trimEnd();
+    const space = line.indexOf(" ");
+    const key = space === -1 ? line : line.slice(0, space);
+    const value = space === -1 ? "" : line.slice(space + 1);
+    if (key === "worktree") {
+      current = { path: value, branch: null, prunable: false, bare: false };
+      found.push(current);
+    } else if (!current) {
+      continue;
+    } else if (key === "branch") {
+      current.branch = value.replace(/^refs\/heads\//, "");
+    } else if (key === "prunable") {
+      current.prunable = true;
+    } else if (key === "bare") {
+      current.bare = true;
+    }
+  }
+  return found;
+}
+var resolved = (p) => {
+  try {
+    return realpathSync(p);
+  } catch {
+    return p;
+  }
+};
+function otherCheckoutHolding(root, taskId) {
+  for (const wt of listWorktrees(root)) {
+    if (wt.bare || !wt.branch) continue;
+    if (taskIdFrom(wt.branch) !== taskId) continue;
+    if (wt.prunable || !existsSync7(wt.path)) continue;
+    if (resolved(wt.path) === resolved(root)) continue;
+    return wt.path;
+  }
+  return null;
+}
+function holderLiveness(root, holderPath) {
+  const target = resolved(holderPath);
+  for (const wt of listWorktrees(root)) {
+    if (resolved(wt.path) !== target) continue;
+    return wt.prunable || !existsSync7(wt.path) ? "stale" : "live";
+  }
+  return "stale";
+}
+
+// src/reconcile.ts
+function branchExists(root, branch) {
+  if (!branch) return false;
+  for (const ref of [branch, `origin/${branch}`]) {
+    try {
+      execFileSync5("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
+      return true;
+    } catch {
+    }
+  }
+  return false;
+}
+function grantFiles(root) {
+  try {
+    return readdirSync4(join13(root, ".zones", "state", "grants")).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
+  } catch {
+    return [];
+  }
+}
+function liveGrant(root, taskId, now) {
+  const path = join13(root, ".zones", "state", "grants", `${taskId}.json`);
+  if (!existsSync8(path)) return false;
+  try {
+    return resolveGrant(JSON.parse(readFileSync11(path, "utf8")), now).state === "active";
+  } catch {
+    return false;
+  }
+}
+var NOTHING = { adopted: [], written: [], grantsRemoved: [], collided: [] };
+async function runReconcile(input) {
+  const log = input.log ?? (() => {
+  });
+  const warn = input.warn ?? (() => {
+  });
+  const doFetch = input.fetchImpl ?? fetch;
+  const now = input.now ?? /* @__PURE__ */ new Date();
+  let res;
+  try {
+    res = await doFetch(`${input.base}/tasks`, { headers: input.headers });
+  } catch {
+    warn("could not read the board's tasks \u2014 nothing was reconciled");
+    return { status: "unavailable", ...NOTHING };
+  }
+  if (!res.ok) {
+    warn(`could not read the board's tasks (${res.status}) \u2014 nothing was reconciled`);
+    return { status: "unavailable", ...NOTHING };
+  }
+  const body = await res.json().catch(() => ({}));
+  const tasks = body.tasks ?? [];
+  const { records: local, unreadable } = scanRecords(input.root);
+  if (!tasks.length && !local.size && !unreadable.length) return { status: "skipped", ...NOTHING };
+  const collided = collisions(local, tasks);
+  if (collided.length) {
+    log(`  ${collided.join(", ")} \u2014 the file and the board describe different work under this id. Nothing was reconciled on this run.`);
+    warn("a repair under a colliding id could rewrite the wrong file (D-49), so every repair was skipped. `cycle doctor` says which record is which.");
+    return { status: "aborted", ...NOTHING, collided };
+  }
+  const c = classifyRecords(local, tasks);
+  const byId = new Map(tasks.map((t) => [t.id, t]));
+  const adopted = [];
+  for (const row of c.behind) {
+    const rec = local.get(row.id);
+    if (setRecordState(rec.path, row.board)) {
+      adopted.push(row.id);
+      log(`  ${row.id}: the record caught up to the board, ${row.file} \u2192 ${row.board}`);
+    } else {
+      log(`  ${row.id}: could not rewrite ${rec.path} \u2014 left alone`);
+    }
+  }
+  const written = [];
+  if (unreadable.length) {
+    log(`  ${unreadable.length} file(s) in .zones/tasks/ carry no \`id:\` \u2014 nothing here can tell which task they belong to. Rename with a leading \`_\` if it is a note rather than a record.`);
+  } else {
+    const today = input.today ?? (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+    for (const t of c.unrecorded) {
+      try {
+        if (otherCheckoutHolding(input.root, t.id)) continue;
+      } catch {
+        continue;
+      }
+      const path = join13(input.root, ".zones", "tasks", `${t.id}.md`);
+      if (existsSync8(path)) continue;
+      mkdirSync6(dirname7(path), { recursive: true });
+      writeFileSync8(path, renderRecord(byId.get(t.id), today, "`cycle sync`"));
+      written.push(t.id);
+      log(`  ${t.id}: record written from the board \u2014 ${t.state}`);
+    }
+  }
+  const grantsRemoved = [];
+  for (const id of grantFiles(input.root)) {
+    if (id === input.taskId) continue;
+    const t = byId.get(id);
+    if (!t || t.state === "In Progress") continue;
+    rmSync3(join13(input.root, ".zones", "state", "grants", `${id}.json`), { force: true });
+    grantsRemoved.push(id);
+    log(`  removed the stranded grant for ${id} \u2014 the board has it in ${t.state}, not In Progress`);
+  }
+  if (c.ahead.length) {
+    log(`  ${c.ahead.length} record(s) claim a state the board does not \u2014 \`cycle pull\` reads their events and says which ones it can account for`);
+  }
+  const running = tasks.filter((t) => t.state === "In Progress");
+  const dead = running.filter((t) => !branchExists(input.root, t.branch) || !liveGrant(input.root, t.id, now));
+  if (dead.length) {
+    log(`  ${dead.length} task(s) are In Progress on the board with nothing running here: ${dead.slice(0, 6).map((t) => t.id).join(", ")}${dead.length > 6 ? ", \u2026" : ""}`);
+    log('    Not repaired here: a pause is a state change and needs your reason \u2014 `cycle pause <task> --reason "..."`');
+  }
+  recordOwnWrites(input.root, input.taskId, [
+    ...adopted.map((id) => local.get(id).path),
+    ...written.map((id) => join13(".zones", "tasks", `${id}.md`))
+  ]);
+  return { status: "ran", adopted, written, grantsRemoved, collided: [] };
+}
+
+// src/update-notice.ts
+import { existsSync as existsSync9, mkdirSync as mkdirSync7, readFileSync as readFileSync12, writeFileSync as writeFileSync9 } from "node:fs";
+import { homedir as homedir3 } from "node:os";
+import { dirname as dirname8, join as join14 } from "node:path";
+var CLI_VERSION = "0.1.12";
+var CHECK_TTL_MS = 24 * 60 * 60 * 1e3;
+var updateCachePath = () => join14(homedir3(), ".commitcycle", "update-check.json");
+function isBehind(current, latest) {
+  const cur = numericParts(current);
+  const lat = numericParts(latest);
+  if (!cur || !lat) return false;
+  const n = Math.max(cur.length, lat.length);
+  for (let i = 0; i < n; i++) {
+    const a = cur[i] ?? 0;
+    const b = lat[i] ?? 0;
+    if (b > a) return true;
+    if (b < a) return false;
+  }
+  return false;
+}
+function updateLine(latest) {
+  return `CommitCycle ${latest} is available \u2014 npm i -g commitcycle / /plugin update`;
+}
+async function fetchLatest(apiUrl, fetchImpl = fetch, timeoutMs = 1500) {
+  const url = `${apiUrl.replace(/\/+$/, "")}/health`;
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const res = await fetchImpl(url, { headers: boardHeaders(), signal: ac.signal });
+    if (!res.ok) return void 0;
+    const body = await res.json().catch(() => ({}));
+    return typeof body.latest === "string" && body.latest ? body.latest : void 0;
+  } catch {
+    return void 0;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+function dueForCheck(cachePath, now, ttlMs = CHECK_TTL_MS) {
+  try {
+    if (!existsSync9(cachePath)) return true;
+    const raw = JSON.parse(readFileSync12(cachePath, "utf8"));
+    const last = typeof raw.last_check === "string" ? Date.parse(raw.last_check) : NaN;
+    if (Number.isNaN(last)) return true;
+    return now.getTime() - last >= ttlMs;
+  } catch {
+    return true;
+  }
+}
+function recordCheck(cachePath, now) {
+  try {
+    mkdirSync7(dirname8(cachePath), { recursive: true });
+    writeFileSync9(cachePath, `${JSON.stringify({ last_check: now.toISOString() }, null, 2)}
+`);
+  } catch {
+  }
+}
+function ambientNoticeAllowed(opts) {
+  if (opts.code !== 0) return false;
+  if (!opts.stderrIsTTY) return false;
+  if (!opts.command || opts.command === "doctor") return false;
+  return true;
+}
+async function notifyIfBehind(opts) {
+  try {
+    const env = opts.env ?? process.env;
+    if (env.CC_NO_UPDATE_NOTICE) return;
+    const now = opts.now ?? /* @__PURE__ */ new Date();
+    const cachePath = opts.cachePath ?? updateCachePath();
+    if (!dueForCheck(cachePath, now, opts.ttlMs)) return;
+    const latest = await fetchLatest(opts.apiUrl, opts.fetchImpl);
+    recordCheck(cachePath, now);
+    if (!latest) return;
+    const current = opts.current ?? CLI_VERSION;
+    if (!isBehind(current, latest)) return;
+    (opts.write ?? ((line) => process.stderr.write(line)))(`${updateLine(latest)}
+`);
+  } catch {
+  }
+}
+function numericParts(v) {
+  const segs = v.trim().split(".").map((s) => parseInt(s, 10));
+  if (!segs.length || Number.isNaN(segs[0])) return null;
+  return segs.map((x) => Number.isNaN(x) ? 0 : x);
 }
 
 // src/enforcement-age.ts
-import { execFileSync as execFileSync3 } from "node:child_process";
+import { execFileSync as execFileSync6 } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync as existsSync5, readFileSync as readFileSync9, readdirSync as readdirSync4, statSync as statSync4 } from "node:fs";
-import { homedir as homedir3 } from "node:os";
-import { dirname as dirname4, join as join10, resolve } from "node:path";
+import { existsSync as existsSync10, readFileSync as readFileSync13, readdirSync as readdirSync5, statSync as statSync4 } from "node:fs";
+import { homedir as homedir4 } from "node:os";
+import { dirname as dirname9, join as join15, resolve as resolve2 } from "node:path";
 var HOOK_SOURCE = ["packages/hook", "packages/contracts"];
 var WORKSPACE_CORE = ["packages", "hook", "dist", "core.js"];
 var COMMITTED_CORE = ["plugin", "hook", "dist", "core.js"];
 function git(root, args) {
   try {
-    return execFileSync3("git", ["-C", root, ...args], { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+    return execFileSync6("git", ["-C", root, ...args], { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
   } catch {
     return null;
   }
 }
 function isAncestor(root, a, b) {
   try {
-    execFileSync3("git", ["-C", root, "merge-base", "--is-ancestor", a, b], { stdio: "ignore" });
+    execFileSync6("git", ["-C", root, "merge-base", "--is-ancestor", a, b], { stdio: "ignore" });
     return true;
   } catch (err) {
     const code = err.status;
@@ -15482,7 +16180,7 @@ function newestSourceMtime(root) {
     if (depth > 8) return;
     for (const entry of safeReaddir(dir)) {
       if (entry === "node_modules" || entry === "dist" || entry.startsWith(".")) continue;
-      const full = join10(dir, entry);
+      const full = join15(dir, entry);
       let stat;
       try {
         stat = statSync4(full);
@@ -15496,16 +16194,16 @@ function newestSourceMtime(root) {
       }
     }
   };
-  for (const rel of HOOK_SOURCE) walk(join10(root, rel, "src"), 0);
+  for (const rel of HOOK_SOURCE) walk(join15(root, rel, "src"), 0);
   return newest;
 }
 function facts(role, path, via) {
-  if (!path || !existsSync5(path)) {
+  if (!path || !existsSync10(path)) {
     return { role, path, exists: false, sha256: null, bytes: null, built: null, via };
   }
   try {
     const stat = statSync4(path);
-    const bytes = readFileSync9(path);
+    const bytes = readFileSync13(path);
     return {
       role,
       path,
@@ -15521,63 +16219,74 @@ function facts(role, path, via) {
 }
 function safeReaddir(dir) {
   try {
-    return readdirSync4(dir);
+    return readdirSync5(dir);
   } catch {
     return [];
   }
 }
-function fromInUseMarker(home, pid) {
-  if (!pid) return null;
-  const cache = join10(home, ".claude", "plugins", "cache");
+function pluginBundles(home, pid) {
+  const bundles = [];
+  const cache = join15(home, ".claude", "plugins", "cache");
   for (const marketplace of safeReaddir(cache)) {
-    for (const plugin of safeReaddir(join10(cache, marketplace))) {
-      for (const version of safeReaddir(join10(cache, marketplace, plugin))) {
-        const root = join10(cache, marketplace, plugin, version);
-        const core = join10(root, "hook", "dist", "core.js");
-        const marker = join10(root, ".in_use", pid);
-        if (!existsSync5(core) || !existsSync5(marker)) continue;
-        let startedAt = null;
-        try {
-          const held = JSON.parse(readFileSync9(marker, "utf8"));
-          if (held.procStart) {
-            const at2 = new Date(held.procStart);
-            if (!Number.isNaN(at2.getTime())) startedAt = at2;
+    for (const plugin of safeReaddir(join15(cache, marketplace))) {
+      for (const version of safeReaddir(join15(cache, marketplace, plugin))) {
+        const root = join15(cache, marketplace, plugin, version);
+        const core = join15(root, "hook", "dist", "core.js");
+        if (!existsSync10(core)) continue;
+        const heldBy = safeReaddir(join15(root, ".in_use")).filter((f) => !f.startsWith("."));
+        let startedAt2 = null;
+        if (pid && heldBy.includes(pid)) {
+          try {
+            const held = JSON.parse(readFileSync13(join15(root, ".in_use", pid), "utf8"));
+            if (held.procStart) {
+              const at2 = new Date(held.procStart);
+              if (!Number.isNaN(at2.getTime())) startedAt2 = at2;
+            }
+          } catch {
           }
-        } catch {
         }
-        return {
-          path: core,
-          via: `the harness's own in-use marker for pid ${pid} \u2014 ${marketplace}/${plugin} ${version}`,
-          startedAt
-        };
+        bundles.push({ root, marketplace, plugin, version, core, heldBy, startedAt: startedAt2 });
       }
     }
+  }
+  return bundles;
+}
+function fromInUseMarker(home, pid) {
+  if (!pid) return null;
+  for (const b of pluginBundles(home, pid)) {
+    if (!b.heldBy.includes(pid)) continue;
+    return {
+      path: b.core,
+      via: `the harness's own in-use marker for pid ${pid} \u2014 ${b.marketplace}/${b.plugin} ${b.version}`,
+      startedAt: b.startedAt
+    };
   }
   return null;
 }
 function fromPath(env) {
   for (const entry of (env.PATH ?? "").split(":")) {
-    if (!entry.includes(`${join10("plugins", "cache")}`) || !entry.endsWith(`${join10("x", "bin")}`.slice(1))) continue;
-    const core = join10(dirname4(entry), "hook", "dist", "core.js");
-    if (existsSync5(core)) {
-      return { path: core, via: `a plugin root on PATH (${dirname4(entry)}) \u2014 no session marker, so this is inference`, startedAt: null };
+    if (!entry.includes(`${join15("plugins", "cache")}`) || !entry.endsWith(`${join15("x", "bin")}`.slice(1))) continue;
+    const core = join15(dirname9(entry), "hook", "dist", "core.js");
+    if (existsSync10(core)) {
+      return { path: core, via: `a plugin root on PATH (${dirname9(entry)}) \u2014 no session marker, so this is inference`, startedAt: null };
     }
   }
   return null;
 }
 function fromSettings(root, env) {
-  const settingsPath = join10(root, ".claude", "settings.json");
-  if (!existsSync5(settingsPath)) return null;
+  const settingsPath = join15(root, ".claude", "settings.json");
+  if (!existsSync10(settingsPath)) return null;
   try {
-    const settings = JSON.parse(readFileSync9(settingsPath, "utf8"));
+    const settings = JSON.parse(readFileSync13(settingsPath, "utf8"));
     const cmd = settings?.hooks?.PreToolUse?.[0]?.hooks?.[0]?.command;
     if (!cmd) return null;
     const wrapper = cmd.replace(/\$\{?CLAUDE_PROJECT_DIR\}?/g, root).replace(/\$\{?CLAUDE_PLUGIN_ROOT\}?/g, env.CLAUDE_PLUGIN_ROOT ?? "").trim();
     if (!wrapper) return null;
     return {
-      path: resolve(dirname4(wrapper), "..", "dist", "core.js"),
+      path: resolve2(dirname9(wrapper), "..", "dist", "core.js"),
       via: `.claude/settings.json \u2192 ${cmd}`,
-      startedAt: null
+      startedAt: null,
+      cmd
     };
   } catch {
     return null;
@@ -15590,8 +16299,8 @@ function locateEnforcing(root, env, home) {
   if (marker) return marker;
   const declared = env.CLAUDE_PLUGIN_ROOT;
   if (declared) {
-    const core = join10(declared, "hook", "dist", "core.js");
-    if (existsSync5(core)) return { path: core, via: "CLAUDE_PLUGIN_ROOT", startedAt: null };
+    const core = join15(declared, "hook", "dist", "core.js");
+    if (existsSync10(core)) return { path: core, via: "CLAUDE_PLUGIN_ROOT", startedAt: null };
   }
   return fromPath(env) ?? fromSettings(root, env) ?? { path: null, via: "nothing on this machine names one", startedAt: null };
 }
@@ -15615,7 +16324,7 @@ function describe(b, now) {
 }
 function inspectEnforcement(root, opts = {}) {
   const env = opts.env ?? process.env;
-  const home = opts.home ?? env.HOME ?? homedir3();
+  const home = opts.home ?? env.HOME ?? homedir4();
   const now = opts.now ?? /* @__PURE__ */ new Date();
   const checks = [];
   const shallow = git(root, ["rev-parse", "--is-shallow-repository"]) === "true";
@@ -15623,8 +16332,8 @@ function inspectEnforcement(root, opts = {}) {
   const source = { rev: src?.rev ?? null, when: src?.when ?? null, shallow };
   const located = locateEnforcing(root, env, home);
   const enforcing = facts("enforcing", located.path, located.via);
-  const workspace = facts("workspace", join10(root, ...WORKSPACE_CORE), "this checkout, built by `pnpm --filter @commitcycle/hook build`");
-  const committed = facts("committed", join10(root, ...COMMITTED_CORE), "committed, and what a marketplace install downloads");
+  const workspace = facts("workspace", join15(root, ...WORKSPACE_CORE), "this checkout, built by `pnpm --filter @commitcycle/hook build`");
+  const committed = facts("committed", join15(root, ...COMMITTED_CORE), "committed, and what a marketplace install downloads");
   if (!enforcing.path) {
     checks.push({
       name: "enforcing bundle",
@@ -15654,7 +16363,7 @@ function inspectEnforcement(root, opts = {}) {
     checks.push({
       name: "built bundle vs source",
       status: "warn",
-      detail: `nothing is built at ${join10(...WORKSPACE_CORE)} in this checkout`,
+      detail: `nothing is built at ${join15(...WORKSPACE_CORE)} in this checkout`,
       fix: "A session wired to this checkout would be denied every tool call. Run `pnpm --filter @commitcycle/hook build`. (A linked worktree starts this way \u2014 dist/ is gitignored and is not carried across.)"
     });
   } else if (effective && workspace.built && workspace.built < effective.at) {
@@ -15682,7 +16391,7 @@ function inspectEnforcement(root, opts = {}) {
     checks.push({
       name: "shipped bundle vs source",
       status: "warn",
-      detail: `${join10(...COMMITTED_CORE)} is missing, so a marketplace install has no hook to run`,
+      detail: `${join15(...COMMITTED_CORE)} is missing, so a marketplace install has no hook to run`,
       fix: "Run `sh scripts/package-plugin.sh`. A plugin that claims enforcement and cannot enforce is worse than one that admits it has none."
     });
   } else if (workspace.exists && committed.sha256 === workspace.sha256) {
@@ -15692,7 +16401,7 @@ function inspectEnforcement(root, opts = {}) {
       detail: `byte-identical to the build in this checkout (sha ${short(committed.sha256)})`
     });
   } else {
-    const bundleCommit = lastCommit(root, [join10(...COMMITTED_CORE)]);
+    const bundleCommit = lastCommit(root, [join15(...COMMITTED_CORE)]);
     const verdict = source.rev && bundleCommit ? bundleCommit.rev === source.rev ? "same" : isAncestor(root, bundleCommit.rev, source.rev) === true ? "behind" : isAncestor(root, source.rev, bundleCommit.rev) === true ? "ahead" : "unknown" : "unknown";
     if (verdict === "behind") {
       const days = source.when && bundleCommit ? Math.floor((source.when.getTime() - bundleCommit.when.getTime()) / DAY) : null;
@@ -15750,14 +16459,58 @@ function inspectEnforcement(root, opts = {}) {
       fix: "Rebuilding will NOT fix this: the harness pinned that copy" + (located.startedAt ? ` when the session started at ${stamp(located.startedAt)}` : " when the session started") + ", and it is outside this repository. Restart the session \u2014 for a plugin install, reinstall or update the plugin first \u2014 and re-run this to confirm. Until then nothing you build here is enforcing anything, and every green test is green about code that is not running."
     });
   }
+  const pid = env.CLAUDE_PID ?? null;
+  const plugins = pluginBundles(home, pid);
+  const pinned = (pid ? plugins.find((b) => b.heldBy.includes(pid)) : null) ?? null;
+  const settingsLoc = fromSettings(root, env);
+  const repoReg = settingsLoc?.path && settingsLoc.cmd ? { command: settingsLoc.cmd, core: settingsLoc.path, exists: existsSync10(settingsLoc.path) } : null;
+  const registrations = { repo: repoReg, plugins, pinned };
+  const registrationChecks = [];
+  if (repoReg?.exists && plugins.length) {
+    const plug = pinned ?? [...plugins].sort((a, b) => compareVersions(b.version, a.version))[0];
+    const repoF = facts("workspace", repoReg.core, "registered by .claude/settings.json");
+    const plugF = facts("enforcing", plug.core, "the installed plugin");
+    if (repoF.sha256 && plugF.sha256) {
+      const keepOne = "Keep one: remove the PreToolUse entry from .claude/settings.json and let the plugin enforce, or `/plugin uninstall` and let the checkout enforce. Whichever you keep, restart the session \u2014 the pin is taken at start and a change here does not reach it.";
+      if (repoF.sha256 === plugF.sha256) {
+        registrationChecks.push({
+          name: "one hook, not two",
+          status: "ok",
+          detail: `two registrations are live and they are the same artifact (sha ${short(repoF.sha256)}): this repository's ${repoReg.command}, and the installed plugin ${plug.marketplace}/${plug.plugin} ${plug.version}`
+        });
+      } else {
+        registrationChecks.push({
+          name: "one hook, not two",
+          status: "fail",
+          detail: `two different hook bundles are registered for this repository at once \u2014 this checkout's ${repoReg.core} (sha ${short(repoF.sha256)}, built ${stamp(repoF.built)}, ${ageWords(repoF.built, now)}) via ${repoReg.command}, and the installed plugin ${plug.marketplace}/${plug.plugin} ${plug.version} at ${plug.core} (sha ${short(plugF.sha256)}, built ${stamp(plugF.built)}, ${ageWords(plugF.built, now)}). ` + (pinned ? `The harness pinned the plugin's for this session \u2014 that is the one deciding.` : `Nothing on this machine says which one this session pinned, so which set of rules is deciding is unknown.`),
+          fix: pinned ? `The plugin's copy answers every tool call in this session, so nothing you build in this checkout changes what is enforced \u2014 the same trap as the session/bundle line above, with a second registration rather than a second vintage. ${keepOne}` : `Run this from inside the session you want to know about (the harness sets CLAUDE_PID and stamps the plugin root it pinned). ${keepOne}`
+        });
+      }
+    }
+  }
   return {
     source,
     enforcing,
     workspace,
     committed,
     session: { pid: env.CLAUDE_PID ?? null, startedAt: located.startedAt },
-    checks
+    checks,
+    registrations,
+    registrationChecks
   };
+}
+function compareVersions(a, b) {
+  const parse = (v) => v.split(".").map((s) => {
+    const n = Number.parseInt(s, 10);
+    return Number.isNaN(n) ? 0 : n;
+  });
+  const x = parse(a);
+  const y = parse(b);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) {
+    const d = (x[i] ?? 0) - (y[i] ?? 0);
+    if (d) return d;
+  }
+  return 0;
 }
 function enforcementChecks(root, opts = {}) {
   try {
@@ -15769,6 +16522,13 @@ function enforcementChecks(root, opts = {}) {
       detail: `the age of the enforcing bundle could not be measured: ${err.message}`,
       fix: "Report this \u2014 an unmeasurable guard is the state this check exists to make visible."
     }];
+  }
+}
+function enforcementReport(root, opts = {}) {
+  try {
+    return inspectEnforcement(root, opts);
+  } catch {
+    return null;
   }
 }
 
@@ -15808,6 +16568,29 @@ async function handshakeCheck(apiUrl, fetchImpl = fetch) {
       fix: "Start the board, or fix the address. Board commands will fail until it answers."
     };
   }
+}
+async function updateCheck(apiUrl, current = CLI_VERSION, fetchImpl = fetch) {
+  const latest = await fetchLatest(apiUrl, fetchImpl);
+  if (!latest) {
+    return {
+      name: "up to date",
+      status: "ok",
+      detail: `this CLI is ${current}; the board did not report a latest version, so an update cannot be checked from here`
+    };
+  }
+  if (isBehind(current, latest)) {
+    return {
+      name: "up to date",
+      status: "warn",
+      detail: `the board's latest is ${latest} and this CLI is ${current}`,
+      fix: `Update when it suits \u2014 nothing here is blocked by it: ${updateLine(latest)}.`
+    };
+  }
+  return {
+    name: "up to date",
+    status: "ok",
+    detail: `on the latest \u2014 this CLI is ${current} and the board reports ${latest}`
+  };
 }
 async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PURE__ */ new Date()) {
   const { records: local, unreadable } = scanRecords(root);
@@ -15861,7 +16644,7 @@ async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PUR
       name: "record titles drift",
       status: "warn",
       detail: `${reworded.length} record(s) are worded differently on the board: ${reworded.slice(0, 8).join(", ")}${reworded.length > 8 ? ", \u2026" : ""}`,
-      fix: "Same work, two names. Harmless until something resolves a task by its title \u2014 push the file's wording with `cycle sync`, or edit the board to match."
+      fix: 'Same work, two names. Harmless until something resolves a task by its title \u2014 push the file\'s wording with `cycle scope <id> --title "\u2026"`, one per listed id, or edit the board to match. `cycle sync` will not do it: title wording is not a drift class it reconciles.'
     });
   }
   if (states.behind.length) {
@@ -15916,7 +16699,7 @@ async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PUR
       name: "unreadable record",
       status: "warn",
       detail: `${unreadable.length} file(s) in .zones/tasks/ carry no \`id:\`: ${unreadable.map((p) => p.split("/").pop()).slice(0, 4).join(", ")}`,
-      fix: "Nothing that walks this directory can tell which task they belong to, so every check above skipped them. CC-142 was an audit record misfiled here with `task:` instead of `id:`. Give it an id, or move it where it belongs."
+      fix: "Nothing that walks this directory can tell which task they belong to, so every check above skipped them. CC-142 was an audit record misfiled here with `task:` instead of `id:`. Give it an id, move it where it belongs \u2014 or, if it is a note rather than a record, rename it with a leading `_` and this directory will stop trying to read it."
     });
   }
   if (orphaned.length) {
@@ -15936,79 +16719,138 @@ async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PUR
   }
   return checks;
 }
-function normalise(title) {
-  let t = title.trim();
-  if (t.startsWith('"') && t.endsWith('"') || t.startsWith("'") && t.endsWith("'")) t = t.slice(1, -1);
-  return t.replace(/\\(["'])/g, "$1").replace(/\s+/g, " ").trim().toLowerCase();
+var DEPLOY_TOOLS = /\b(wrangler\s+(deploy|versions\s+deploy|pages\s+deploy)|vercel\s+(deploy|--prod)|netlify\s+deploy|firebase\s+deploy|fly(ctl)?\s+deploy|sst\s+deploy|serverless\s+deploy|eb\s+deploy|gcloud\s+run\s+deploy)\b/;
+var GUARD_CALL = /\bguard-deploy\b|\bdeploy-guard\b/;
+var SCRIPT_REF = /(?:^|[\s&|;(<>"'`])((?:\.{0,2}\/)?(?:[\w.@-]+\/)+[\w.@-]+\.(?:sh|bash|mjs|cjs|js|ts))(?=$|[\s&|;)<>"'`])/g;
+function reachesGuard(root, manifestRel, body) {
+  if (GUARD_CALL.test(body)) return "guarded";
+  const top = resolve3(root);
+  const bases = [dirname10(join16(top, manifestRel)), top];
+  let unread = false;
+  for (const match of body.matchAll(SCRIPT_REF)) {
+    const ref = match[1];
+    let read = false;
+    for (const base of bases) {
+      const candidate = resolve3(base, ref);
+      if (candidate !== top && !candidate.startsWith(top + sep)) continue;
+      let stat;
+      try {
+        stat = statSync5(candidate);
+      } catch {
+        continue;
+      }
+      if (!stat.isFile() || stat.size > 256 * 1024) continue;
+      let script;
+      try {
+        script = readFileSync14(candidate, "utf8");
+      } catch {
+        continue;
+      }
+      read = true;
+      const runnable = script.split("\n").filter((l) => !/^\s*#/.test(l)).join("\n");
+      if (GUARD_CALL.test(runnable)) return "guarded";
+      break;
+    }
+    if (!read) unread = true;
+  }
+  return unread ? "unreadable" : "unguarded";
 }
-var NOISE = /* @__PURE__ */ new Set(["the", "and", "that", "with", "for", "from", "its", "has", "had", "was", "not", "one", "this", "but", "are", "you", "can", "all", "which", "what", "when", "where", "into", "out", "off"]);
-function sameSubject(a, b) {
-  const words = (s) => new Set(normalise(s).split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !NOISE.has(w)));
-  const x = words(a);
-  const y = words(b);
-  if (!x.size || !y.size) return x.size === y.size;
-  const [small, large] = x.size <= y.size ? [x, y] : [y, x];
-  let shared = 0;
-  for (const w of small) if (large.has(w)) shared++;
-  return shared / small.size >= 0.5;
-}
-function branchExists(root, branch) {
-  if (!branch) return false;
-  for (const ref of [branch, `origin/${branch}`]) {
+function manifestPaths(root) {
+  const rels = ["package.json"];
+  for (const group of ["apps", "packages", "services"]) {
+    let entries;
     try {
-      execFileSync4("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
-      return true;
+      entries = readdirSync6(join16(root, group));
     } catch {
+      continue;
+    }
+    for (const entry of entries.sort()) {
+      if (entry.startsWith(".")) continue;
+      rels.push(`${group}/${entry}/package.json`);
     }
   }
-  return false;
+  return rels;
 }
-function grantFiles(root) {
-  try {
-    return readdirSync5(join11(root, ".zones", "state", "grants")).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
-  } catch {
-    return [];
-  }
-}
-function liveGrant(root, taskId, now) {
-  const path = join11(root, ".zones", "state", "grants", `${taskId}.json`);
-  if (!existsSync6(path)) return false;
-  try {
-    return resolveGrant(JSON.parse(readFileSync10(path, "utf8")), now).state === "active";
-  } catch {
-    return false;
-  }
-}
-var DEPLOY_TOOLS = /\b(wrangler\s+(deploy|versions\s+deploy|pages\s+deploy)|vercel\s+(deploy|--prod)|netlify\s+deploy|firebase\s+deploy|fly(ctl)?\s+deploy|sst\s+deploy|serverless\s+deploy|eb\s+deploy|gcloud\s+run\s+deploy)\b/;
 function deployChecks(root) {
-  const manifests = ["package.json", "apps/api/package.json", "apps/web/package.json", "apps/dashboard/package.json"];
   const unguarded = [];
+  const unreadable = [];
   let looked = false;
-  for (const rel of manifests) {
-    const file = join11(root, rel);
-    if (!existsSync6(file)) continue;
+  for (const rel of manifestPaths(root)) {
+    const file = join16(root, rel);
+    if (!existsSync11(file)) continue;
     try {
-      const scripts = JSON.parse(readFileSync10(file, "utf8")).scripts ?? {};
+      const scripts = JSON.parse(readFileSync14(file, "utf8")).scripts ?? {};
       looked = true;
       for (const [name, body] of Object.entries(scripts)) {
         if (!DEPLOY_TOOLS.test(body)) continue;
-        if (/(?:cc|cycle)\s+guard-deploy|deploy-guard/.test(body)) continue;
-        unguarded.push(`${rel === "package.json" ? "" : `${rel} `}${name}`);
+        const verdict = reachesGuard(root, rel, body);
+        if (verdict === "guarded") continue;
+        (verdict === "unreadable" ? unreadable : unguarded).push(`${rel === "package.json" ? "" : `${rel} `}${name}`);
       }
     } catch {
     }
   }
-  if (!looked || !unguarded.length) return [];
+  if (!looked) return [];
+  const checks = [];
+  if (unguarded.length) {
+    checks.push({
+      name: "deploy guard",
+      status: "warn",
+      detail: `${unguarded.length} deploy script(s) can publish from any branch: ${unguarded.join(", ")}`,
+      fix: 'Most hosts build every branch into the same place by default, so a push to a feature branch becomes a production deploy. Put the guard in front: "deploy": "cycle guard-deploy && <your deploy command>". It exits 2 and deploys nothing when the branch is not your trunk, and CC_ALLOW_BRANCH_DEPLOY=1 is the way to mean it on purpose.'
+    });
+  }
+  if (unreadable.length) {
+    checks.push({
+      name: "deploy guard",
+      status: "warn",
+      detail: `${unreadable.length} deploy script(s) hand off to a script this check could not read: ${unreadable.join(", ")}`,
+      fix: 'They may well be guarded \u2014 the hand-off leaves the repository, or the file is not there, so nothing here can say either way, and "could not check" must never be printed as "you are fine". Put `cycle guard-deploy` in the package.json script itself, or keep the wrapper inside the repository where this can follow it one step.'
+    });
+  }
+  return checks;
+}
+function agentsMergeDriverChecks(root) {
+  const attrsPath = join16(root, ".gitattributes");
+  let mapped = false;
+  try {
+    mapped = existsSync11(attrsPath) && CC_AGENTS_MAPPING.test(readFileSync14(attrsPath, "utf8"));
+  } catch {
+    return [];
+  }
+  if (!mapped) {
+    if (!existsSync11(join16(root, ".zones", "zones.yml"))) return [];
+    return [{
+      name: "AGENTS.md merge driver",
+      status: "warn",
+      detail: ".gitattributes does not map AGENTS.md to the cc-agents merge driver",
+      fix: "A branch still carrying a cc:begin/cc:end block will conflict with main on merge (CC-543). `cycle init` writes the mapping and registers the driver; or add the line `AGENTS.md merge=cc-agents` to .gitattributes and run `cycle sync`, which registers the config whenever the mapping is present (CC-590)."
+    }];
+  }
+  let driver = "";
+  try {
+    driver = execFileSync7("git", ["-C", root, "config", "--get", "merge.cc-agents.driver"], {
+      stdio: ["ignore", "pipe", "ignore"]
+    }).toString().trim();
+  } catch {
+  }
+  if (driver) {
+    return [{
+      name: "AGENTS.md merge driver",
+      status: "ok",
+      detail: "cc-agents is mapped and configured \u2014 the cc-managed block will not conflict on merge"
+    }];
+  }
   return [{
-    name: "deploy guard",
+    name: "AGENTS.md merge driver",
     status: "warn",
-    detail: `${unguarded.length} deploy script(s) can publish from any branch: ${unguarded.join(", ")}`,
-    fix: 'Most hosts build every branch into the same place by default, so a push to a feature branch becomes a production deploy. Put the guard in front: "deploy": "cycle guard-deploy && <your deploy command>". It exits 2 and deploys nothing when the branch is not your trunk, and CC_ALLOW_BRANCH_DEPLOY=1 is the way to mean it on purpose.'
+    detail: ".gitattributes maps AGENTS.md to cc-agents, but merge.cc-agents.driver is not set in this clone",
+    fix: 'Without the driver, git falls back to a normal merge and AGENTS.md\'s cc:begin/cc:end block conflicts on every PR again (CC-543). `cycle sync` registers it on every pass now (CC-590) \u2014 run that, or set it by hand: `git config merge.cc-agents.driver "node scripts/merge-agents.mjs %O %A %B"` (no vendored script? the binary carries the driver: "cycle merge-driver %O %A %B"). Note it is `.driver` git consults \u2014 `.name` alone registers nothing.'
   }];
 }
-function runDoctor(root, now = /* @__PURE__ */ new Date()) {
+function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
   const checks = [];
-  if (!existsSync6(join11(root, ".git"))) {
+  if (!existsSync11(join16(root, ".git"))) {
     return [{
       name: "git repository",
       status: "fail",
@@ -16017,9 +16859,9 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
     }];
   }
   checks.push({ name: "git repository", status: "ok", detail: root });
-  const zonesPath = join11(root, ".zones", "zones.yml");
+  const zonesPath = join16(root, ".zones", "zones.yml");
   let zonesOk = false;
-  if (!existsSync6(zonesPath)) {
+  if (!existsSync11(zonesPath)) {
     checks.push({
       name: "zone map",
       status: "fail",
@@ -16027,7 +16869,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       fix: "Run `cycle init`. Without it CC has no idea what is protected, so writes are denied."
     });
   } else {
-    const parsed = parseZonesFile(readFileSync10(zonesPath, "utf8"));
+    const parsed = parseZonesFile(readFileSync14(zonesPath, "utf8"));
     if (!parsed.ok) {
       checks.push({
         name: "zone map",
@@ -16058,8 +16900,9 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       }
     }
   }
-  const settingsPath = join11(root, ".claude", "settings.json");
-  if (!existsSync6(settingsPath)) {
+  const report = enforcementReport(root, { now, ...opts });
+  const settingsPath = join16(root, ".claude", "settings.json");
+  if (!existsSync11(settingsPath)) {
     checks.push({
       name: "hook installed",
       status: "fail",
@@ -16068,7 +16911,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
     });
   } else {
     try {
-      const settings = JSON.parse(readFileSync10(settingsPath, "utf8"));
+      const settings = JSON.parse(readFileSync14(settingsPath, "utf8"));
       const cmd = settings?.hooks?.PreToolUse?.[0]?.hooks?.[0]?.command;
       if (!cmd) {
         checks.push({
@@ -16079,7 +16922,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
         });
       } else {
         const resolved2 = cmd.replace("$CLAUDE_PROJECT_DIR", root);
-        const there = existsSync6(resolved2);
+        const there = existsSync11(resolved2);
         checks.push({
           name: "hook installed",
           status: there ? "ok" : "fail",
@@ -16115,9 +16958,10 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       });
     }
   }
-  checks.push(...enforcementChecks(root, { now }));
+  checks.push(...report?.checks ?? enforcementChecks(root, { now }));
+  checks.push(...report?.registrationChecks ?? []);
   const branch = currentBranch(root);
-  const taskId = branch ? /^(?:task|spike|fix|feat)\/([A-Z]+-\d+)/.exec(branch)?.[1] ?? null : null;
+  const taskId = taskIdFrom(branch);
   if (!branch) {
     checks.push({
       name: "active task",
@@ -16133,8 +16977,8 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       fix: "Writes are denied here by design. Branch as task/CC-123-something to work."
     });
   } else {
-    const grantPath = join11(root, ".zones", "state", "grants", `${taskId}.json`);
-    if (!existsSync6(grantPath)) {
+    const grantPath = join16(root, ".zones", "state", "grants", `${taskId}.json`);
+    if (!existsSync11(grantPath)) {
       checks.push({
         name: "active task",
         status: "warn",
@@ -16143,7 +16987,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
       });
     } else {
       try {
-        const state = resolveGrant(JSON.parse(readFileSync10(grantPath, "utf8")), now);
+        const state = resolveGrant(JSON.parse(readFileSync14(grantPath, "utf8")), now);
         if (state.state === "expired") {
           checks.push({
             name: "active task",
@@ -16170,6 +17014,21 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
             fix: "Nothing here creates branches \u2014 the gate derives a name and a person types one, so the two can drift apart silently. Correct the task record to the branch that exists, before a manifest gets computed against the wrong one."
           });
         }
+        if (state.state !== "none" && state.grant.holder) {
+          let stale = false;
+          try {
+            stale = holderLiveness(root, state.grant.holder.path) === "stale";
+          } catch {
+          }
+          if (stale) {
+            checks.push({
+              name: "grant holder is live",
+              status: "warn",
+              detail: `the grant for ${taskId} names a holder git cannot find: ${state.grant.holder.path}`,
+              fix: `That checkout is prunable or gone, so nothing is running under this grant where it says it is. This is a report, not a revocation \u2014 the grant still holds (the filesystem is authoritative, D-50). If the work truly moved on, \`cycle pause ${taskId} --reason "..."\` hands the grant back.`
+            });
+          }
+        }
       } catch {
         checks.push({
           name: "active task",
@@ -16182,7 +17041,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
   }
   if (zonesOk) {
     try {
-      execFileSync4("git", ["-C", root, "status", "--porcelain"], { stdio: ["ignore", "pipe", "ignore"] });
+      execFileSync7("git", ["-C", root, "status", "--porcelain"], { stdio: ["ignore", "pipe", "ignore"] });
       checks.push({ name: "guard prerequisites", status: "ok", detail: "the working tree can be read" });
     } catch {
       checks.push({
@@ -16196,7 +17055,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
   let hasTimeout = false;
   for (const bin of ["timeout", "gtimeout"]) {
     try {
-      execFileSync4("command", ["-v", bin], { stdio: "ignore", shell: true });
+      execFileSync7("command", ["-v", bin], { stdio: "ignore", shell: true });
       hasTimeout = true;
       break;
     } catch {
@@ -16211,6 +17070,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
     });
   }
   checks.push(...deployChecks(root));
+  checks.push(...agentsMergeDriverChecks(root));
   const board2 = resolveBoard(root);
   if (!board2.tenant) {
     checks.push({
@@ -16235,7 +17095,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date()) {
   const signedInAs = board2.apiUrl ? savedIdentity(board2.apiUrl) : void 0;
   let gitIdentity;
   try {
-    gitIdentity = execFileSync4("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || void 0;
+    gitIdentity = execFileSync7("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || void 0;
   } catch {
   }
   if (signedInAs && gitIdentity && signedInAs !== gitIdentity) {
@@ -16282,8 +17142,18 @@ Working, with ${warns} thing(s) worth knowing about.` : "\nEverything checks out
 }
 
 // src/status.ts
-import { existsSync as existsSync7, readFileSync as readFileSync11 } from "node:fs";
-import { join as join12 } from "node:path";
+import { existsSync as existsSync12, readFileSync as readFileSync15, realpathSync as realpathSync2 } from "node:fs";
+import { join as join17 } from "node:path";
+function samePath(a, b) {
+  const r = (p) => {
+    try {
+      return realpathSync2(p);
+    } catch {
+      return p;
+    }
+  };
+  return r(a) === r(b);
+}
 function runStatus(root, now = /* @__PURE__ */ new Date()) {
   const out = [];
   const resolved2 = currentBranch(root);
@@ -16298,10 +17168,10 @@ function runStatus(root, now = /* @__PURE__ */ new Date()) {
   let spike = false;
   const deferred = [];
   if (taskId) {
-    const grantPath = join12(root, ".zones", "state", "grants", `${taskId}.json`);
-    if (existsSync7(grantPath)) {
+    const grantPath = join17(root, ".zones", "state", "grants", `${taskId}.json`);
+    if (existsSync12(grantPath)) {
       try {
-        const state = resolveGrant(JSON.parse(readFileSync11(grantPath, "utf8")), now);
+        const state = resolveGrant(JSON.parse(readFileSync15(grantPath, "utf8")), now);
         if (state.state === "active") {
           open = state.open;
           expiresAt = state.grant.expires;
@@ -16321,6 +17191,16 @@ from the branch name. Fix the record before closing \u2014 a manifest computed h
 would be attributed to work the grant never covered.`
           );
         }
+        const holder = state.state !== "none" ? state.grant.holder : void 0;
+        if (holder && !samePath(holder.path, root)) {
+          deferred.push(
+            `
+This grant is held by another checkout:
+  holder  ${holder.path} (on ${holder.branch})
+  here    ${root}
+The grant was issued for that directory; write access lives where it is held.`
+          );
+        }
       } catch {
       }
     }
@@ -16329,12 +17209,12 @@ would be attributed to work the grant never covered.`
     out.push(`Mode     spike \u2014 the database schema stays closed whatever is approved`);
   }
   out.push(...deferred);
-  const zonesPath = join12(root, ".zones", "zones.yml");
-  if (!existsSync7(zonesPath)) {
+  const zonesPath = join17(root, ".zones", "zones.yml");
+  if (!existsSync12(zonesPath)) {
     out.push("\nNo zone map. Run `cycle init`.");
     return out.join("\n");
   }
-  const parsed = parseZonesFile(readFileSync11(zonesPath, "utf8"));
+  const parsed = parseZonesFile(readFileSync15(zonesPath, "utf8"));
   if (!parsed.ok) {
     out.push(`
 The zone map is invalid: ${parsed.issues[0]?.message}`);
@@ -16357,21 +17237,521 @@ The zone map is invalid: ${parsed.issues[0]?.message}`);
   return out.join("\n");
 }
 
-// src/protect.ts
+// src/handoff.ts
+import { existsSync as existsSync14, mkdirSync as mkdirSync8, readdirSync as readdirSync8, readFileSync as readFileSync17, writeFileSync as writeFileSync11 } from "node:fs";
+import { basename as basename2, dirname as dirname11, isAbsolute as isAbsolute3, join as join19, relative as relative5, resolve as resolve4 } from "node:path";
+
+// src/playbooks.ts
 var import_yaml2 = __toESM(require_dist(), 1);
-import { readFileSync as readFileSync12, writeFileSync as writeFileSync6 } from "node:fs";
-import { join as join13 } from "node:path";
+import { existsSync as existsSync13, readdirSync as readdirSync7, readFileSync as readFileSync16, writeFileSync as writeFileSync10 } from "node:fs";
+import { join as join18 } from "node:path";
+var REQUIRED_SECTIONS = [
+  "## What an agent must know",
+  "## Critical decisions",
+  "## Known gaps",
+  "## Feed rule"
+];
+var NAME_RULES = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+var CITATION = /\b(D-\d+|CC-\d+|E\d+)\b|§|\.[a-z]{2,8}\b/;
+function scanPlaybooks(root) {
+  const dir = join18(root, ".zones", "playbooks");
+  if (!existsSync13(dir)) return null;
+  const warnings = [];
+  const books = [];
+  const files = readdirSync7(dir).filter((f) => f.endsWith(".md") && f !== "README.md").sort();
+  for (const file of files) {
+    const rel = `.zones/playbooks/${file}`;
+    const raw = readFileSync16(join18(dir, file), "utf8");
+    const fm = parseFrontmatter(raw);
+    if (!fm) {
+      warnings.push(`${rel} has no frontmatter \u2014 not a playbook the loader can trust`);
+      continue;
+    }
+    const topic = str(fm.data.topic) ?? file.replace(/\.md$/, "");
+    const name = str(fm.data.name);
+    const description = str(fm.data.description);
+    const status = str(fm.data.status) ?? "seeded";
+    if (!name) warnings.push(`${rel}: no "name" in the frontmatter (the compiled view's identity \u2014 docs/07 Rule 1)`);
+    else if (name !== topic) warnings.push(`${rel}: name "${name}" \u2260 topic "${topic}" \u2014 the validator asserts they match`);
+    else if (!NAME_RULES.test(name) || name.length > 64) warnings.push(`${rel}: name "${name}" breaks the skills name rules (lowercase, hyphens, \u226464)`);
+    if (!description) warnings.push(`${rel}: no "description" \u2014 the compiled view would have no routing signal`);
+    else if (description.length > 1024) warnings.push(`${rel}: description is ${description.length} chars \u2014 the skills spec caps it at 1024`);
+    for (const heading of REQUIRED_SECTIONS) {
+      if (!fm.body.split("\n").some((l) => l.startsWith(heading))) {
+        warnings.push(`${rel}: missing required section "${heading}" (docs/07 Rule 1)`);
+      }
+    }
+    for (const bullet of claimBullets(fm.body)) {
+      if (!CITATION.test(bullet)) {
+        warnings.push(`${rel}: uncited claim \u2014 "${bullet.slice(0, 60)}\u2026" (every claim carries a receipt, or it stays out; warn-only by rule)`);
+      }
+    }
+    books.push({ file: rel, topic, name, description, status, display: displayName(fm.body, topic) });
+  }
+  return { books, warnings };
+}
+function writePlaybooksReadme(root, scan) {
+  const path = join18(root, ".zones", "playbooks", "README.md");
+  const active = scan.books.filter((b) => b.status !== "archived");
+  const rows = active.map((b) => `| ${b.display} | [${b.topic}.md](${b.topic}.md) |`);
+  const next = [
+    "# Playbooks",
+    "",
+    "Per-topic, per-project agent context \u2014 seeded by the first audit of this",
+    "codebase (CC-107, 2026-08-08), fed by every close that learns something.",
+    "Contract and lifecycle: [docs/07-playbooks.md](../../docs/07-playbooks.md)",
+    "(D-45, DECIDED \u2014 rev 3; the analysis record is docs/08-evolving-playbooks.md).",
+    "",
+    "<!-- The table is generated by cycle sync from the playbook files \u2014 edit them, not this. -->",
+    "",
+    "Before working a task, read the playbook for each of its declared topics:",
+    "",
+    "| Topic | File |",
+    "|---|---|",
+    ...rows,
+    "",
+    "Playbooks are Layer 1 class: advisory context. They never override",
+    "`zones.yml`, the gate, or a decision row \u2014 they cite them.",
+    ""
+  ].join("\n");
+  const current = existsSync13(path) ? readFileSync16(path, "utf8") : "";
+  if (current === next) return "unchanged";
+  writeFileSync10(path, next);
+  return "updated";
+}
+function parseFrontmatter(raw) {
+  if (!raw.startsWith("---\n")) return null;
+  const end = raw.indexOf("\n---\n", 4);
+  if (end < 0) return null;
+  try {
+    const data = (0, import_yaml2.parse)(raw.slice(4, end + 1));
+    return data && typeof data === "object" ? { data, body: raw.slice(end + 5) } : null;
+  } catch {
+    return null;
+  }
+}
+function str(v) {
+  return typeof v === "string" && v.trim() ? v.trim() : void 0;
+}
+function displayName(body, topic) {
+  const h1 = body.split("\n").find((l) => l.startsWith("# "));
+  const m = h1?.match(/^#\s+(.+?)\s+playbook\b/i);
+  return m?.[1] ?? topic;
+}
+function claimBullets(body) {
+  return [
+    ...sectionBullets(body, "## What an agent must know"),
+    ...sectionBullets(body, "## Feed rule")
+  ];
+}
+function sectionBullets(body, heading) {
+  const lines = body.split("\n");
+  const start = lines.findIndex((l) => l.startsWith(heading));
+  if (start < 0) return [];
+  const bullets = [];
+  let current = null;
+  for (let i = start + 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.startsWith("## ")) break;
+    if (line.startsWith("- ")) {
+      if (current) bullets.push(current.join(" "));
+      current = [line.slice(2)];
+    } else if (current && /^\s+\S/.test(line)) {
+      current.push(line.trim());
+    } else if (current) {
+      bullets.push(current.join(" "));
+      current = null;
+    }
+  }
+  if (current) bullets.push(current.join(" "));
+  return bullets;
+}
+
+// src/handoff.ts
+var LIVE = /* @__PURE__ */ new Set(["Todo", "In Progress", "In Review"]);
+var clip = (s, max = 150) => {
+  const flat = s.replace(/\s+/g, " ").trim();
+  return flat.length <= max ? flat : `${flat.slice(0, max - 1).trimEnd()}\u2026`;
+};
+var cell = (s, max = 150) => clip(s, max).split("|").join("\\|");
+var idNum = (id) => Number(/-(\d+)$/.exec(id)?.[1] ?? 0);
+function scanAudits(root) {
+  const dir = join19(root, ".zones", "audit");
+  const audits = [];
+  const missingTask = [];
+  const unreadable = [];
+  let names;
+  try {
+    names = readdirSync8(dir).filter((f) => f.endsWith(".md"));
+  } catch {
+    return { audits, missingTask, unreadable };
+  }
+  for (const name of names.sort()) {
+    const rel = `.zones/audit/${name}`;
+    let head;
+    try {
+      head = readFileSync17(join19(dir, name), "utf8").slice(0, 4e3);
+    } catch {
+      unreadable.push(rel);
+      continue;
+    }
+    const task = /^task:[ \t]*(\S+)[ \t]*$/m.exec(head)?.[1];
+    if (!task) {
+      missingTask.push(rel);
+      continue;
+    }
+    audits.push({
+      file: rel,
+      task,
+      title: /^title:[ \t]*(.+)$/m.exec(head)?.[1]?.trim().replace(/^"|"$/g, ""),
+      closed: /^closed:[ \t]*(.+)$/m.exec(head)?.[1]?.trim()
+    });
+  }
+  return { audits, missingTask, unreadable };
+}
+function sectionFirstParagraph(text, heading) {
+  const lines = text.split("\n");
+  const at2 = lines.findIndex((l) => l.startsWith(heading));
+  if (at2 < 0) return null;
+  let i = at2 + 1;
+  while (i < lines.length && lines[i].trim() === "") i++;
+  const para = [];
+  while (i < lines.length && lines[i].trim() !== "" && !lines[i].startsWith("#")) {
+    para.push(lines[i].trim());
+    i++;
+  }
+  return para.length ? para.join(" ") : null;
+}
+function firstSentence(text) {
+  const flat = text.replace(/\s+/g, " ").trim();
+  const m = /^.*?[.!?](?=\s|$)/.exec(flat);
+  return m ? m[0] : flat;
+}
+function playbookUpdated(root, file) {
+  try {
+    const head = readFileSync17(join19(root, file), "utf8").slice(0, 2e3);
+    return /^updated:[ \t]*(.+)$/m.exec(head)?.[1]?.trim() ?? "\u2014";
+  } catch {
+    return "\u2014";
+  }
+}
+async function runHandoff(opts) {
+  const root = opts.root;
+  const now = opts.now ?? /* @__PURE__ */ new Date();
+  const today = now.toISOString().slice(0, 10);
+  const closedN = opts.closed ?? 10;
+  const counts = {
+    live: 0,
+    openDecisions: 0,
+    recentlyClosed: 0,
+    dangling: 0,
+    doneWithoutAudit: 0,
+    unreadable: 0
+  };
+  const none = {
+    ok: false,
+    text: "",
+    ownWriteRecorded: false,
+    liveSource: "none",
+    counts
+  };
+  let target = null;
+  if (opts.out !== void 0) {
+    target = isAbsolute3(opts.out) ? opts.out : resolve4(root, opts.out);
+    const insideZones = relative5(resolve4(root, ".zones"), target);
+    if (insideZones === "" || !insideZones.startsWith("..")) {
+      return {
+        ...none,
+        refusal: "--out must not point into .zones/ \u2014 a briefing written there would be scanned,\ncounted and gated by the checks it describes. `cycle handoff --out HANDOFF.md`\nwrites it at the repository root instead. Nothing was written."
+      };
+    }
+  }
+  const cannot = [];
+  let liveSource = "none";
+  let boardRows = [];
+  if (opts.offline) {
+    cannot.push("the board was not asked (--offline)");
+  } else if (!opts.board) {
+    cannot.push("no board is configured (no api_url + tenant in .zones/board.json or the environment) \u2014 the board was not asked");
+  } else {
+    try {
+      const r = await boardCall(
+        { apiUrl: opts.board.apiUrl, tenant: opts.board.tenant, repo: opts.board.repo, token: opts.board.token, fetchImpl: opts.fetchImpl },
+        "/tasks"
+      );
+      if (r.ok) {
+        boardRows = r.body.tasks ?? [];
+        liveSource = "board";
+      } else {
+        cannot.push(`the board could not answer: ${r.message}`);
+      }
+    } catch (err) {
+      cannot.push(`the board is unreachable (${err.message})`);
+    }
+  }
+  const rec = scanRecords(root);
+  const recordRows = [...rec.records.values()];
+  let live = [];
+  if (liveSource === "board") {
+    live = boardRows.filter((t) => LIVE.has(t.state)).map((t) => ({
+      id: t.id,
+      state: t.state,
+      owner: t.owner ?? "\u2014",
+      branch: t.branch ?? "\u2014",
+      since: (t.created_at ?? "").slice(0, 10) || "\u2014"
+    }));
+  } else {
+    liveSource = "records";
+    live = recordRows.filter((r) => LIVE.has(r.state)).map((r) => ({ id: r.id, state: r.state, owner: "\u2014", branch: "\u2014", since: "\u2014" }));
+    cannot.push(
+      "Live work above is the record files' state, not the board's \u2014 a record file can be stale, and file state must never be read as board state"
+    );
+  }
+  live.sort((a, b) => idNum(a.id) - idNum(b.id));
+  counts.live = live.length;
+  const agentsPath = join19(root, "AGENTS.md");
+  const agentsRaw = existsSync14(agentsPath) ? readFileSync17(agentsPath, "utf8") : null;
+  const layer1 = agentsRaw ? CC_BLOCK.exec(agentsRaw)?.[0] ?? null : null;
+  const zonesPath = join19(root, ".zones", "zones.yml");
+  let zones = null;
+  let zonesInvalid = null;
+  if (existsSync14(zonesPath)) {
+    const parsed = parseZonesFile(readFileSync17(zonesPath, "utf8"));
+    if (parsed.ok) {
+      zones = parsed.value.zones.map((z) => ({
+        id: z.id,
+        policy: z.default_policy,
+        owner: z.owner ?? "\u2014",
+        paths: z.paths.join(", ")
+      }));
+    } else {
+      zonesInvalid = parsed.issues[0]?.message ?? "unparseable";
+      cannot.push(`.zones/zones.yml is invalid (${zonesInvalid}) \u2014 the zone map could not be read; \`cycle doctor\` says more`);
+    }
+  }
+  const decisionLogPath = join19(root, "docs", "01-decisiones.md");
+  const decisionLog = existsSync14(decisionLogPath) ? readFileSync17(decisionLogPath, "utf8") : null;
+  const proposedRows = [];
+  const decisionIds = /* @__PURE__ */ new Set();
+  if (decisionLog) {
+    for (const line of decisionLog.split("\n")) {
+      const m = /^\|\s*(D-\d+[^|]*?)\s*\|([^|]*)\|([^|]*)\|/.exec(line);
+      if (!m) continue;
+      decisionIds.add(/D-\d+/.exec(m[1])[0]);
+      if (m[3].trim().startsWith("PROPOSED")) proposedRows.push({ id: m[1], text: m[2].trim() });
+    }
+  }
+  const decisionsDir = join19(root, ".zones", "decisions");
+  const decisionFiles = [];
+  const decisionsUnreadable = [];
+  if (existsSync14(decisionsDir)) {
+    for (const name of readdirSync8(decisionsDir).filter((f) => f.endsWith(".md")).sort()) {
+      const rel = `.zones/decisions/${name}`;
+      try {
+        const raw = readFileSync17(join19(decisionsDir, name), "utf8");
+        const status = /^- Status:[ \t]*(.+)$/m.exec(raw)?.[1]?.trim();
+        if (!status) {
+          decisionsUnreadable.push(rel);
+          continue;
+        }
+        const title = /^#\s+(.+)$/m.exec(raw)?.[1]?.trim() ?? name;
+        decisionFiles.push({ file: rel, title, status });
+      } catch {
+        decisionsUnreadable.push(rel);
+      }
+    }
+  }
+  const openFiles = decisionFiles.filter((d) => /^propos/i.test(d.status));
+  counts.openDecisions = proposedRows.length + openFiles.length;
+  const auditScan = scanAudits(root);
+  const recent = auditScan.audits.slice().sort((a, b) => (b.closed ?? "").localeCompare(a.closed ?? "") || idNum(b.task ?? "") - idNum(a.task ?? "")).slice(0, closedN);
+  counts.recentlyClosed = recent.length;
+  const closedLines = recent.map((a) => {
+    const id = a.task;
+    const recordPath = join19(root, ".zones", "tasks", `${id}.md`);
+    if (existsSync14(recordPath)) {
+      try {
+        const para = sectionFirstParagraph(readFileSync17(recordPath, "utf8"), "## Result");
+        if (para) return { id, closed: a.closed ?? "\u2014", label: "result", line: clip(para) };
+      } catch {
+      }
+    }
+    try {
+      const asked = sectionFirstParagraph(readFileSync17(join19(root, a.file), "utf8"), "## What was asked");
+      if (asked) return { id, closed: a.closed ?? "\u2014", label: "asked", line: clip(firstSentence(asked)) };
+    } catch {
+    }
+    return { id, closed: a.closed ?? "\u2014", label: "title", line: clip(a.title ?? id) };
+  });
+  const scan = scanPlaybooks(root);
+  const books = (scan?.books ?? []).filter((b) => b.status !== "archived");
+  const alwaysOn = books.filter((b) => !TOPICS.includes(b.topic));
+  if (!alwaysOn.length) {
+    cannot.push("no always-on playbook \u2014 no scanned playbook has a topic outside the board taxonomy (D-60), so nothing loads for every task");
+  }
+  const doneWithoutAudit = recordRows.filter((r) => r.state === "Done" && !existsSync14(join19(root, ".zones", "audit", `${r.id}.md`))).map((r) => r.id).sort((a, b) => idNum(a) - idNum(b));
+  counts.doneWithoutAudit = doneWithoutAudit.length;
+  const noDecisionLog = !decisionLog && !existsSync14(decisionsDir);
+  if (noDecisionLog) cannot.push("no decision log in this repository \u2014 neither docs/01-decisiones.md nor .zones/decisions/ exists");
+  const label2 = opts.board ? `${opts.board.tenant}/${opts.board.repo}` : basename2(root);
+  const out = [];
+  out.push(`# Day 1 \u2014 ${label2}`);
+  out.push("");
+  out.push(
+    `Generated by \`cycle handoff\` on ${today}. Nothing here is authored: every line is`,
+    "read from this repository or from the board it answers to. Regenerate it rather",
+    "than editing it."
+  );
+  out.push("", "## Read these first", "");
+  let n = 0;
+  const item = (line) => {
+    out.push(`${++n}. ${line}`);
+  };
+  if (agentsRaw) item("AGENTS.md \u2014 Layer 1: how work starts here (its CC block is reproduced below)");
+  for (const b of alwaysOn) item(`${b.file} \u2014 the always-on playbook: read it whatever the task touches (D-60)`);
+  if (decisionLog) item("docs/01-decisiones.md \u2014 the decision log; PROPOSED rows are waiting on an owner");
+  item("The live tasks below \u2014 what is running right now");
+  if (auditScan.audits.length) item(`The ${Math.min(closedN, auditScan.audits.length)} most recent audit records under .zones/audit/ \u2014 how work actually closes here`);
+  if (!n) out.push("Nothing to point at \u2014 this repository has no Layer 1, no playbooks and no audit trail yet.");
+  out.push("", "## How work starts here", "");
+  if (layer1) {
+    out.push("The committed AGENTS.md block, byte-for-byte \u2014 these bytes are what the next agent loads:", "");
+    out.push(layer1);
+  } else {
+    out.push("This repository has no Layer 1 \u2014 no CC block in AGENTS.md. `cycle init` writes one.");
+  }
+  out.push("", "## The zone map", "");
+  if (zones && zones.length) {
+    out.push("| Zone | Policy | Owner | Paths |");
+    out.push("|---|---|---|---|");
+    for (const z of zones) out.push(`| ${cell(z.id)} | ${cell(z.policy)} | ${cell(z.owner)} | ${cell(z.paths)} |`);
+    out.push("", "Everything not listed is unprotected inside an active task \u2014 and closed without one.");
+  } else if (zonesInvalid) {
+    out.push(`The zone map exists and does not parse (${zonesInvalid}) \u2014 writes are denied until it does. \`cycle doctor\` says more.`);
+  } else {
+    out.push("Nothing is protected here \u2014 no .zones/zones.yml. `cycle init` proposes one.");
+  }
+  out.push("", "## Live work", "");
+  if (live.length) {
+    out.push("| Task | State | Owner | Branch | Since |");
+    out.push("|---|---|---|---|---|");
+    for (const t of live) out.push(`| ${cell(t.id)} | ${cell(t.state)} | ${cell(t.owner)} | ${cell(t.branch)} | ${cell(t.since)} |`);
+    if (liveSource === "records") {
+      out.push("", "  note: these states are the record files', not the board's \u2014 see the last section.");
+    }
+  } else {
+    out.push(liveSource === "board" ? "Nothing is live \u2014 the board holds no task in Todo, In Progress or In Review." : "Nothing is live in the record files \u2014 no task record in Todo, In Progress or In Review, and the board was not asked.");
+  }
+  out.push("", "## Open decisions", "");
+  if (noDecisionLog) {
+    out.push("No decision log in this repository \u2014 neither docs/01-decisiones.md nor .zones/decisions/ exists.");
+  } else {
+    if (decisionLog) {
+      if (proposedRows.length) {
+        out.push(`docs/01-decisiones.md \u2014 ${proposedRows.length} PROPOSED row(s) waiting on an owner:`, "");
+        for (const d of proposedRows) out.push(`- ${d.id} \u2014 ${clip(d.text, 120)}`);
+      } else {
+        out.push("docs/01-decisiones.md \u2014 no PROPOSED rows; every decision there is decided or revised.");
+      }
+    }
+    if (existsSync14(decisionsDir)) {
+      if (decisionLog) out.push("");
+      if (openFiles.length) {
+        out.push(`.zones/decisions/ \u2014 ${openFiles.length} still open:`, "");
+        for (const d of openFiles) out.push(`- ${clip(d.title, 100)} \u2014 Status: ${clip(d.status, 60)} (${d.file})`);
+      } else {
+        out.push(`.zones/decisions/ \u2014 ${decisionFiles.length} decision file(s), none waiting: accepted and rejected are both records (D-46).`);
+      }
+    }
+  }
+  out.push("", "## Recently closed", "");
+  if (closedLines.length) {
+    out.push(`The audit set under .zones/audit/ is authoritative for closed work \u2014 ${auditScan.audits.length} record(s); the ${closedLines.length} most recent:`, "");
+    for (const c of closedLines) {
+      out.push(`- ${c.id} (closed ${c.closed}) \u2014 ${c.label}: ${c.line}`);
+    }
+  } else {
+    out.push("No audit records under .zones/audit/ \u2014 nothing has closed here yet, or closes never wrote their record.");
+  }
+  out.push("", "## Playbooks", "");
+  if (books.length) {
+    out.push("| Topic | Status | Last fed | File |");
+    out.push("|---|---|---|---|");
+    for (const b of books.slice().sort((a, z) => a.topic.localeCompare(z.topic))) {
+      out.push(`| ${cell(b.topic)} | ${cell(b.status)} | ${cell(playbookUpdated(root, b.file))} | ${cell(b.file)} |`);
+    }
+    if (alwaysOn.length) {
+      out.push("", `Always-on (D-60): ${alwaysOn.map((b) => b.file).join(", ")} \u2014 its topic is outside the board taxonomy, so no task declares it; read it regardless.`);
+    }
+  } else {
+    out.push("No playbooks in this repository. `cycle seed` drafts them from the codebase, as choices \u2014 claims cite real files or are dropped.");
+  }
+  const emitted = out.join("\n");
+  const liveIds = new Set(boardRows.map((t) => t.id));
+  const dangling = [];
+  for (const id of new Set(emitted.match(/\b(?:CC|D)-\d+\b/g) ?? [])) {
+    const found = id.startsWith("D-") ? decisionIds.has(id) : existsSync14(join19(root, ".zones", "tasks", `${id}.md`)) || existsSync14(join19(root, ".zones", "audit", `${id}.md`)) || liveIds.has(id);
+    if (!found) dangling.push(id);
+  }
+  dangling.sort((a, b) => a.localeCompare(b, void 0, { numeric: true }));
+  counts.dangling = dangling.length;
+  const unreadable = [];
+  if (rec.unreadable.length) {
+    unreadable.push(`${rec.unreadable.length} task record(s) with no readable id: frontmatter`);
+  }
+  if (auditScan.missingTask.length) {
+    unreadable.push(`${auditScan.missingTask.length} audit record(s) with no task: key (${auditScan.missingTask.join(", ")}) \u2014 excluded from Recently closed`);
+  }
+  if (auditScan.unreadable.length) {
+    unreadable.push(`${auditScan.unreadable.length} audit record(s) that could not be read`);
+  }
+  if (decisionsUnreadable.length) {
+    unreadable.push(`${decisionsUnreadable.length} decision file(s) with no "- Status:" bullet (${decisionsUnreadable.join(", ")})`);
+  }
+  counts.unreadable = rec.unreadable.length + auditScan.missingTask.length + auditScan.unreadable.length + decisionsUnreadable.length;
+  if (dangling.length) {
+    const shown = dangling.slice(0, 12).join(", ");
+    cannot.push(`${dangling.length} cited id(s) with no target in this repository: ${shown}${dangling.length > 12 ? ", \u2026" : ""}`);
+  }
+  if (doneWithoutAudit.length) {
+    const shown = doneWithoutAudit.slice(0, 12).join(", ");
+    cannot.push(`${doneWithoutAudit.length} task record(s) Done on disk with no audit record: ${shown}${doneWithoutAudit.length > 12 ? ", \u2026" : ""}`);
+  }
+  cannot.push(...unreadable);
+  out.push("", "## What this briefing could not answer", "");
+  if (cannot.length) {
+    for (const line of cannot) out.push(`  note: ${line}`);
+  } else {
+    out.push("  Nothing \u2014 every source above answered.");
+  }
+  let text = out.join("\n");
+  if (target) {
+    mkdirSync8(dirname11(target), { recursive: true });
+    writeFileSync11(target, `${text}
+`);
+    const rel = relative5(resolve4(root), target).split("\\").join("/");
+    const recorded = recordOwnWrites(root, taskOnBranch(root), [rel]) > 0;
+    return { ok: true, text, wrote: rel, ownWriteRecorded: recorded, liveSource, counts };
+  }
+  text += "\n\n  To keep this: `cycle handoff --out HANDOFF.md` writes it at the repository root \u2014 never into .zones/ \u2014 and records its own write.";
+  return { ok: true, text, ownWriteRecorded: false, liveSource, counts };
+}
+
+// src/protect.ts
+var import_yaml3 = __toESM(require_dist(), 1);
+import { readFileSync as readFileSync18, writeFileSync as writeFileSync12 } from "node:fs";
+import { join as join20 } from "node:path";
 function loadDoc(root) {
-  const path = join13(root, ".zones", "zones.yml");
+  const path = join20(root, ".zones", "zones.yml");
   let raw;
   try {
-    raw = readFileSync12(path, "utf8");
+    raw = readFileSync18(path, "utf8");
   } catch {
     return { error: "No .zones/zones.yml here. Run `cycle init` first." };
   }
   const parsed = parseZonesFile(raw);
   if (!parsed.ok) return { error: `zones.yml is invalid, fix that first: ${parsed.issues[0]?.message}` };
-  return { doc: (0, import_yaml2.parseDocument)(raw), path };
+  return { doc: (0, import_yaml3.parseDocument)(raw), path };
 }
 function runProtect(root, glob, zoneId) {
   const loaded = loadDoc(root);
@@ -16393,7 +17773,8 @@ function runProtect(root, glob, zoneId) {
     return { ok: true, message: `"${glob}" is already in "${zoneId}" \u2014 nothing to do.` };
   }
   paths.add(doc.createNode(glob));
-  writeFileSync6(path, doc.toString());
+  writeFileSync12(path, doc.toString());
+  recordOwnWrites(root, taskOnBranch(root), [join20(".zones", "zones.yml")]);
   return {
     ok: true,
     message: `"${glob}" is now in "${zoneId}". The change is in zones.yml, in your diff \u2014 commit it with the work, and run \`cycle sync\` so the board learns the new boundary.`
@@ -16414,7 +17795,8 @@ function runDismiss(root, glob) {
     return { ok: true, message: `"${glob}" was already dismissed \u2014 nothing to do.` };
   }
   list.add(doc.createNode(glob));
-  writeFileSync6(path, doc.toString());
+  writeFileSync12(path, doc.toString());
+  recordOwnWrites(root, taskOnBranch(root), [join20(".zones", "zones.yml")]);
   return {
     ok: true,
     message: `"${glob}" is recorded as reviewed-and-open. The closing gate stops asking about it. If that turns out to be wrong, \`cycle protect\` it later \u2014 the record of both decisions is the point.`
@@ -16491,162 +17873,17 @@ async function runRequestAccess(opts) {
 }
 
 // src/submit.ts
-import { execFileSync as execFileSync6 } from "node:child_process";
-import { existsSync as existsSync12, rmSync } from "node:fs";
-import { join as join17 } from "node:path";
-
-// src/own-writes.ts
-import { appendFileSync, existsSync as existsSync8, mkdirSync as mkdirSync4 } from "node:fs";
-import { dirname as dirname5, join as join14, relative as relative4, resolve as resolve2 } from "node:path";
-var eventLogPath = (root, taskId) => join14(root, ".zones", "state", "events", `${taskId}.jsonl`);
-function recordOwnWrites(root, taskId, paths, now = /* @__PURE__ */ new Date()) {
-  if (!taskId || !paths.length) return 0;
-  const lines = paths.map((p) => relative4(resolve2(root), resolve2(root, p)).split("\\").join("/")).filter((p) => p && !p.startsWith("..")).map((path) => JSON.stringify({
-    t: now.toISOString(),
-    type: "mutation",
-    task_id: taskId,
-    path
-  }));
-  if (!lines.length) return 0;
-  try {
-    const log = eventLogPath(root, taskId);
-    if (!existsSync8(dirname5(log))) mkdirSync4(dirname5(log), { recursive: true });
-    appendFileSync(log, lines.join("\n") + "\n");
-    return lines.length;
-  } catch {
-    return 0;
-  }
-}
+import { execFileSync as execFileSync8 } from "node:child_process";
+import { existsSync as existsSync16, readFileSync as readFileSync20, rmSync as rmSync4, writeFileSync as writeFileSync13 } from "node:fs";
+import { join as join22 } from "node:path";
 
 // src/record.ts
-import { existsSync as existsSync10, readFileSync as readFileSync14 } from "node:fs";
-import { join as join16 } from "node:path";
-
-// src/playbooks.ts
-var import_yaml3 = __toESM(require_dist(), 1);
-import { existsSync as existsSync9, readdirSync as readdirSync6, readFileSync as readFileSync13, writeFileSync as writeFileSync7 } from "node:fs";
-import { join as join15 } from "node:path";
-var REQUIRED_SECTIONS = [
-  "## What an agent must know",
-  "## Critical decisions",
-  "## Known gaps",
-  "## Feed rule"
-];
-var NAME_RULES = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-var CITATION = /\b(D-\d+|CC-\d+|E\d+)\b|§|\.[a-z]{2,8}\b/;
-function scanPlaybooks(root) {
-  const dir = join15(root, ".zones", "playbooks");
-  if (!existsSync9(dir)) return null;
-  const warnings = [];
-  const books = [];
-  const files = readdirSync6(dir).filter((f) => f.endsWith(".md") && f !== "README.md").sort();
-  for (const file of files) {
-    const rel = `.zones/playbooks/${file}`;
-    const raw = readFileSync13(join15(dir, file), "utf8");
-    const fm = parseFrontmatter(raw);
-    if (!fm) {
-      warnings.push(`${rel} has no frontmatter \u2014 not a playbook the loader can trust`);
-      continue;
-    }
-    const topic = str(fm.data.topic) ?? file.replace(/\.md$/, "");
-    const name = str(fm.data.name);
-    const description = str(fm.data.description);
-    const status = str(fm.data.status) ?? "seeded";
-    if (!name) warnings.push(`${rel}: no "name" in the frontmatter (the compiled view's identity \u2014 docs/07 Rule 1)`);
-    else if (name !== topic) warnings.push(`${rel}: name "${name}" \u2260 topic "${topic}" \u2014 the validator asserts they match`);
-    else if (!NAME_RULES.test(name) || name.length > 64) warnings.push(`${rel}: name "${name}" breaks the skills name rules (lowercase, hyphens, \u226464)`);
-    if (!description) warnings.push(`${rel}: no "description" \u2014 the compiled view would have no routing signal`);
-    else if (description.length > 1024) warnings.push(`${rel}: description is ${description.length} chars \u2014 the skills spec caps it at 1024`);
-    for (const heading of REQUIRED_SECTIONS) {
-      if (!fm.body.split("\n").some((l) => l.startsWith(heading))) {
-        warnings.push(`${rel}: missing required section "${heading}" (docs/07 Rule 1)`);
-      }
-    }
-    for (const bullet of mustKnowBullets(fm.body)) {
-      if (!CITATION.test(bullet)) {
-        warnings.push(`${rel}: uncited claim \u2014 "${bullet.slice(0, 60)}\u2026" (every claim carries a receipt, or it stays out; warn-only by rule)`);
-      }
-    }
-    books.push({ file: rel, topic, name, description, status, display: displayName(fm.body, topic) });
-  }
-  return { books, warnings };
-}
-function writePlaybooksReadme(root, scan) {
-  const path = join15(root, ".zones", "playbooks", "README.md");
-  const active = scan.books.filter((b) => b.status !== "archived");
-  const rows = active.map((b) => `| ${b.display} | [${b.topic}.md](${b.topic}.md) |`);
-  const next = [
-    "# Playbooks",
-    "",
-    "Per-topic, per-project agent context \u2014 seeded by the first audit of this",
-    "codebase (CC-107, 2026-08-08), fed by every close that learns something.",
-    "Contract and lifecycle: [docs/07-playbooks.md](../../docs/07-playbooks.md)",
-    "(D-45, DECIDED \u2014 rev 3; the analysis record is docs/08-evolving-playbooks.md).",
-    "",
-    "<!-- The table is generated by cycle sync from the playbook files \u2014 edit them, not this. -->",
-    "",
-    "Before working a task, read the playbook for each of its declared topics:",
-    "",
-    "| Topic | File |",
-    "|---|---|",
-    ...rows,
-    "",
-    "Playbooks are Layer 1 class: advisory context. They never override",
-    "`zones.yml`, the gate, or a decision row \u2014 they cite them.",
-    ""
-  ].join("\n");
-  const current = existsSync9(path) ? readFileSync13(path, "utf8") : "";
-  if (current === next) return "unchanged";
-  writeFileSync7(path, next);
-  return "updated";
-}
-function parseFrontmatter(raw) {
-  if (!raw.startsWith("---\n")) return null;
-  const end = raw.indexOf("\n---\n", 4);
-  if (end < 0) return null;
-  try {
-    const data = (0, import_yaml3.parse)(raw.slice(4, end + 1));
-    return data && typeof data === "object" ? { data, body: raw.slice(end + 5) } : null;
-  } catch {
-    return null;
-  }
-}
-function str(v) {
-  return typeof v === "string" && v.trim() ? v.trim() : void 0;
-}
-function displayName(body, topic) {
-  const h1 = body.split("\n").find((l) => l.startsWith("# "));
-  const m = h1?.match(/^#\s+(.+?)\s+playbook\b/i);
-  return m?.[1] ?? topic;
-}
-function mustKnowBullets(body) {
-  const lines = body.split("\n");
-  const start = lines.findIndex((l) => l.startsWith("## What an agent must know"));
-  if (start < 0) return [];
-  const bullets = [];
-  let current = null;
-  for (let i = start + 1; i < lines.length; i++) {
-    const line = lines[i];
-    if (line.startsWith("## ")) break;
-    if (line.startsWith("- ")) {
-      if (current) bullets.push(current.join(" "));
-      current = [line.slice(2)];
-    } else if (current && /^\s+\S/.test(line)) {
-      current.push(line.trim());
-    } else if (current) {
-      bullets.push(current.join(" "));
-      current = null;
-    }
-  }
-  if (current) bullets.push(current.join(" "));
-  return bullets;
-}
-
-// src/record.ts
+import { existsSync as existsSync15, readFileSync as readFileSync19 } from "node:fs";
+import { join as join21 } from "node:path";
 function readTaskRecord(root, taskId) {
-  const path = join16(root, ".zones", "tasks", `${taskId}.md`);
-  if (!existsSync10(path)) return null;
-  const fm = parseFrontmatter(readFileSync14(path, "utf8"));
+  const path = join21(root, ".zones", "tasks", `${taskId}.md`);
+  if (!existsSync15(path)) return null;
+  const fm = parseFrontmatter(readFileSync19(path, "utf8"));
   if (!fm) return null;
   const topics = Array.isArray(fm.data.topics) ? fm.data.topics.filter((t) => typeof t === "string") : [];
   return {
@@ -16658,55 +17895,6 @@ function readTaskRecord(root, taskId) {
        record being stale (CC-416). */
     qualityGate: typeof fm.data.quality_gate === "string" ? fm.data.quality_gate : void 0
   };
-}
-
-// src/worktrees.ts
-import { execFileSync as execFileSync5 } from "node:child_process";
-import { existsSync as existsSync11, realpathSync } from "node:fs";
-function listWorktrees(root) {
-  const out = execFileSync5("git", ["worktree", "list", "--porcelain"], {
-    cwd: root,
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"]
-  });
-  const found = [];
-  let current = null;
-  for (const raw of out.split("\n")) {
-    const line = raw.trimEnd();
-    const space = line.indexOf(" ");
-    const key = space === -1 ? line : line.slice(0, space);
-    const value = space === -1 ? "" : line.slice(space + 1);
-    if (key === "worktree") {
-      current = { path: value, branch: null, prunable: false, bare: false };
-      found.push(current);
-    } else if (!current) {
-      continue;
-    } else if (key === "branch") {
-      current.branch = value.replace(/^refs\/heads\//, "");
-    } else if (key === "prunable") {
-      current.prunable = true;
-    } else if (key === "bare") {
-      current.bare = true;
-    }
-  }
-  return found;
-}
-var resolved = (p) => {
-  try {
-    return realpathSync(p);
-  } catch {
-    return p;
-  }
-};
-function otherCheckoutHolding(root, taskId) {
-  for (const wt of listWorktrees(root)) {
-    if (wt.bare || !wt.branch) continue;
-    if (taskIdFrom(wt.branch) !== taskId) continue;
-    if (wt.prunable || !existsSync11(wt.path)) continue;
-    if (resolved(wt.path) === resolved(root)) continue;
-    return wt.path;
-  }
-  return null;
 }
 
 // src/submit.ts
@@ -16829,11 +18017,42 @@ async function handOff(opts) {
   }
   log(`  ${taskId} is now ${to}`);
   const moved = await res.json().catch(() => ({}));
-  const grant = join17(root, ".zones", "state", "grants", `${taskId}.json`);
+  if (to === "Todo") {
+    const recordPath = join22(root, ".zones", "tasks", `${taskId}.md`);
+    const recordRel = join22(".zones", "tasks", `${taskId}.md`);
+    if (!existsSync16(recordPath)) {
+      warnings.push(`no record at ${recordRel} to write the pause into \u2014 the board moved anyway`);
+    } else {
+      try {
+        const prior = readFileSync20(recordPath, "utf8");
+        const lines = prior.replace(/^state:.*$/m, "state: Todo").split("\n");
+        const row = `| ${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)} | Todo | Paused: ${opts.reason ?? ""} |`;
+        const heading = lines.findIndex((l) => l.trim() === "## History");
+        let at2 = -1;
+        for (let i = heading + 1; heading !== -1 && i < lines.length; i++) {
+          if (lines[i].trimStart().startsWith("|")) at2 = i;
+          else if (at2 !== -1 && lines[i].trim() !== "") break;
+        }
+        if (at2 === -1) {
+          lines.push("", "---", "", "## History", "", "| When | State | Note |", "|---|---|---|", row);
+        } else {
+          lines.splice(at2 + 1, 0, row);
+        }
+        writeFileSync13(recordPath, lines.join("\n"));
+        recordOwnWrites(root, taskId, [recordRel]);
+        log(`  ${recordRel} \u2014 Todo, with the reason under its history`);
+      } catch (err) {
+        warnings.push(
+          `the board paused ${taskId} but its record could not be amended (${err.message}). Add the history row to ${recordRel} by hand \u2014 a paused record that still says In Progress is the drift this command exists to prevent.`
+        );
+      }
+    }
+  }
+  const grant = join22(root, ".zones", "state", "grants", `${taskId}.json`);
   let grantRemoved = false;
-  if (existsSync12(grant)) {
+  if (existsSync16(grant)) {
     try {
-      rmSync(grant, { force: true });
+      rmSync4(grant, { force: true });
       grantRemoved = true;
       log("  the grant is gone \u2014 protected zones are closed again");
     } catch (err) {
@@ -16843,13 +18062,16 @@ async function handOff(opts) {
     }
   }
   if (taskId === taskIdFrom(branch)) {
+    if (clearLocalBlock(root).changed) {
+      log("  CLAUDE.local.md cleared \u2014 no task is active");
+    }
     const zones = readZoneLines(root);
-    if (zones && writeAgentsBlock(root, renderAgentsBlock({ zones, board: readBoardBinding(root), enforcement: detectEnforcement(root) })).changed) {
+    if (zones && writeAgentsBlock(root, renderDurableBlock({ zones, board: readBoardBinding(root), enforcement: detectEnforcement(root) })).changed) {
       recordOwnWrites(root, taskId, ["AGENTS.md"]);
-      log("  AGENTS.md cleared \u2014 no task is active");
+      log("  AGENTS.md \u2014 settled to the durable zone map");
       let identicalToHead = false;
       try {
-        execFileSync6("git", ["diff", "--quiet", "HEAD", "--", "AGENTS.md"], { cwd: root, stdio: "pipe" });
+        execFileSync8("git", ["diff", "--quiet", "HEAD", "--", "AGENTS.md"], { cwd: root, stdio: "pipe" });
         identicalToHead = true;
       } catch {
       }
@@ -16857,7 +18079,7 @@ async function handOff(opts) {
         log("  the block was never committed, so the clear leaves nothing to commit");
       } else {
         try {
-          execFileSync6(
+          execFileSync8(
             "git",
             ["commit", "-q", "-m", `${taskId}: clear the CC block on hand-in`, "--", "AGENTS.md"],
             { cwd: root, stdio: "pipe" }
@@ -16880,9 +18102,9 @@ async function handOff(opts) {
 }
 
 // src/feed.ts
-import { readFileSync as readFileSync15, writeFileSync as writeFileSync8 } from "node:fs";
-import { join as join18 } from "node:path";
-var MUST_KNOW = "## What an agent must know";
+import { readFileSync as readFileSync21, writeFileSync as writeFileSync14 } from "node:fs";
+import { join as join23 } from "node:path";
+var FEED_RULE = "## Feed rule";
 function runFeed(root, topic, text, taskId) {
   const scan = scanPlaybooks(root);
   const book = scan?.books.find((b) => b.topic === topic);
@@ -16892,29 +18114,35 @@ function runFeed(root, topic, text, taskId) {
   if (book.status === "archived") {
     return { ok: false, warning: `topic "${topic}" is archived \u2014 its playbook keeps its history and takes no new bullets` };
   }
-  const path = join18(root, book.file);
-  const raw = readFileSync15(path, "utf8");
+  const path = join23(root, book.file);
+  const raw = readFileSync21(path, "utf8");
   const lines = raw.split("\n");
-  const start = lines.findIndex((l) => l.startsWith(MUST_KNOW));
+  const start = lines.findIndex((l) => l.startsWith(FEED_RULE));
+  let insert;
+  let warning;
   if (start < 0) {
-    return { ok: false, warning: `${book.file} has no "${MUST_KNOW}" section \u2014 fix the file (CC-116's contract), then feed` };
-  }
-  let end = lines.length;
-  for (let i = start + 1; i < lines.length; i++) {
-    if (lines[i].startsWith("## ")) {
-      end = i;
-      break;
+    insert = lines.length;
+    while (insert > 0 && lines[insert - 1].trim() === "") insert--;
+    warning = `${book.file} has no "${FEED_RULE}" section \u2014 the bullet landed at the end of the file`;
+  } else {
+    let end = lines.length;
+    for (let i = start + 1; i < lines.length; i++) {
+      if (lines[i].startsWith("## ")) {
+        end = i;
+        break;
+      }
     }
+    insert = end;
+    while (insert > start + 1 && lines[insert - 1].trim() === "") insert--;
   }
-  let insert = end;
-  while (insert > start + 1 && lines[insert - 1].trim() === "") insert--;
   const bullet = `- ${withProvenance(text.trim(), taskId)}`;
-  lines.splice(insert, 0, bullet);
+  const opensList = insert > 0 && !/^- /.test(lines[insert - 1]);
+  lines.splice(insert, 0, ...opensList ? ["", bullet] : [bullet]);
   const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const bumped = lines.map((l, i) => i < 20 && /^updated: /.test(l) ? `updated: ${today}` : l);
-  writeFileSync8(path, bumped.join("\n"));
+  writeFileSync14(path, bumped.join("\n"));
   recordOwnWrites(root, taskId ?? null, [book.file]);
-  return { ok: true, path: book.file, bullet };
+  return warning ? { ok: true, path: book.file, bullet, warning } : { ok: true, path: book.file, bullet };
 }
 function withProvenance(text, taskId) {
   if (!taskId || text.includes(taskId)) return text;
@@ -16934,7 +18162,7 @@ function feedOffers(root, taskId, touched) {
     const book = scan.books.find((b) => b.topic === topic);
     if (!book || book.status === "archived") continue;
     if (touched?.has(book.file)) continue;
-    const rule = feedRuleLine(join18(root, book.file));
+    const rule = feedRuleLine(join23(root, book.file));
     offers.push(
       `${topic} \u2014 ${rule ?? "one bullet, one citation"}
     cycle feed ${topic} "what this close taught (${taskId})"   # skipping is legal by rule`
@@ -16944,7 +18172,7 @@ function feedOffers(root, taskId, touched) {
 }
 function feedRuleLine(path) {
   try {
-    const lines = readFileSync15(path, "utf8").split("\n");
+    const lines = readFileSync21(path, "utf8").split("\n");
     const start = lines.findIndex((l) => l.startsWith("## Feed rule"));
     if (start < 0) return null;
     const body = lines.slice(start + 1).join(" ").trim();
@@ -16956,9 +18184,9 @@ function feedRuleLine(path) {
 }
 
 // src/seed.ts
-import { execFileSync as execFileSync7 } from "node:child_process";
-import { existsSync as existsSync13, mkdirSync as mkdirSync5, readFileSync as readFileSync16, writeFileSync as writeFileSync9 } from "node:fs";
-import { join as join19 } from "node:path";
+import { execFileSync as execFileSync9 } from "node:child_process";
+import { existsSync as existsSync17, mkdirSync as mkdirSync9, readFileSync as readFileSync22, writeFileSync as writeFileSync15 } from "node:fs";
+import { join as join24 } from "node:path";
 async function runSeed(input) {
   const { root, apiUrl, tenant, repo, token } = input;
   const log = input.log ?? (() => {
@@ -17001,8 +18229,8 @@ async function runSeed(input) {
   const written = [];
   const skipped = [];
   for (const draft of body.drafts) {
-    const rel = join19(".zones", "playbooks", `${draft.topic}.md`);
-    if (existsSync13(join19(root, rel))) {
+    const rel = join24(".zones", "playbooks", `${draft.topic}.md`);
+    if (existsSync17(join24(root, rel))) {
       skipped.push(draft.topic);
       log(`  ${draft.topic}: a playbook already exists \u2014 the seed never overwrites; feed it instead (cycle feed)`);
       continue;
@@ -17013,8 +18241,8 @@ async function runSeed(input) {
       log(`  ${draft.topic}: skipped \u2014 your call, recorded as nothing (a skipped seed is not a decision)`);
       continue;
     }
-    mkdirSync5(join19(root, ".zones", "playbooks"), { recursive: true });
-    writeFileSync9(join19(root, rel), renderPlaybook(draft, repo));
+    mkdirSync9(join24(root, ".zones", "playbooks"), { recursive: true });
+    writeFileSync15(join24(root, rel), renderPlaybook(draft, repo));
     written.push(draft.topic);
     log(`  ${draft.topic}: written \u2014 ${rel}`);
   }
@@ -17023,10 +18251,15 @@ async function runSeed(input) {
   }
   if (written.length) {
     const scan = scanPlaybooks(root);
+    let readmeChanged = false;
     if (scan) {
-      writePlaybooksReadme(root, scan);
+      readmeChanged = writePlaybooksReadme(root, scan) === "updated";
       for (const w of scan.warnings) log(`  note: ${w}`);
     }
+    recordOwnWrites(root, taskOnBranch(root), [
+      ...written.map((topic) => join24(".zones", "playbooks", `${topic}.md`)),
+      ...readmeChanged ? [join24(".zones", "playbooks", "README.md")] : []
+    ]);
   }
   return { status: written.length ? "seeded" : "nothing", written, skipped, notBorn: body.notBorn };
 }
@@ -17071,7 +18304,7 @@ function renderPlaybook(draft, repo) {
 function buildBrief(root) {
   const git3 = (args) => {
     try {
-      return execFileSync7("git", args, { cwd: root, stdio: "pipe" }).toString();
+      return execFileSync9("git", args, { cwd: root, stdio: "pipe" }).toString();
     } catch {
       return "";
     }
@@ -17079,14 +18312,14 @@ function buildBrief(root) {
   const all = git3(["ls-files"]).split("\n").filter(Boolean);
   const files = all.slice(0, 2e3);
   const parts = [];
-  const readme = join19(root, "README.md");
-  if (existsSync13(readme)) {
-    parts.push("README.md, first lines:", "", readFileSync16(readme, "utf8").split("\n").slice(0, 50).join("\n"));
+  const readme = join24(root, "README.md");
+  if (existsSync17(readme)) {
+    parts.push("README.md, first lines:", "", readFileSync22(readme, "utf8").split("\n").slice(0, 50).join("\n"));
   }
-  const pkg = join19(root, "package.json");
-  if (existsSync13(pkg)) {
+  const pkg = join24(root, "package.json");
+  if (existsSync17(pkg)) {
     try {
-      const p = JSON.parse(readFileSync16(pkg, "utf8"));
+      const p = JSON.parse(readFileSync22(pkg, "utf8"));
       parts.push(
         "",
         "package.json (name, scripts, workspaces):",
@@ -17119,8 +18352,8 @@ function buildBrief(root) {
 }
 
 // src/challenge.ts
-import { existsSync as existsSync14, mkdirSync as mkdirSync6, readdirSync as readdirSync7, writeFileSync as writeFileSync10 } from "node:fs";
-import { join as join20 } from "node:path";
+import { existsSync as existsSync18, mkdirSync as mkdirSync10, readdirSync as readdirSync9, writeFileSync as writeFileSync16 } from "node:fs";
+import { join as join25 } from "node:path";
 async function runChallenge(input) {
   const { root, apiUrl, tenant, repo, token } = input;
   const log = input.log ?? (() => {
@@ -17198,15 +18431,15 @@ async function runChallenge(input) {
   return { status: "done", accepted, rejected, skipped, proposals: body.proposals };
 }
 function nextDecisionNumber(root) {
-  const dir = join20(root, ".zones", "decisions");
-  if (!existsSync14(dir)) return 1;
-  const max = readdirSync7(dir).map((f) => /^(\d{4})-/.exec(f)?.[1]).filter((n) => !!n).reduce((a, n) => Math.max(a, Number(n)), 0);
+  const dir = join25(root, ".zones", "decisions");
+  if (!existsSync18(dir)) return 1;
+  const max = readdirSync9(dir).map((f) => /^(\d{4})-/.exec(f)?.[1]).filter((n) => !!n).reduce((a, n) => Math.max(a, Number(n)), 0);
   return max + 1;
 }
 var slug = (title) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 function writeDecision(root, n, p, verdict, grounds) {
   const num2 = String(n).padStart(4, "0");
-  const rel = join20(".zones", "decisions", `${num2}-${slug(p.title)}.md`);
+  const rel = join25(".zones", "decisions", `${num2}-${slug(p.title)}.md`);
   const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const lines = [
     `# ${num2} \u2014 ${p.title}`,
@@ -17228,24 +18461,25 @@ function writeDecision(root, n, p, verdict, grounds) {
   if (verdict === "reject") {
     lines.push("## Grounds", "", grounds ?? "not stated", "");
   }
-  mkdirSync6(join20(root, ".zones", "decisions"), { recursive: true });
-  writeFileSync10(join20(root, rel), lines.join("\n"));
+  mkdirSync10(join25(root, ".zones", "decisions"), { recursive: true });
+  writeFileSync16(join25(root, rel), lines.join("\n"));
+  recordOwnWrites(root, taskOnBranch(root), [rel]);
   return rel;
 }
 
 // src/close.ts
-import { existsSync as existsSync17, mkdirSync as mkdirSync8, readFileSync as readFileSync19, writeFileSync as writeFileSync12 } from "node:fs";
-import { dirname as dirname7, join as join23 } from "node:path";
+import { existsSync as existsSync21, mkdirSync as mkdirSync12, readFileSync as readFileSync25, writeFileSync as writeFileSync18 } from "node:fs";
+import { dirname as dirname13, join as join28 } from "node:path";
 
 // src/verify.ts
-import { execFileSync as execFileSync8 } from "node:child_process";
-import { existsSync as existsSync15, readdirSync as readdirSync8, readFileSync as readFileSync17 } from "node:fs";
-import { join as join21 } from "node:path";
+import { execFileSync as execFileSync10 } from "node:child_process";
+import { existsSync as existsSync19, readdirSync as readdirSync10, readFileSync as readFileSync23 } from "node:fs";
+import { join as join26 } from "node:path";
 var git2 = (root, cmd) => (
   // stderr is piped, not inherited: forkPoint probes refs that may not exist,
   // and a repo with no remote would otherwise print two `fatal:` lines on
   // every verify. Failures still throw, with stderr on the error object.
-  execFileSync8("/bin/sh", ["-c", `git ${cmd}`], {
+  execFileSync10("/bin/sh", ["-c", `git ${cmd}`], {
     cwd: root,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"]
@@ -17297,7 +18531,7 @@ function trunk(root) {
 function branchOf(root, taskId) {
   let name;
   try {
-    const fm = readFileSync17(join21(root, ".zones", "tasks", `${taskId}.md`), "utf8").slice(0, 2e3);
+    const fm = readFileSync23(join26(root, ".zones", "tasks", `${taskId}.md`), "utf8").slice(0, 2e3);
     name = /^branch:[ \t]*(.+)$/m.exec(fm)?.[1]?.trim();
   } catch {
     return null;
@@ -17305,7 +18539,7 @@ function branchOf(root, taskId) {
   if (!name || name === "null") return null;
   for (const ref of [name, `origin/${name}`]) {
     try {
-      execFileSync8("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
+      execFileSync10("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
       return ref;
     } catch {
     }
@@ -17321,7 +18555,7 @@ function subjectOf(root, sha) {
 }
 function reachableFrom(root, sha, ref) {
   try {
-    execFileSync8("git", ["-C", root, "merge-base", "--is-ancestor", sha, ref], { stdio: "ignore" });
+    execFileSync10("git", ["-C", root, "merge-base", "--is-ancestor", sha, ref], { stdio: "ignore" });
     return true;
   } catch {
     return false;
@@ -17329,7 +18563,7 @@ function reachableFrom(root, sha, ref) {
 }
 function alreadyMerged(root, ref) {
   try {
-    execFileSync8("git", ["-C", root, "merge-base", "--is-ancestor", "HEAD", ref], { stdio: "ignore" });
+    execFileSync10("git", ["-C", root, "merge-base", "--is-ancestor", "HEAD", ref], { stdio: "ignore" });
     return true;
   } catch {
     return false;
@@ -17380,23 +18614,23 @@ function buildHistoryManifest(root, taskId, shas) {
   };
 }
 function grantOnDisk(root, taskId) {
-  const path = join21(root, ".zones", "state", "grants", `${taskId}.json`);
-  if (!existsSync15(path)) return { kind: "none" };
+  const path = join26(root, ".zones", "state", "grants", `${taskId}.json`);
+  if (!existsSync19(path)) return { kind: "none" };
   try {
-    const g = JSON.parse(readFileSync17(path, "utf8"));
+    const g = JSON.parse(readFileSync23(path, "utf8"));
     return { kind: "grant", zones: g.zones ?? [] };
   } catch {
     return { kind: "unreadable" };
   }
 }
 function mutatedPaths(root) {
-  const dir = join21(root, ".zones", "state", "events");
-  if (!existsSync15(dir)) return [];
-  const logs = readdirSync8(dir).filter((f) => f.endsWith(".jsonl"));
+  const dir = join26(root, ".zones", "state", "events");
+  if (!existsSync19(dir)) return [];
+  const logs = readdirSync10(dir).filter((f) => f.endsWith(".jsonl"));
   const observed = [];
   const selfRecorded = [];
   for (const file of logs) {
-    for (const line of readFileSync17(join21(dir, file), "utf8").split("\n").filter(Boolean)) {
+    for (const line of readFileSync23(join26(dir, file), "utf8").split("\n").filter(Boolean)) {
       try {
         const e = JSON.parse(line);
         if (e.type !== "mutation" || !e.path) continue;
@@ -17412,7 +18646,22 @@ function runVerify(opts) {
   const { root } = opts;
   const log = opts.log ?? (() => {
   });
-  const taskId = (opts.fromHistory ? opts.taskId : void 0) ?? taskOnBranch(root);
+  const onBranch = taskOnBranch(root);
+  if (!opts.fromHistory && opts.taskId && opts.taskId !== onBranch) {
+    return {
+      ok: false,
+      taskId: onBranch,
+      manifest: null,
+      generated: [],
+      unprotected: [],
+      warnings: [],
+      failures: [{
+        field: "task",
+        message: onBranch ? `You asked for ${opts.taskId} but this branch is bound to ${onBranch}. Check out ${opts.taskId}'s branch first, or drop the id to act on ${onBranch}. (--from-history reads a task out of history on purpose; without it the branch is the source of truth.)` : `You asked for ${opts.taskId} but this checkout is on no task branch, so there is nothing to bind it to. Check out ${opts.taskId}'s branch first.`
+      }]
+    };
+  }
+  const taskId = (opts.fromHistory ? opts.taskId : void 0) ?? onBranch;
   if (!taskId) {
     return {
       ok: false,
@@ -17427,8 +18676,8 @@ function runVerify(opts) {
       }]
     };
   }
-  const zonesPath = join21(root, ".zones", "zones.yml");
-  if (!existsSync15(zonesPath)) {
+  const zonesPath = join26(root, ".zones", "zones.yml");
+  if (!existsSync19(zonesPath)) {
     return {
       ok: false,
       taskId,
@@ -17439,7 +18688,7 @@ function runVerify(opts) {
       failures: [{ field: "zones", message: "No .zones/zones.yml. Run `cycle init` first." }]
     };
   }
-  const parsed = parseZonesFile(readFileSync17(zonesPath, "utf8"));
+  const parsed = parseZonesFile(readFileSync23(zonesPath, "utf8"));
   if (!parsed.ok) {
     return {
       ok: false,
@@ -17563,13 +18812,13 @@ ${strays.map((s) => `      ${s.slice(0, 8)} ${subjectOf(root, s).slice(0, 88)}`)
 }
 
 // src/sync.ts
-import { existsSync as existsSync16, mkdirSync as mkdirSync7, readFileSync as readFileSync18, renameSync, rmSync as rmSync2, writeFileSync as writeFileSync11 } from "node:fs";
-import { dirname as dirname6, join as join22 } from "node:path";
+import { existsSync as existsSync20, mkdirSync as mkdirSync11, readFileSync as readFileSync24, renameSync, rmSync as rmSync5, writeFileSync as writeFileSync17 } from "node:fs";
+import { dirname as dirname12, join as join27 } from "node:path";
 async function mirrorTaskEvents(input) {
   const doFetch = input.fetchImpl ?? fetch;
-  const logPath = join22(input.root, ".zones", "state", "events", `${input.taskId}.jsonl`);
-  if (!existsSync16(logPath)) return { pushed: 0 };
-  const lines = readFileSync18(logPath, "utf8").split("\n").filter((l) => l.trim());
+  const logPath = join27(input.root, ".zones", "state", "events", `${input.taskId}.jsonl`);
+  if (!existsSync20(logPath)) return { pushed: 0 };
+  const lines = readFileSync24(logPath, "utf8").split("\n").filter((l) => l.trim());
   const events = lines.flatMap((l) => {
     try {
       return [JSON.parse(l)];
@@ -17611,9 +18860,9 @@ async function runSync(opts) {
   let boardSaw = false;
   let zonesPushed = 0;
   let zoneLines = null;
-  const zonesPath = join22(root, ".zones", "zones.yml");
-  if (existsSync16(zonesPath)) {
-    const parsed = parseZonesFile(readFileSync18(zonesPath, "utf8"));
+  const zonesPath = join27(root, ".zones", "zones.yml");
+  if (existsSync20(zonesPath)) {
+    const parsed = parseZonesFile(readFileSync24(zonesPath, "utf8"));
     if (!parsed.ok) {
       warnings.push(`zones.yml is invalid, so it was not synced: ${parsed.issues[0]?.message}`);
     } else {
@@ -17646,18 +18895,39 @@ async function runSync(opts) {
       try {
         const { policy } = await res.json();
         const value = policy === "reads" || policy === "journal" ? policy : "closed";
-        const target = join22(root, ".zones", "state", "failure-policy");
-        const current = existsSync16(target) ? readFileSync18(target, "utf8").trim() : null;
+        const target = join27(root, ".zones", "state", "failure-policy");
+        const current = existsSync20(target) ? readFileSync24(target, "utf8").trim() : null;
         if (current !== value) {
-          mkdirSync7(dirname6(target), { recursive: true });
+          mkdirSync11(dirname12(target), { recursive: true });
           const tmp = `${target}.tmp`;
-          writeFileSync11(tmp, `${value}
+          writeFileSync17(tmp, `${value}
 `);
           renameSync(tmp, target);
           log(`  failure policy: ${value} \u2014 what the hook's wrapper honors when the core is down`);
         }
       } catch {
         warnings.push("the failure policy could not be read \u2014 the local one was left alone");
+      }
+    }
+  }
+  {
+    const res = await doFetch(`${base}/pr-policy`, { headers });
+    if (res.ok) {
+      try {
+        const { pr_open } = await res.json();
+        const value = pr_open === true ? "on" : "off";
+        const target = join27(root, ".zones", "state", "pr-policy");
+        const current = existsSync20(target) ? readFileSync24(target, "utf8").trim() : null;
+        if (current !== value) {
+          mkdirSync11(dirname12(target), { recursive: true });
+          const tmp = `${target}.tmp`;
+          writeFileSync17(tmp, `${value}
+`);
+          renameSync(tmp, target);
+          log(`  pr.open: ${value} \u2014 whether cc_submit opens this repo's task PRs (the hook honors it for the branch push)`);
+        }
+      } catch {
+        warnings.push("the pr policy could not be read \u2014 the local one was left alone");
       }
     }
   }
@@ -17691,9 +18961,9 @@ async function runSync(opts) {
         `this board answered 404 to everything \u2014 signed in as ${who ?? "nobody (`cycle login` has not run here)"}, so either ${tenant}/${repo} does not exist or that identity is not a member of it. Nothing local was touched.`
       );
     } else if (res.status === 404) {
-      const stale = join22(root, ".zones", "state", "grants", `${taskId}.json`);
-      if (existsSync16(stale)) {
-        rmSync2(stale, { force: true });
+      const stale = join27(root, ".zones", "state", "grants", `${taskId}.json`);
+      if (existsSync20(stale)) {
+        rmSync5(stale, { force: true });
         grantState = "revoked";
         log(`  removed the grant for ${taskId} \u2014 the board has revoked it`);
       } else {
@@ -17703,38 +18973,77 @@ async function runSync(opts) {
       warnings.push(`could not fetch the grant (${res.status}) \u2014 the local grant was left alone`);
     } else {
       const { grant } = await res.json();
-      const target = join22(root, ".zones", "state", "grants", `${taskId}.json`);
+      const target = join27(root, ".zones", "state", "grants", `${taskId}.json`);
       const next = JSON.stringify(grant, null, 2) + "\n";
-      const current = existsSync16(target) ? readFileSync18(target, "utf8") : null;
+      const current = existsSync20(target) ? readFileSync24(target, "utf8") : null;
       if (current === next) {
         grantState = "unchanged";
       } else {
-        mkdirSync7(dirname6(target), { recursive: true });
+        mkdirSync11(dirname12(target), { recursive: true });
         const tmp = `${target}.tmp`;
-        writeFileSync11(tmp, next);
+        writeFileSync17(tmp, next);
         renameSync(tmp, target);
         grantState = "written";
-        log(`  wrote the grant for ${taskId}`);
+        const ranOut = Number.isFinite(Date.parse(grant.expires)) && Date.parse(grant.expires) <= Date.now();
+        log(ranOut ? `  the grant for ${taskId} is already expired (${grant.expires}) \u2014 written, but nothing is open until it is renewed at the gate` : `  wrote the grant for ${taskId}`);
       }
     }
   }
   if (taskId) {
     try {
-      live = JSON.parse(readFileSync18(join22(root, ".zones", "state", "grants", `${taskId}.json`), "utf8"));
+      live = JSON.parse(readFileSync24(join27(root, ".zones", "state", "grants", `${taskId}.json`), "utf8"));
     } catch {
       live = null;
     }
+  }
+  let reconciled = { status: "skipped", adopted: [], written: [], grantsRemoved: [], collided: [] };
+  if (opts.reconcile !== false && boardSaw) {
+    reconciled = await runReconcile({
+      root,
+      base,
+      headers,
+      taskId,
+      fetchImpl: doFetch,
+      log,
+      warn: (w) => warnings.push(w)
+    });
   }
   const scan = scanPlaybooks(root);
   if (scan) {
     warnings.push(...scan.warnings);
     if (writePlaybooksReadme(root, scan) === "updated") {
+      recordOwnWrites(root, taskId, [join27(".zones", "playbooks", "README.md")]);
       log("  .zones/playbooks/README.md regenerated from the playbook files");
     }
   }
   const archivedTopics = new Set(
     (scan?.books ?? []).filter((b) => b.status === "archived").map((b) => b.topic)
   );
+  const driver = ensureMergeDriver(root);
+  if (driver.status === "registered") {
+    log(`  merge driver wired for this clone \u2014 merge.cc-agents.driver was unset (CC-543/CC-590)`);
+  } else if (driver.status === "failed") {
+    warnings.push("the cc-agents merge driver could not be registered \u2014 `cycle doctor` has the one-liner");
+  }
+  const healed = healAgentsFile(root);
+  if (healed.changed) {
+    recordOwnWrites(root, taskId, ["AGENTS.md"]);
+    const parts = [
+      healed.resolvedHunks ? `${healed.resolvedHunks} cc-only conflict hunk(s) resolved to this side` : null,
+      healed.collapsedBlocks ? `${healed.collapsedBlocks} stacked block(s) collapsed` : null,
+      healed.placeholdersRemoved ? `${healed.placeholdersRemoved} stray placeholder(s) removed` : null
+    ].filter(Boolean).join(", ");
+    log(`  AGENTS.md healed \u2014 ${parts || "normalised"}`);
+    if (healed.resolvedHunks) {
+      warnings.push("AGENTS.md conflict hunks were resolved in the working tree \u2014 review, then `git add AGENTS.md` if a merge is in flight");
+    }
+  }
+  if (healed.humanHunks) {
+    warnings.push(`AGENTS.md still carries ${healed.humanHunks} genuine conflict hunk(s) outside the cc block \u2014 those are yours to resolve`);
+  }
+  if (healed.unbalanced) {
+    warnings.push("AGENTS.md has unbalanced cc:begin/cc:end markers \u2014 fix them by hand; nothing structural was touched");
+  }
   let agents = "skipped";
   if (zoneLines) {
     let task;
@@ -17773,18 +19082,22 @@ async function runSync(opts) {
         topics: (spec.topics ?? []).filter((t) => !archivedTopics.has(t))
       };
     }
-    const result = writeAgentsBlock(root, renderAgentsBlock({
+    const enforcement = detectEnforcement(root);
+    const board2 = readBoardBinding(root);
+    const durable = writeAgentsBlock(root, renderDurableBlock({ zones: zoneLines, board: board2, enforcement }));
+    if (durable.changed) {
+      recordOwnWrites(root, taskId, ["AGENTS.md"]);
+      log("  AGENTS.md \u2014 the durable zone map was refreshed");
+    }
+    const local = task ? writeLocalBlock(root, renderEphemeralBlock({
       zones: zoneLines,
       task,
       playbookExists: playbookReader(root),
-      board: readBoardBinding(root),
-      // What is really running here, not what we wish were (CC-209).
-      enforcement: detectEnforcement(root)
-    }));
-    agents = result.changed ? "updated" : "unchanged";
-    if (result.changed) {
-      recordOwnWrites(root, taskId, ["AGENTS.md"]);
-      log(task ? `  AGENTS.md now names ${taskId} and what is open to it` : "  AGENTS.md cleared \u2014 no task is active");
+      enforcement
+    })) : clearLocalBlock(root);
+    agents = durable.changed || local.changed ? "updated" : "unchanged";
+    if (local.changed) {
+      log(task ? `  CLAUDE.local.md now names ${taskId} and what is open to it` : "  CLAUDE.local.md cleared \u2014 no task is active");
     }
   }
   const mentions = [];
@@ -17800,12 +19113,13 @@ async function runSync(opts) {
           log(`  ${mentions.length} unacknowledged mention(s) \u2014 advisory, nothing is blocked:`);
           for (const line of mentions) log(`    ${line}`);
           log("    A checkout named above is claimed, not verified \u2014 `git worktree list --porcelain` settles it.");
+          log("    `cycle ack` discharges one \u2014 it closes the warning and opens nothing.");
         }
       }
     } catch {
     }
   }
-  return { taskId, zonesPushed, eventsPushed, grant: grantState, agents, mentions, warnings };
+  return { taskId, zonesPushed, eventsPushed, grant: grantState, agents, mentions, reconciled, warnings };
 }
 
 // src/close.ts
@@ -17869,13 +19183,13 @@ async function runClose(opts) {
   const body = await res.json();
   let auditPath;
   if (body.audit) {
-    auditPath = join23(".zones", "audit", `${local.taskId}.md`);
-    const full = join23(root, auditPath);
-    mkdirSync8(dirname7(full), { recursive: true });
+    auditPath = join28(".zones", "audit", `${local.taskId}.md`);
+    const full = join28(root, auditPath);
+    mkdirSync12(dirname13(full), { recursive: true });
     const written = [auditPath];
-    if (existsSync17(full) && readFileSync19(full, "utf8") !== body.audit) {
+    if (existsSync21(full) && readFileSync25(full, "utf8") !== body.audit) {
       const kept = `${auditPath}.superseded`;
-      writeFileSync12(join23(root, kept), readFileSync19(full, "utf8"));
+      writeFileSync18(join28(root, kept), readFileSync25(full, "utf8"));
       written.push(kept);
       log(`  an audit record was already here \u2014 kept as ${kept}`);
       local.warnings.push({
@@ -17883,7 +19197,7 @@ async function runClose(opts) {
         message: `${local.taskId} already had an audit record and it differed. The previous one is at ${kept}; read both before deleting either \u2014 a task that closes twice usually means its id or its board changed.`
       });
     }
-    writeFileSync12(full, body.audit);
+    writeFileSync18(full, body.audit);
     recordOwnWrites(root, local.taskId, written);
     log(`  wrote ${auditPath}`);
     if (opts.override) {
@@ -17907,19 +19221,23 @@ function parseEvidence(values, by, at2 = (/* @__PURE__ */ new Date()).toISOStrin
     at: at2
   }));
 }
-var missingCapture = (root, e) => e.kind === "capture" && !existsSync17(join23(root, e.value));
+var missingCapture = (root, e) => e.kind === "capture" && !existsSync21(join28(root, e.value));
 
 // src/start.ts
-import { execFileSync as execFileSync9 } from "node:child_process";
-import { existsSync as existsSync18, readFileSync as readFileSync20, writeFileSync as writeFileSync13 } from "node:fs";
-import { join as join24 } from "node:path";
+import { execFileSync as execFileSync11 } from "node:child_process";
+import { existsSync as existsSync22, mkdirSync as mkdirSync13, readFileSync as readFileSync26, writeFileSync as writeFileSync19 } from "node:fs";
+import { dirname as dirname14, join as join29 } from "node:path";
 var slug2 = (title) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 function uncommittedTracked(root) {
   try {
-    return execFileSync9("git", ["status", "--porcelain"], { cwd: root, stdio: "pipe" }).toString().split("\n").filter((l) => l.trim() && !l.startsWith("??")).map((l) => l.trim());
+    return execFileSync11("git", ["status", "--porcelain"], { cwd: root, stdio: "pipe" }).toString().split("\n").filter((l) => l.trim() && !l.startsWith("??")).map((l) => l.trim());
   } catch {
     return [];
   }
+}
+function boardRefusal(status, body) {
+  const said = [body.error, body.message].find((v) => typeof v === "string" && v.trim().length > 0)?.trim();
+  return said ? `the board could not start the task: ${said} (it answered ${status})` : `the board could not start the task \u2014 it answered ${status} and gave no reason`;
 }
 async function runStart(input) {
   const { root, apiUrl, tenant, repo, token, actor } = input;
@@ -17940,7 +19258,7 @@ async function runStart(input) {
   const doFetch = input.fetchImpl ?? fetch;
   const base = `${apiUrl.replace(/\/+$/, "")}/v1/${tenant}/${repo}`;
   const headers = boardHeaders(token);
-  const call3 = async (path, method, body) => {
+  const call2 = async (path, method, body) => {
     const res = await doFetch(`${base}${path}`, {
       method,
       headers,
@@ -17961,7 +19279,7 @@ async function runStart(input) {
   let boundBranch;
   let onBoard;
   if (input.taskId) {
-    const got = await call3(`/tasks/${input.taskId}`, "GET");
+    const got = await call2(`/tasks/${input.taskId}`, "GET");
     mustSucceed(`reading ${input.taskId}`, got);
     taskId = String(got.body.task.id);
     title = input.title ?? String(got.body.task.title ?? taskId);
@@ -17969,10 +19287,11 @@ async function runStart(input) {
     boundBranch = got.body.task.branch ?? void 0;
     onBoard = got.body.task;
   } else {
-    const intake2 = await call3("/tasks", "POST", { title: input.title, requested_by: actor });
+    const intake2 = await call2("/tasks", "POST", { title: input.title, requested_by: actor });
     mustSucceed("filing the task", intake2);
     taskId = intake2.body.task.id;
     title = input.title;
+    state = "Triage";
   }
   const patch = input.taskId ? {
     ...input.goal !== void 0 ? { goal: input.goal } : {},
@@ -17992,13 +19311,13 @@ async function runStart(input) {
     priority: input.priority ?? "none"
   };
   if (Object.keys(patch).length) {
-    const scoped = await call3(`/tasks/${taskId}`, "PUT", patch);
+    const scoped = await call2(`/tasks/${taskId}`, "PUT", patch);
     mustSucceed(`scoping ${taskId}`, scoped);
   }
   const branch = boundBranch ?? `task/${taskId}-${slug2(title)}`;
   const exists = () => {
     try {
-      execFileSync9("git", ["rev-parse", "--verify", `refs/heads/${branch}`], { cwd: root, stdio: "pipe" });
+      execFileSync11("git", ["rev-parse", "--verify", `refs/heads/${branch}`], { cwd: root, stdio: "pipe" });
       return true;
     } catch {
       return false;
@@ -18007,25 +19326,32 @@ async function runStart(input) {
   const repointed = (() => {
     if (!exists()) return false;
     try {
-      execFileSync9("git", ["merge-base", "--is-ancestor", branch, "HEAD"], { cwd: root, stdio: "pipe" });
-      const tip = execFileSync9("git", ["rev-parse", branch], { cwd: root, stdio: "pipe" }).toString().trim();
-      const head = execFileSync9("git", ["rev-parse", "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
+      execFileSync11("git", ["merge-base", "--is-ancestor", branch, "HEAD"], { cwd: root, stdio: "pipe" });
+      const tip = execFileSync11("git", ["rev-parse", branch], { cwd: root, stdio: "pipe" }).toString().trim();
+      const head = execFileSync11("git", ["rev-parse", "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
       if (tip === head) return false;
-      execFileSync9("git", ["branch", "-f", branch, "HEAD"], { cwd: root, stdio: "pipe" });
+      execFileSync11("git", ["branch", "-f", branch, "HEAD"], { cwd: root, stdio: "pipe" });
       return true;
     } catch {
       return false;
     }
   })();
-  execFileSync9("git", exists() ? ["checkout", branch] : ["checkout", "-b", branch], { cwd: root, stdio: "pipe" });
+  execFileSync11("git", exists() ? ["checkout", branch] : ["checkout", "-b", branch], { cwd: root, stdio: "pipe" });
   if (repointed) {
     console.error(`  note: ${branch} pointed at history HEAD already contains \u2014 re-pointed to HEAD instead of rewinding the checkout`);
   }
-  if (state !== "Todo") await call3(`/tasks/${taskId}/transition`, "POST", { to: "Todo", actor });
-  const gate = await call3(`/tasks/${taskId}/transition`, "POST", {
+  const hop = state === "Triage" ? await call2(`/tasks/${taskId}/transition`, "POST", { to: "Todo", actor }) : void 0;
+  const boardState = hop && hop.status >= 200 && hop.status < 300 ? "Todo" : state ?? "Todo";
+  const gate = await call2(`/tasks/${taskId}/transition`, "POST", {
     to: "In Progress",
     actor,
-    branch
+    branch,
+    // The checkout this task is being started from (CC-50). `root` is the git
+    // top-level (`git rev-parse --show-toplevel`, resolved once in index.ts),
+    // so the grant records the directory that holds it — right for a linked
+    // worktree by construction, and a fact git answers rather than one the
+    // agent sets (CC-51).
+    holder_path: root
   });
   const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const refused = gate.status !== 200 || gate.body.ok === false;
@@ -18035,7 +19361,12 @@ async function runStart(input) {
     // The board's title when adopting: a record named differently from the
     // task it records is the drift `cycle doctor` already counts twelve of.
     title,
-    state: refused ? "Todo" : "In Progress",
+    /* A refusal reports the state the board actually holds, never an invented
+       one. This read `refused ? 'Todo' : 'In Progress'`, so a start refused
+       against a task the board held In Review rewrote its record to Todo —
+       and because the record is rendered rather than amended, that took the
+       Result section and the ticked criteria with it (CC-462). */
+    state: refused ? boardState : "In Progress",
     branch,
     /* A field nobody typed is not a field somebody cleared — the same rule the
        patch above already follows, applied to the file it forgot. */
@@ -18050,17 +19381,22 @@ async function runStart(input) {
     today,
     refused
   });
-  recordOwnWrites(root, taskId, [join24(".zones", "tasks", `${taskId}.md`)]);
+  recordOwnWrites(root, taskId, [join29(".zones", "tasks", `${taskId}.md`)]);
   if (refused) {
+    const gateFailures = gate.body.failures ?? [];
+    if (gateFailures.length) {
+      return { started: false, taskId, branch, failures: gateFailures };
+    }
     return {
       started: false,
       taskId,
       branch,
-      failures: gate.body.failures ?? []
+      failures: [{ field: "board", message: boardRefusal(gate.status, gate.body) }],
+      boardError: true
     };
   }
   if (input.syncAfter !== false) {
-    await runSync({ root, apiUrl, token, tenant, repo, fetchImpl: input.fetchImpl });
+    await runSync({ root, apiUrl, token, tenant, repo, fetchImpl: input.fetchImpl, reconcile: false });
   }
   const scan = scanPlaybooks(root);
   const byTopic = new Map((scan?.books ?? []).map((b) => [b.topic, b]));
@@ -18069,7 +19405,7 @@ async function runStart(input) {
   for (const t of declaredTopics) {
     if (byTopic.get(t)?.status === "archived") {
       topicWarnings.push(`topic "${t}" is archived \u2014 its playbook stays for history and no longer loads`);
-    } else if (existsSync18(join24(root, ".zones", "playbooks", `${t}.md`))) {
+    } else if (existsSync22(join29(root, ".zones", "playbooks", `${t}.md`))) {
       playbooks.push(`.zones/playbooks/${t}.md`);
     } else {
       topicWarnings.push(`topic "${t}" has no playbook \u2014 nothing to load (the birth rule: no cited content, no topic)`);
@@ -18087,11 +19423,11 @@ async function runStart(input) {
   };
 }
 function priorRecord(root, taskId) {
-  const path = join24(root, ".zones", "tasks", `${taskId}.md`);
-  if (!existsSync18(path)) return { history: [] };
+  const path = join29(root, ".zones", "tasks", `${taskId}.md`);
+  if (!existsSync22(path)) return { history: [] };
   let text;
   try {
-    text = readFileSync20(path, "utf8");
+    text = readFileSync26(path, "utf8");
   } catch {
     return { history: [] };
   }
@@ -18101,11 +19437,48 @@ function priorRecord(root, taskId) {
     const row = /^\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*([^|]*?)\s*\|\s*(.*?)\s*\|$/.exec(line.trim());
     if (row) history.push([row[1], row[2], row[3]]);
   }
-  return { created, history };
+  return { created, history, text };
+}
+var RENDERED_HEADINGS = /* @__PURE__ */ new Set(["## Goal", "## Non-goals", "## Affected zones", "## Acceptance criteria", "## History"]);
+function sectionsOf(text) {
+  const out = [];
+  let cur = null;
+  for (const line of text.split("\n")) {
+    if (line.startsWith("## ")) {
+      if (cur) out.push({ heading: cur.heading, body: cur.body.join("\n") });
+      cur = { heading: line.trim(), body: [] };
+    } else if (cur) cur.body.push(line);
+  }
+  if (cur) out.push({ heading: cur.heading, body: cur.body.join("\n") });
+  return out;
+}
+function amendRendered(rendered, prior) {
+  if (!prior) return rendered;
+  const ticked = new Set(
+    (sectionsOf(prior).find((s) => s.heading === "## Acceptance criteria")?.body ?? "").split("\n").map((l) => /^- \[[xX]\]\s+(.*)$/.exec(l.trim())?.[1]).filter((t) => Boolean(t))
+  );
+  let out = ticked.size ? rendered.split("\n").map((l) => {
+    const m = /^- \[ \]\s+(.*)$/.exec(l.trim());
+    return m && ticked.has(m[1]) ? l.replace("- [ ]", "- [x]") : l;
+  }).join("\n") : rendered;
+  const carried = sectionsOf(prior).filter((s) => !RENDERED_HEADINGS.has(s.heading));
+  if (carried.length) {
+    const block = carried.map((s) => `${s.heading}
+${s.body}`.replace(/\n+$/, "")).join("\n\n");
+    const at2 = out.indexOf("\n---\n\n## History");
+    out = at2 === -1 ? `${out.replace(/\n+$/, "")}
+
+${block}
+` : `${out.slice(0, at2)}
+
+${block}
+${out.slice(at2)}`;
+  }
+  return out;
 }
 function writeRecord(root, r) {
   const prior = priorRecord(root, r.taskId);
-  const now = r.refused ? [r.today, "Todo", "**Gate refused In Progress** \u2014 see the failures printed at start; branch kept"] : [r.today, "In Progress", "Gate passed; grant bound to this branch"];
+  const now = r.refused ? [r.today, r.state, "**Gate refused In Progress** \u2014 see the failures printed at start; branch kept"] : [r.today, "In Progress", "Gate passed; grant bound to this branch"];
   const last = prior.history[prior.history.length - 1];
   const repeats = last && last[0] === now[0] && last[1] === now[1] && last[2] === now[2];
   const history = prior.history.length ? repeats ? prior.history : [...prior.history, now] : [
@@ -18130,7 +19503,9 @@ function writeRecord(root, r) {
     writtenBy: "Record written at birth by `cycle start` (CC-111) \u2014 the D-43 orphan pattern\nends where this command begins.",
     history
   });
-  writeFileSync13(join24(root, ".zones", "tasks", `${r.taskId}.md`), body);
+  const recordPath = join29(root, ".zones", "tasks", `${r.taskId}.md`);
+  mkdirSync13(dirname14(recordPath), { recursive: true });
+  writeFileSync19(recordPath, amendRendered(body, prior.text));
 }
 
 // src/scope.ts
@@ -18188,31 +19563,10 @@ async function runScope(opts) {
 }
 
 // src/decide.ts
-import { existsSync as existsSync19, readFileSync as readFileSync21 } from "node:fs";
-import { join as join25 } from "node:path";
-async function call(opts, path, init) {
-  const doFetch = opts.fetchImpl ?? fetch;
-  const warnings = [];
-  const res = await doFetch(`${opts.apiUrl.replace(/\/+$/, "")}/v1/${opts.tenant}/${opts.repo}${path}`, {
-    ...init,
-    headers: boardHeaders(opts.token)
-  });
-  const drift = replyDrift(res);
-  if (drift) warnings.push(drift);
-  const tooOld = await upgradeRequired(res);
-  if (tooOld) return { ok: false, message: tooOld, warnings };
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    return {
-      ok: false,
-      message: body.failures?.map((f) => f.message).join(" ") ?? body.error ?? `the board answered ${res.status}`,
-      warnings
-    };
-  }
-  return { ok: true, body: await res.json(), warnings };
-}
-var pendingRequests = (opts) => call(opts, "/access-requests?state=pending");
-var decideRequest = (opts, id, state, decidedBy, ttlHours) => call(opts, `/access-requests/${id}/resolve`, {
+import { existsSync as existsSync23, readFileSync as readFileSync27 } from "node:fs";
+import { join as join30 } from "node:path";
+var pendingRequests = (opts) => boardCall(opts, "/access-requests?state=pending");
+var decideRequest = (opts, id, state, decidedBy, ttlHours) => boardCall(opts, `/access-requests/${id}/resolve`, {
   method: "POST",
   body: JSON.stringify({ state, decided_by: decidedBy, ttl_hours: ttlHours, channel: "session" })
 });
@@ -18225,11 +19579,23 @@ function formatRequest(r, zoneName, owner) {
   ].join("\n");
 }
 function zoneOwners(root) {
-  const path = join25(root, ".zones", "zones.yml");
-  if (!existsSync19(path)) return /* @__PURE__ */ new Map();
-  const parsed = parseZonesFile(readFileSync21(path, "utf8"));
+  const path = join30(root, ".zones", "zones.yml");
+  if (!existsSync23(path)) return /* @__PURE__ */ new Map();
+  const parsed = parseZonesFile(readFileSync27(path, "utf8"));
   if (!parsed.ok) return /* @__PURE__ */ new Map();
   return new Map(parsed.value.zones.map((z) => [z.id, { name: z.name, owner: z.owner }]));
+}
+
+// src/mentions.ts
+var openMentions = (opts, taskId) => boardCall(opts, `/tasks/${encodeURIComponent(taskId)}/mentions`);
+var ackMention = (opts, taskId, mentionT) => boardCall(opts, `/tasks/${encodeURIComponent(taskId)}/mentions/ack`, {
+  method: "POST",
+  body: JSON.stringify({ mention_t: mentionT })
+});
+function formatMention(m) {
+  return `${m.t}
+  ${m.reason}
+  from ${m.actor}`;
 }
 
 // src/show.ts
@@ -18296,21 +19662,21 @@ function formatList(tasks) {
 }
 
 // src/deploy-guard.ts
-import { execFileSync as execFileSync10 } from "node:child_process";
+import { execFileSync as execFileSync12 } from "node:child_process";
 function currentBranch2(env = process.env, fromGit = gitBranch) {
   return env.CC_DEPLOY_BRANCH || env.WORKERS_CI_BRANCH || env.GITHUB_REF_NAME || env.VERCEL_GIT_COMMIT_REF || env.BRANCH || env.CI_COMMIT_REF_NAME || env.BUILDKITE_BRANCH || fromGit() || null;
 }
 var headIsTrunkTip = (trunk2) => {
   try {
-    execFileSync10("git", ["fetch", "--quiet", "origin", trunk2], {
+    execFileSync12("git", ["fetch", "--quiet", "origin", trunk2], {
       stdio: ["ignore", "ignore", "ignore"],
       timeout: 2e4
     });
-    const head = execFileSync10("git", ["rev-parse", "HEAD"], {
+    const head = execFileSync12("git", ["rev-parse", "HEAD"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
-    const tip = execFileSync10("git", ["rev-parse", `origin/${trunk2}`], {
+    const tip = execFileSync12("git", ["rev-parse", `origin/${trunk2}`], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
@@ -18321,7 +19687,7 @@ var headIsTrunkTip = (trunk2) => {
 };
 var gitBranch = () => {
   try {
-    const name = execFileSync10("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+    const name = execFileSync12("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
@@ -18395,18 +19761,27 @@ var VALUE_FLAGS = {
   "request-access": ["--zone", "--mode", "--reason", "--alternative"],
   verify: ["--base", "--evidence", "--override"],
   seed: ["--topics"],
-  protect: ["--zone"]
+  protect: ["--zone"],
+  handoff: ["--closed", "--out"]
 };
 var KNOWN_FLAGS = {
   start: ["--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--help", "-h"],
   submit: ["--help", "-h"],
+  // sync graduated here with its reconcile stage (CC-570): it deletes grant
+  // files and writes record files now, so a mistyped flag must be refused, not
+  // silently dropped in front of a command that repairs the vault.
+  sync: ["--no-reconcile", "--help", "-h"],
   pause: ["--reason", "--help", "-h"],
   verify: ["--base", "--evidence", "--from-history", "--close", "--override", "--help", "-h"],
   // `--state` stays in the allowed set so it reaches runScope, whose refusal
   // names the gate and its edges (E15) — the dispatch's "not a flag this
   // command takes" would bury the better sentence. Recognised, then refused
   // with the reason, is not the same as accepted.
-  scope: ["--title", "--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--mode", "--state", "--help", "-h"]
+  scope: ["--title", "--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--mode", "--state", "--help", "-h"],
+  // `handoff` is read-only until --out, and --out writes a file into the
+  // working tree — a stray flag silently dropped there is a file written by a
+  // command somebody believed meant something else (CC-580).
+  handoff: ["--closed", "--out", "--offline", "--help", "-h"]
 };
 function wantsHelp(command, args) {
   const takesValue = new Set(VALUE_FLAGS[command] ?? []);
@@ -18416,6 +19791,18 @@ function wantsHelp(command, args) {
     if (takesValue.has(a)) i++;
   }
   return false;
+}
+function positionalTaskId(command, args) {
+  const takesValue = new Set(VALUE_FLAGS[command] ?? []);
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (takesValue.has(a)) {
+      i++;
+      continue;
+    }
+    if (/^[A-Z]+-\d+$/.test(a)) return a;
+  }
+  return void 0;
 }
 function unknownFlag(command, args) {
   const known = KNOWN_FLAGS[command];
@@ -18563,12 +19950,24 @@ var COMMAND_HELP = {
   disk, which is the case this exists for.`,
   sync: `cycle sync \u2014 push the map and events up, pull the grant down
 
-  cycle sync
+  cycle sync [--no-reconcile]
 
   Sends this repository's zone map and this task's local events to the board, and
   writes down whatever grant the board holds for this branch \u2014 including a
   revocation, which is the one outcome that changes what you may touch. It never
-  moves a task between states.`,
+  moves a task between states.
+
+  It also repairs the drift a vault accumulates when nobody runs maintenance: a
+  record behind the board catches up, a task the board holds past Triage with no
+  record file gets one written from the board, and a grant file for work the
+  board is not running is deleted \u2014 the hook reads those files and never the
+  board (D-10), so a leftover one is access nothing upstream believes in. One
+  line per repair, silence when there is nothing to repair.
+
+  What it will not do on its own: pause a task (a state change needs your
+  reason), rewrite a record that is AHEAD of the board (that is evidence \u2014 run
+  \`cycle pull\`), or touch anything at all when two records collide on one id.
+  --no-reconcile skips the whole of it.`,
   pull: `cycle pull \u2014 reconcile the record files against the board
 
   cycle pull [--adopt] [--write-missing]
@@ -18609,6 +20008,19 @@ var COMMAND_HELP = {
 
   Records the refusal at the board and closes the request. Nothing here changes.
   The requester sees it on their next \`cycle sync\`.`,
+  ack: `cycle ack \u2014 answer a mention addressed to this task
+
+  cycle ack            list the mentions still open for this branch's task
+  cycle ack <when>     discharge the one raised at that timestamp
+
+  A mention is a fact another task left for this one. It carries no command and
+  changes no gate decision (D-31) \u2014 an unacknowledged one is a warning at the
+  closing gate and never a refusal, and acking it closes that warning and
+  nothing else. No zone opens.
+
+  The task is the branch's own and cannot be passed as an argument: the board
+  only accepts an ack from the task the mention was addressed to. The mention
+  itself stays on the record \u2014 an ack is a second event, never an erasure.`,
   protect: `cycle protect \u2014 answer "should this be protected?" with yes
 
   cycle protect <glob> --zone <id>
@@ -18626,10 +20038,16 @@ var COMMAND_HELP = {
 
   cycle feed <topic> "one bullet (CC-xxx)"
 
-  Appends one bullet to .zones/playbooks/<topic>.md \u2014 a local file edit, in your
-  diff, committed with the close. Always optional: skipping is legal by rule, and
-  a required feed would be a mandatory checklist arriving from a fourth side
-  (D-45). The sync lint judges the citation, not this command.`,
+  Appends one bullet to .zones/playbooks/<topic>.md, at the end of its
+  "## Feed rule" section \u2014 where the playbook itself says fed knowledge lives,
+  never under whatever subheading happens to end the must-know body (CC-581).
+  A playbook without that section takes the bullet at the end of the file, and
+  the command says so with a note \u2014 a stated fallback, not a silent one.
+
+  A local file edit, in your diff, committed with the close. Always optional:
+  skipping is legal by rule, and a required feed would be a mandatory checklist
+  arriving from a fourth side (D-45). The sync lint judges the citation, not
+  this command.`,
   seed: `cycle seed \u2014 draft playbooks from this codebase
 
   cycle seed [--topics a,b] [--yes]
@@ -18661,21 +20079,51 @@ var COMMAND_HELP = {
   Never remove it from a deploy command, and never set CC_ALLOW_BRANCH_DEPLOY=1
   to make a build pass \u2014 a deploy that needs it gone is the deploy it was
   written for.`,
+  "merge-driver": `cycle merge-driver \u2014 the cc-agents git merge driver, as a verb
+
+  git config merge.cc-agents.driver "cycle merge-driver %O %A %B"
+
+  Plumbing: git invokes it during a merge of AGENTS.md, you do not. It 3-way
+  merges the human content outside the cc:begin/cc:end block and keeps this
+  side's block, so the ephemeral region never conflicts while real edits still
+  do (CC-543). It exists as a verb so a repository that does not vendor
+  scripts/merge-agents.mjs \u2014 any consumer repo \u2014 still has the driver in the
+  binary it installed; \`cycle init\` writes the mapping and \`cycle sync\`
+  re-registers the config whenever a clone is missing it (CC-590).`,
   mcp: `cycle mcp \u2014 serve the MCP tools over stdio
 
   cycle mcp
 
   For a client's .mcp.json, not for a terminal: stdout is a newline-delimited
   JSON-RPC stream and it never returns. The tools it serves file and scope work
-  against the board; the gate is still the only thing that moves a task.`
+  against the board; the gate is still the only thing that moves a task.`,
+  handoff: `cycle handoff \u2014 a day-1 briefing for whoever picks this repository up next
+
+  cycle handoff [--closed N] [--out <path>] [--offline]
+
+  Prints what is running, what is undecided, what was just closed, and the
+  order to read it in \u2014 every line read from this repository or from the board
+  it answers to. Every section is always present: a source that is missing says
+  so, and the last section lists what the briefing could not answer. When the
+  board cannot answer (or with --offline) live states come from the record
+  files, and the briefing says the states are the files' \u2014 never the board's.
+
+  Without --out it changes nothing, and the last line offers the command that
+  would keep it. With --out it writes the briefing there \u2014 never into .zones/ \u2014
+  and records its own write in this task's event log, so the close does not
+  read the file as an unwitnessed mutation.
+
+  --closed N   how many recently closed tasks to show (default 10)
+  --out <path> write the briefing to that file instead of only printing it
+  --offline    do not ask the board; the briefing says what that cost`
 };
 
 // src/index.ts
 function branchTouched(root) {
   for (const base of ["origin/main", "main"]) {
     try {
-      const mb = execFileSync11("git", ["merge-base", base, "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
-      const out = execFileSync11("git", ["diff", "--name-only", `${mb}..HEAD`], { cwd: root, stdio: "pipe" }).toString();
+      const mb = execFileSync13("git", ["merge-base", base, "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
+      const out = execFileSync13("git", ["diff", "--name-only", `${mb}..HEAD`], { cwd: root, stdio: "pipe" }).toString();
       return new Set(out.split("\n").filter(Boolean));
     } catch {
     }
@@ -18684,17 +20132,17 @@ function branchTouched(root) {
 }
 function repoRoot(from = process.cwd()) {
   try {
-    const out = execFileSync11("git", ["rev-parse", "--show-toplevel"], {
+    const out = execFileSync13("git", ["rev-parse", "--show-toplevel"], {
       cwd: from,
       stdio: ["ignore", "pipe", "ignore"]
     }).toString().trim();
     if (out) return out;
   } catch {
   }
-  let cur = resolve4(from);
+  let cur = resolve6(from);
   for (; ; ) {
-    if (existsSync21(join27(cur, ".git"))) return cur;
-    const parent = dirname9(cur);
+    if (existsSync25(join32(cur, ".git"))) return cur;
+    const parent = dirname16(cur);
     if (parent === cur) return null;
     cur = parent;
   }
@@ -18723,6 +20171,10 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
                   [--zone id:write] [--topics a,b] [--priority high] [--gate none]
                   Correct what a task says. It cannot move it \u2014 that is the gate
   cycle status       What task is active, and what is open to it
+  cycle handoff [--closed N] [--out <path>]
+                  A day-1 briefing for whoever picks this repository up next:
+                  what is running, what is undecided, what was just closed, and
+                  the order to read it in. Prints; --out writes
   cycle sync         Push the zone map and events, pull the grant for this branch
   cycle pull [--adopt] [--write-missing]
                   Reconcile the record files against the board's task states
@@ -18736,6 +20188,8 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
   cycle approve <id> [--hours N] \xB7 cycle deny <id>
                   Answer one from here. The console is the stronger door; the
                   trail records which one answered
+  cycle ack [when]   Mentions addressed to this branch's task, and the way to
+                  discharge one. Advisory \u2014 it closes a warning, opens nothing
   cycle verify [--from-history]
                   Run the closing checks against this branch \u2014 or, for work that
                   merged before it closed, against the task's own commits in main
@@ -18808,6 +20262,7 @@ var NOT_YET = {
   discard: "Phase 2.",
   promote: "Phase 2."
 };
+var boardTaskFailed = (status) => status === "unavailable" || status === "not_configured" || status === "invalid";
 async function main2() {
   const [command, ...args] = process.argv.slice(2);
   if (!command || command === "--help" || command === "-h" || command === "help") {
@@ -18943,7 +20398,7 @@ Looking at ${root}
         root,
         acceptAll,
         log: (l) => console.log(l),
-        hookPath: existsSync21(join27(root, "packages/hook/bin/cc-hook.sh")) ? "$CLAUDE_PROJECT_DIR/packages/hook/bin/cc-hook.sh" : void 0,
+        hookPath: existsSync25(join32(root, "packages/hook/bin/cc-hook.sh")) ? "$CLAUDE_PROJECT_DIR/packages/hook/bin/cc-hook.sh" : void 0,
         /* An abandoned question is a no, not a crash (CC-181).
          *
          * `rl.question` rejects when stdin ends — a pipe running dry, a closed
@@ -18993,7 +20448,7 @@ Next: set a real owner for each zone in .zones/zones.yml \u2014 that is who gets
 asked when someone needs access. Then run \`cycle doctor\` to confirm it is live.
 `
       );
-      if (!existsSync21(join27(root, ".zones", "playbooks"))) {
+      if (!existsSync25(join32(root, ".zones", "playbooks"))) {
         console.log(
           `No playbooks yet. Once the board is connected, \`cycle seed\` drafts them from
 this codebase \u2014 offered as choices, claims citing real files, topics with
@@ -19035,8 +20490,8 @@ nothing to cite not born (docs/07). Or write them by hand; the contract holds.
       const topics = (take("topics") ?? "").split(",").map((t) => t.trim()).filter(Boolean);
       let actor = "solo";
       try {
-        const { execFileSync: execFileSync12 } = await import("node:child_process");
-        actor = execFileSync12("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || actor;
+        const { execFileSync: execFileSync14 } = await import("node:child_process");
+        actor = execFileSync14("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || actor;
       } catch {
       }
       actor = savedIdentity(board2.apiUrl) ?? actor;
@@ -19064,7 +20519,8 @@ ${result.taskId} ${adopting ? "was not started" : "filed and scoped, but the gat
         if (result.branch) {
           console.log(`
 The task is in Todo, and this shell is now on \`${result.branch}\` \u2014 the branch its grant binds when it starts.`);
-          console.log("Fix what the gate named (approvals go through the board), then re-run the transition.\n");
+          console.log(result.boardError ? `This is the board or the connection, not your task \u2014 wait a moment and run \`cycle start ${result.taskId}\` again; if it keeps failing, \`cycle doctor\` says why.
+` : "Fix what the gate named (approvals go through the board), then re-run the transition.\n");
         } else {
           console.log("");
         }
@@ -19208,6 +20664,71 @@ ${id} ${command === "approve" ? "approved" : "denied"} as ${me}.`);
       console.log("`cycle sync` on the task's branch brings the decision down.\n");
       return 0;
     }
+    /* The mention, discharged where it was addressed (CC-512).
+     *
+     * `POST /tasks/:id/mentions/ack` shipped with CC-445 and had no caller
+     * anywhere — no command, no tool, no button — so a mention could be raised
+     * and never answered, and the closing gate warned about the same open one
+     * at every close of that task. See mentions.ts for why this door and not
+     * the MCP, and why it is not folded into `cycle sync`.
+     *
+     * The addressee is the branch's own task and is never a flag: a mention is
+     * addressed to a task, the board only accepts an ack from that task's own
+     * row, and an id typed by hand is the `cycle pause CC-123` shape — a
+     * command reaching a task the person typing it is not standing on. */
+    case "ack": {
+      const board2 = boardEnv(root);
+      if (!board2) return 1;
+      const taskId = taskIdFrom(currentBranch(root));
+      if (!taskId) {
+        console.error("\n  `cycle ack` answers a mention addressed to THIS branch's task, and this");
+        console.error("  branch names none. Check out the task branch the mention was sent to.\n");
+        return 1;
+      }
+      const open = await openMentions(board2, taskId);
+      for (const w of open.warnings) console.log(`  note: ${w}`);
+      if (!open.ok) {
+        console.error(`
+  ${open.message}
+`);
+        return 1;
+      }
+      const list = open.body.mentions ?? [];
+      const at2 = args.find((a) => !a.startsWith("--"));
+      if (!at2) {
+        console.log("");
+        if (!list.length) {
+          console.log(`Nothing open for ${taskId}. A mention nobody sent is the quiet case, not a problem.
+`);
+          return 0;
+        }
+        for (const m of list) console.log(`${formatMention(m)}
+`);
+        console.log("A checkout named above is claimed, not verified \u2014 `git worktree list --porcelain` settles it.");
+        console.log(`Answer one with \`cycle ack ${list[0].t}\`.
+`);
+        return 0;
+      }
+      if (!list.some((m) => m.t === at2)) {
+        console.error(`
+  ${taskId} has no open mention at ${at2}. \`cycle ack\` lists what is open.
+`);
+        return 1;
+      }
+      const r = await ackMention(board2, taskId, at2);
+      for (const w of r.warnings) console.log(`  note: ${w}`);
+      if (!r.ok) {
+        console.error(`
+  ${r.message}
+`);
+        return 1;
+      }
+      console.log(`
+Acknowledged the mention of ${at2} on ${taskId}.`);
+      console.log("The mention stays on the record \u2014 an ack is a second event, never an erasure.");
+      console.log("It closes the closing-gate warning for this one, and changes nothing else.\n");
+      return 0;
+    }
     /* Joining this machine to a board (CC-184, D-53). Before `boardEnv`, like
        `cycle login`: pairing is what a repository with no board.json does, and
        requiring one first would be the loop it exists to break. */
@@ -19322,7 +20843,10 @@ ${taskId} updated: ${Object.keys(patch).join(", ")}.`);
       }
       const checks = runDoctor(root);
       const resolved2 = resolveBoard(root);
-      if (resolved2.apiUrl) checks.push(await handshakeCheck(resolved2.apiUrl));
+      if (resolved2.apiUrl) {
+        checks.push(await handshakeCheck(resolved2.apiUrl));
+        checks.push(await updateCheck(resolved2.apiUrl));
+      }
       if (resolved2.apiUrl && resolved2.tenant) {
         checks.push(...await recordDriftCheck(root, { ...resolved2, apiUrl: resolved2.apiUrl }));
       }
@@ -19332,20 +20856,37 @@ ${taskId} updated: ${Object.keys(patch).join(", ")}.`);
     case "sync": {
       const board2 = boardEnv(root);
       if (!board2) return 1;
-      const result = await runSync({ ...board2, root, log: (l) => console.log(l) });
+      const result = await runSync({
+        ...board2,
+        root,
+        reconcile: !args.includes("--no-reconcile"),
+        log: (l) => console.log(l)
+      });
       for (const w of result.warnings) console.log(`  note: ${w}`);
-      console.log(
-        result.grant === "written" ? `
-Grant updated for ${result.taskId}. Run \`cycle status\` to see what is open.
-` : result.grant === "unchanged" ? `
-Already up to date.
-` : result.grant === "revoked" ? `
-The grant for ${result.taskId} was revoked \u2014 protected zones are closed again.
-` : `
-Nothing to pull down.
-`
-      );
-      return 0;
+      const closing = result.grant === "written" ? `Grant updated for ${result.taskId}. Run \`cycle status\` to see what is open.` : result.grant === "unchanged" ? `Already up to date.` : result.grant === "revoked" ? `The grant for ${result.taskId} was revoked \u2014 protected zones are closed again.` : `Nothing to pull down.`;
+      const rec = result.reconciled;
+      const repairs = rec.adopted.length + rec.written.length + rec.grantsRemoved.length;
+      const repaired = repairs ? ` Reconciled: ${rec.adopted.length} record(s) caught up, ${rec.written.length} written from the board, ${rec.grantsRemoved.length} stranded grant(s) removed. Commit them with the task that ran this.` : "";
+      console.log(`
+${closing}${repaired}
+`);
+      return rec.status === "aborted" ? 1 : 0;
+    }
+    /* Plumbing, not a verb people type: git invokes this as the cc-agents
+       merge driver (`merge.cc-agents.driver = "cycle merge-driver %O %A %B"`).
+       It exists so a repository that does not vendor scripts/merge-agents.mjs
+       — every consumer repo — still carries the driver inside the binary it
+       already installed (CC-590). Same code either way: esbuild inlines the
+       script, so the vendored file and this verb cannot drift apart. */
+    case "merge-driver": {
+      const [basePath, oursPath, theirsPath] = args;
+      if (!basePath || !oursPath || !theirsPath) {
+        console.error(
+          "cycle merge-driver: expected three paths (git passes %O %A %B). This is the cc-agents merge driver; git invokes it \u2014 you do not."
+        );
+        return 2;
+      }
+      return runMergeDriver(basePath, oursPath, theirsPath);
     }
     case "pull": {
       const board2 = boardEnv(root);
@@ -19354,11 +20895,12 @@ Nothing to pull down.
       const writeMissing = args.includes("--write-missing");
       const r = await runPull({ ...board2, root, adopt, writeMissing, log: (l) => console.log(l) });
       if (r.status !== "ok") return 1;
-      const drifted = r.behind.length + r.ahead.length + r.rewound.length + r.offLadder.length;
+      const drifted = r.behind.length + r.ahead.length + r.rewound.length + r.offLadder.length + r.contested.length;
       if (!drifted && !r.unrecorded.length && !r.orphaned.length) {
         console.log("\nEvery record agrees with the board.\n");
         return 0;
       }
+      const contestedLine = r.contested.length ? ` ${r.contested.length} contested \u2014 the file and the board describe different work under ${r.contested.map((x) => x.id).join(", ")}; nothing was written there, and \`cycle doctor\` says how to decide which record is real.` : "";
       if (adopt || writeMissing) {
         const did = [
           adopt ? `${r.adopted.length} record(s) caught up` : null,
@@ -19366,19 +20908,19 @@ Nothing to pull down.
         ].filter(Boolean).join(", ");
         console.log(
           `
-${did}.` + (r.ahead.length ? ` ${r.ahead.length} left alone \u2014 a file ahead of the board is evidence, not staleness.` : "") + " Commit them with the task that ran this.\n"
+${did}.` + (r.ahead.length ? ` ${r.ahead.length} left alone \u2014 a file ahead of the board is evidence, not staleness.` : "") + contestedLine + " Commit them with the task that ran this.\n"
         );
       } else {
         console.log(
-          "\nNothing was written." + (r.behind.length ? ` \`--adopt\` catches up the ${r.behind.length} stale record(s).` : "") + (r.unrecorded.length ? ` \`--write-missing\` materialises the ${r.unrecorded.length} task(s) the board holds and disk does not.` : "") + " The rest need a decision, not a rewrite.\n"
+          "\nNothing was written." + (r.behind.length ? ` \`--adopt\` catches up the ${r.behind.length} stale record(s).` : "") + (r.unrecorded.length ? ` \`--write-missing\` materialises the ${r.unrecorded.length} task(s) the board holds and disk does not.` : "") + contestedLine + " The rest need a decision, not a rewrite.\n"
         );
       }
-      return 0;
+      return adopt && r.contested.length ? 1 : 0;
     }
     case "pause": {
       const board2 = boardEnv(root);
       if (!board2) return 1;
-      const named = args.find((a) => /^[A-Z]+-\d+$/.test(a));
+      const named = positionalTaskId("pause", args);
       const at2 = args.indexOf("--reason");
       const reason = (at2 === -1 ? "" : args[at2 + 1]) ?? "";
       if (!reason.trim()) {
@@ -19493,7 +21035,7 @@ That capture is not in the repository: ${bad.map((e) => e.value).join(", ")}`);
           actor,
           evidence,
           fromHistory: args.includes("--from-history"),
-          taskId: args.find((a) => /^[A-Z]+-\d+$/.test(a)),
+          taskId: positionalTaskId("verify", args),
           override: overrideAt === -1 ? void 0 : { by: actor, reason: args[overrideAt + 1] ?? "" },
           log: (l) => console.log(l)
         });
@@ -19526,7 +21068,7 @@ ${closed.taskId} is Done.` + (closed.auditPath ? ` The record is at ${closed.aud
         base,
         evidence,
         fromHistory: args.includes("--from-history"),
-        taskId: args.find((a) => /^[A-Z]+-\d+$/.test(a)),
+        taskId: positionalTaskId("verify", args),
         log: (l) => console.log(l)
       });
       for (const w of result.warnings) console.log(`  note: ${w.message}`);
@@ -19570,7 +21112,7 @@ Seeded ${result.written.length} playbook(s): ${result.written.join(", ")}.`);
       } else {
         console.log("");
       }
-      return 0;
+      return boardTaskFailed(result.status) ? 1 : 0;
     }
     case "challenge": {
       const board2 = boardEnv(root);
@@ -19602,7 +21144,7 @@ ${result.accepted.length} accepted, ${result.rejected.length} refused knowingly,
       } else {
         console.log("");
       }
-      return 0;
+      return boardTaskFailed(result.status) ? 1 : 0;
     }
     case "feed": {
       const [topic, ...rest] = args.filter((a) => !a.startsWith("--"));
@@ -19616,11 +21158,14 @@ ${result.accepted.length} accepted, ${result.rejected.length} refused knowingly,
         console.log(`  note: ${result.warning}`);
         return 0;
       }
+      const note = result.warning ? `  note: ${result.warning}
+
+` : "";
       console.log(`
 Fed ${result.path}:
   ${result.bullet}
 
-The sync lint judges the citation; commit the playbook with the close.
+${note}The sync lint judges the citation; commit the playbook with the close.
 `);
       return 0;
     }
@@ -19654,6 +21199,51 @@ ${r.message}
       console.log("\n" + runStatus(root) + "\n");
       return 0;
     }
+    /* The day-1 briefing (CC-580, CC-571 phase 0). Beside `status` and before
+       any boardEnv, on purpose: like status, doctor and feed it must answer
+       with no board at all — the board is one of its sources, never its
+       precondition, and an unreachable one becomes a line in the briefing's
+       own "could not answer" section rather than a refusal. */
+    case "handoff": {
+      const closedAt = args.indexOf("--closed");
+      let closed;
+      if (closedAt !== -1) {
+        closed = Number(args[closedAt + 1]);
+        if (!Number.isInteger(closed) || closed < 0) {
+          console.error("\ncycle handoff: --closed takes how many recently closed tasks to show, e.g. `cycle handoff --closed 10`. Nothing was done.\n");
+          return 1;
+        }
+      }
+      const outAt = args.indexOf("--out");
+      const out = outAt === -1 ? void 0 : args[outAt + 1];
+      if (outAt !== -1 && (!out || out.startsWith("--"))) {
+        console.error("\ncycle handoff: --out takes the path to write, e.g. `cycle handoff --out HANDOFF.md`. Nothing was written.\n");
+        return 1;
+      }
+      const resolved2 = resolveBoard(root);
+      const result = await runHandoff({
+        root,
+        closed,
+        out,
+        offline: args.includes("--offline"),
+        board: resolved2.apiUrl && resolved2.tenant ? { apiUrl: resolved2.apiUrl, tenant: resolved2.tenant, repo: resolved2.repo, token: resolved2.token } : null
+      });
+      if (!result.ok) {
+        console.error(`
+${result.refusal}
+`);
+        return 1;
+      }
+      if (result.wrote) {
+        console.log(`
+Wrote ${result.wrote} \u2014 regenerate it with \`cycle handoff --out ${result.wrote}\` rather than editing it.`);
+        console.log(result.ownWriteRecorded ? "  note: recorded as this task's own write (CC-205) \u2014 the close reads the diff, and the file now has an event beside it." : "  note: no task is bound to this branch, so the write has no event beside it \u2014 a close here would read it as unwitnessed.");
+        console.log("");
+      } else {
+        console.log("\n" + result.text + "\n");
+      }
+      return 0;
+    }
     default:
       console.error(`Unknown command "${command}".
 
@@ -19662,9 +21252,23 @@ ${HELP}`);
   }
 }
 main2().then(
-  (code) => process.exit(code),
+  async (code) => {
+    await updateNotice(code);
+    process.exit(code);
+  },
   (err) => {
     console.error(`cycle failed: ${err.message}`);
     process.exit(1);
   }
 );
+async function updateNotice(code) {
+  try {
+    if (!ambientNoticeAllowed({ code, stderrIsTTY: Boolean(process.stderr.isTTY), command: process.argv[2] })) return;
+    const root = repoRoot();
+    if (!root) return;
+    const board2 = resolveBoard(root);
+    if (!board2.apiUrl) return;
+    await notifyIfBehind({ apiUrl: board2.apiUrl });
+  } catch {
+  }
+}

@@ -148,6 +148,13 @@ List the files written. Then say the two things people get wrong:
 - enforcement is not installed yet by this skill alone — the hook is what
   actually blocks a write, and it is a per-project install today
 
+One mechanic worth a sentence: the committed AGENTS.md block is deliberately
+byte-stable — it never names the active task, so it never merge-conflicts.
+Task context lives in a gitignored CLAUDE.local.md the binary maintains, and
+`cycle init`/`cycle sync` wire a git merge driver (`cycle merge-driver`, inside
+the binary — nothing to vendor) as the net for branches that predate this
+(CC-543/CC-551/CC-590).
+
 Offer the first task rather than leaving them at a prompt. If a board was
 configured, the `cc_intake` tool files one in a line, and `cc_interview` drafts
 the four answers as choices they correct.

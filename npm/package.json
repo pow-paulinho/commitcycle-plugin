@@ -1,6 +1,6 @@
 {
   "name": "commitcycle",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Least privilege for AI coding agents: zones with owners, a five-state board with a gate, and grants bound to a task and a branch.",
   "type": "module",
   "bin": { "cycle": "bin/cycle.js" },
