@@ -984,13 +984,13 @@ var require_Collection = __commonJS({
 var require_stringifyComment = __commonJS({
   "../../node_modules/.pnpm/yaml@2.9.0/node_modules/yaml/dist/stringify/stringifyComment.js"(exports) {
     "use strict";
-    var stringifyComment = (str3) => str3.replace(/^(?!$)(?: $)?/gm, "#");
+    var stringifyComment = (str4) => str4.replace(/^(?!$)(?: $)?/gm, "#");
     function indentComment(comment, indent) {
       if (/^\n+$/.test(comment))
         return comment.substring(1);
       return indent ? comment.replace(/^(?! *$)/gm, indent) : comment;
     }
-    var lineComment = (str3, indent, comment) => str3.endsWith("\n") ? indentComment(comment, indent) : comment.includes("\n") ? "\n" + indentComment(comment, indent) : (str3.endsWith(" ") ? "" : " ") + comment;
+    var lineComment = (str4, indent, comment) => str4.endsWith("\n") ? indentComment(comment, indent) : comment.includes("\n") ? "\n" + indentComment(comment, indent) : (str4.endsWith(" ") ? "" : " ") + comment;
     exports.indentComment = indentComment;
     exports.lineComment = lineComment;
     exports.stringifyComment = stringifyComment;
@@ -1144,16 +1144,16 @@ var require_stringifyString = __commonJS({
       lineWidth: ctx.options.lineWidth,
       minContentWidth: ctx.options.minContentWidth
     });
-    var containsDocumentMarker = (str3) => /^(%|---|\.\.\.)/m.test(str3);
-    function lineLengthOverLimit(str3, lineWidth, indentLength) {
+    var containsDocumentMarker = (str4) => /^(%|---|\.\.\.)/m.test(str4);
+    function lineLengthOverLimit(str4, lineWidth, indentLength) {
       if (!lineWidth || lineWidth < 0)
         return false;
       const limit = lineWidth - indentLength;
-      const strLen = str3.length;
+      const strLen = str4.length;
       if (strLen <= limit)
         return false;
       for (let i = 0, start = 0; i < strLen; ++i) {
-        if (str3[i] === "\n") {
+        if (str4[i] === "\n") {
           if (i - start > limit)
             return true;
           start = i + 1;
@@ -1170,11 +1170,11 @@ var require_stringifyString = __commonJS({
       const { implicitKey } = ctx;
       const minMultiLineLength = ctx.options.doubleQuotedMinMultiLineLength;
       const indent = ctx.indent || (containsDocumentMarker(value) ? "  " : "");
-      let str3 = "";
+      let str4 = "";
       let start = 0;
       for (let i = 0, ch = json[i]; ch; ch = json[++i]) {
         if (ch === " " && json[i + 1] === "\\" && json[i + 2] === "n") {
-          str3 += json.slice(start, i) + "\\ ";
+          str4 += json.slice(start, i) + "\\ ";
           i += 1;
           start = i;
           ch = "\\";
@@ -1183,38 +1183,38 @@ var require_stringifyString = __commonJS({
           switch (json[i + 1]) {
             case "u":
               {
-                str3 += json.slice(start, i);
+                str4 += json.slice(start, i);
                 const code = json.substr(i + 2, 4);
                 switch (code) {
                   case "0000":
-                    str3 += "\\0";
+                    str4 += "\\0";
                     break;
                   case "0007":
-                    str3 += "\\a";
+                    str4 += "\\a";
                     break;
                   case "000b":
-                    str3 += "\\v";
+                    str4 += "\\v";
                     break;
                   case "001b":
-                    str3 += "\\e";
+                    str4 += "\\e";
                     break;
                   case "0085":
-                    str3 += "\\N";
+                    str4 += "\\N";
                     break;
                   case "00a0":
-                    str3 += "\\_";
+                    str4 += "\\_";
                     break;
                   case "2028":
-                    str3 += "\\L";
+                    str4 += "\\L";
                     break;
                   case "2029":
-                    str3 += "\\P";
+                    str4 += "\\P";
                     break;
                   default:
                     if (code.substr(0, 2) === "00")
-                      str3 += "\\x" + code.substr(2);
+                      str4 += "\\x" + code.substr(2);
                     else
-                      str3 += json.substr(i, 6);
+                      str4 += json.substr(i, 6);
                 }
                 i += 5;
                 start = i + 1;
@@ -1224,14 +1224,14 @@ var require_stringifyString = __commonJS({
               if (implicitKey || json[i + 2] === '"' || json.length < minMultiLineLength) {
                 i += 1;
               } else {
-                str3 += json.slice(start, i) + "\n\n";
+                str4 += json.slice(start, i) + "\n\n";
                 while (json[i + 2] === "\\" && json[i + 3] === "n" && json[i + 4] !== '"') {
-                  str3 += "\n";
+                  str4 += "\n";
                   i += 2;
                 }
-                str3 += indent;
+                str4 += indent;
                 if (json[i + 2] === " ")
-                  str3 += "\\";
+                  str4 += "\\";
                 i += 1;
                 start = i + 1;
               }
@@ -1240,8 +1240,8 @@ var require_stringifyString = __commonJS({
               i += 1;
           }
       }
-      str3 = start ? str3 + json.slice(start) : json;
-      return implicitKey ? str3 : foldFlowLines.foldFlowLines(str3, indent, foldFlowLines.FOLD_QUOTED, getFoldOptions(ctx, false));
+      str4 = start ? str4 + json.slice(start) : json;
+      return implicitKey ? str4 : foldFlowLines.foldFlowLines(str4, indent, foldFlowLines.FOLD_QUOTED, getFoldOptions(ctx, false));
     }
     function singleQuotedString(value, ctx) {
       if (ctx.options.singleQuote === false || ctx.implicitKey && value.includes("\n") || /[ \t]\n|\n[ \t]/.test(value))
@@ -1369,15 +1369,15 @@ ${indent}${start}${value}${end}`;
           return quotedString(value, ctx);
         }
       }
-      const str3 = value.replace(/\n+/g, `$&
+      const str4 = value.replace(/\n+/g, `$&
 ${indent}`);
       if (actualString) {
-        const test = (tag) => tag.default && tag.tag !== "tag:yaml.org,2002:str" && tag.test?.test(str3);
+        const test = (tag) => tag.default && tag.tag !== "tag:yaml.org,2002:str" && tag.test?.test(str4);
         const { compat, tags } = ctx.doc.schema;
         if (tags.some(test) || compat?.some(test))
           return quotedString(value, ctx);
       }
-      return implicitKey ? str3 : foldFlowLines.foldFlowLines(str3, indent, foldFlowLines.FOLD_FLOW, getFoldOptions(ctx, false));
+      return implicitKey ? str4 : foldFlowLines.foldFlowLines(str4, indent, foldFlowLines.FOLD_FLOW, getFoldOptions(ctx, false));
     }
     function stringifyString(item, ctx, onComment, onChompKeep) {
       const { implicitKey, inFlow } = ctx;
@@ -1529,11 +1529,11 @@ var require_stringify = __commonJS({
       const props = stringifyProps(node, tagObj, ctx);
       if (props.length > 0)
         ctx.indentAtStart = (ctx.indentAtStart ?? 0) + props.length + 1;
-      const str3 = typeof tagObj.stringify === "function" ? tagObj.stringify(node, ctx, onComment, onChompKeep) : identity.isScalar(node) ? stringifyString.stringifyString(node, ctx, onComment, onChompKeep) : node.toString(ctx, onComment, onChompKeep);
+      const str4 = typeof tagObj.stringify === "function" ? tagObj.stringify(node, ctx, onComment, onChompKeep) : identity.isScalar(node) ? stringifyString.stringifyString(node, ctx, onComment, onChompKeep) : node.toString(ctx, onComment, onChompKeep);
       if (!props)
-        return str3;
-      return identity.isScalar(node) || str3[0] === "{" || str3[0] === "[" ? `${props} ${str3}` : `${props}
-${ctx.indent}${str3}`;
+        return str4;
+      return identity.isScalar(node) || str4[0] === "{" || str4[0] === "[" ? `${props} ${str4}` : `${props}
+${ctx.indent}${str4}`;
     }
     exports.createStringifyContext = createStringifyContext;
     exports.stringify = stringify;
@@ -1568,8 +1568,8 @@ var require_stringifyPair = __commonJS({
       });
       let keyCommentDone = false;
       let chompKeep = false;
-      let str3 = stringify.stringify(key, ctx, () => keyCommentDone = true, () => chompKeep = true);
-      if (!explicitKey && !ctx.inFlow && str3.length > 1024) {
+      let str4 = stringify.stringify(key, ctx, () => keyCommentDone = true, () => chompKeep = true);
+      if (!explicitKey && !ctx.inFlow && str4.length > 1024) {
         if (simpleKeys)
           throw new Error("With simple keys, single line scalar must not span more than 1024 characters");
         explicitKey = true;
@@ -1578,27 +1578,27 @@ var require_stringifyPair = __commonJS({
         if (allNullValues || value == null) {
           if (keyCommentDone && onComment)
             onComment();
-          return str3 === "" ? "?" : explicitKey ? `? ${str3}` : str3;
+          return str4 === "" ? "?" : explicitKey ? `? ${str4}` : str4;
         }
       } else if (allNullValues && !simpleKeys || value == null && explicitKey) {
-        str3 = `? ${str3}`;
+        str4 = `? ${str4}`;
         if (keyComment && !keyCommentDone) {
-          str3 += stringifyComment.lineComment(str3, ctx.indent, commentString(keyComment));
+          str4 += stringifyComment.lineComment(str4, ctx.indent, commentString(keyComment));
         } else if (chompKeep && onChompKeep)
           onChompKeep();
-        return str3;
+        return str4;
       }
       if (keyCommentDone)
         keyComment = null;
       if (explicitKey) {
         if (keyComment)
-          str3 += stringifyComment.lineComment(str3, ctx.indent, commentString(keyComment));
-        str3 = `? ${str3}
+          str4 += stringifyComment.lineComment(str4, ctx.indent, commentString(keyComment));
+        str4 = `? ${str4}
 ${indent}:`;
       } else {
-        str3 = `${str3}:`;
+        str4 = `${str4}:`;
         if (keyComment)
-          str3 += stringifyComment.lineComment(str3, ctx.indent, commentString(keyComment));
+          str4 += stringifyComment.lineComment(str4, ctx.indent, commentString(keyComment));
       }
       let vsb, vcb, valueComment;
       if (identity.isNode(value)) {
@@ -1614,7 +1614,7 @@ ${indent}:`;
       }
       ctx.implicitKey = false;
       if (!explicitKey && !keyComment && identity.isScalar(value))
-        ctx.indentAtStart = str3.length + 1;
+        ctx.indentAtStart = str4.length + 1;
       chompKeep = false;
       if (!indentSeq && indentStep.length >= 2 && !ctx.inFlow && !explicitKey && identity.isSeq(value) && !value.flow && !value.tag && !value.anchor) {
         ctx.indent = ctx.indent.substring(2);
@@ -1658,16 +1658,16 @@ ${ctx.indent}`;
       } else if (valueStr === "" || valueStr[0] === "\n") {
         ws = "";
       }
-      str3 += ws + valueStr;
+      str4 += ws + valueStr;
       if (ctx.inFlow) {
         if (valueCommentDone && onComment)
           onComment();
       } else if (valueComment && !valueCommentDone) {
-        str3 += stringifyComment.lineComment(str3, ctx.indent, commentString(valueComment));
+        str4 += stringifyComment.lineComment(str4, ctx.indent, commentString(valueComment));
       } else if (chompKeep && onChompKeep) {
         onChompKeep();
       }
-      return str3;
+      return str4;
     }
     exports.stringifyPair = stringifyPair;
   }
@@ -1894,31 +1894,31 @@ var require_stringifyCollection = __commonJS({
           }
         }
         chompKeep = false;
-        let str4 = stringify.stringify(item, itemCtx, () => comment2 = null, () => chompKeep = true);
+        let str5 = stringify.stringify(item, itemCtx, () => comment2 = null, () => chompKeep = true);
         if (comment2)
-          str4 += stringifyComment.lineComment(str4, itemIndent, commentString(comment2));
+          str5 += stringifyComment.lineComment(str5, itemIndent, commentString(comment2));
         if (chompKeep && comment2)
           chompKeep = false;
-        lines.push(blockItemPrefix + str4);
+        lines.push(blockItemPrefix + str5);
       }
-      let str3;
+      let str4;
       if (lines.length === 0) {
-        str3 = flowChars.start + flowChars.end;
+        str4 = flowChars.start + flowChars.end;
       } else {
-        str3 = lines[0];
+        str4 = lines[0];
         for (let i = 1; i < lines.length; ++i) {
           const line = lines[i];
-          str3 += line ? `
+          str4 += line ? `
 ${indent}${line}` : "\n";
         }
       }
       if (comment) {
-        str3 += "\n" + stringifyComment.indentComment(commentString(comment), indent);
+        str4 += "\n" + stringifyComment.indentComment(commentString(comment), indent);
         if (onComment)
           onComment();
       } else if (chompKeep && onChompKeep)
         onChompKeep();
-      return str3;
+      return str4;
     }
     function stringifyFlowCollection({ items }, ctx, { flowChars, itemIndent }) {
       const { indent, indentStep, flowCollectionPadding: fcPadding, options: { commentString } } = ctx;
@@ -1961,21 +1961,21 @@ ${indent}${line}` : "\n";
         }
         if (comment)
           reqNewline = true;
-        let str3 = stringify.stringify(item, itemCtx, () => comment = null);
-        reqNewline || (reqNewline = lines.length > linesAtValue || str3.includes("\n"));
+        let str4 = stringify.stringify(item, itemCtx, () => comment = null);
+        reqNewline || (reqNewline = lines.length > linesAtValue || str4.includes("\n"));
         if (i < items.length - 1) {
-          str3 += ",";
+          str4 += ",";
         } else if (ctx.options.trailingComma) {
           if (ctx.options.lineWidth > 0) {
-            reqNewline || (reqNewline = lines.reduce((sum, line) => sum + line.length + 2, 2) + (str3.length + 2) > ctx.options.lineWidth);
+            reqNewline || (reqNewline = lines.reduce((sum, line) => sum + line.length + 2, 2) + (str4.length + 2) > ctx.options.lineWidth);
           }
           if (reqNewline) {
-            str3 += ",";
+            str4 += ",";
           }
         }
         if (comment)
-          str3 += stringifyComment.lineComment(str3, itemIndent, commentString(comment));
-        lines.push(str3);
+          str4 += stringifyComment.lineComment(str4, itemIndent, commentString(comment));
+        lines.push(str4);
         linesAtValue = lines.length;
       }
       const { start, end } = flowChars;
@@ -1987,11 +1987,11 @@ ${indent}${line}` : "\n";
           reqNewline = ctx.options.lineWidth > 0 && len > ctx.options.lineWidth;
         }
         if (reqNewline) {
-          let str3 = start;
+          let str4 = start;
           for (const line of lines)
-            str3 += line ? `
+            str4 += line ? `
 ${indentStep}${indent}${line}` : "\n";
-          return `${str3}
+          return `${str4}
 ${indent}${end}`;
         } else {
           return `${start}${fcPadding}${lines.join(" ")}${fcPadding}${end}`;
@@ -2323,7 +2323,7 @@ var require_string = __commonJS({
       identify: (value) => typeof value === "string",
       default: true,
       tag: "tag:yaml.org,2002:str",
-      resolve: (str3) => str3,
+      resolve: (str4) => str4,
       stringify(item, ctx, onComment, onChompKeep) {
         ctx = Object.assign({ actualString: true }, ctx);
         return stringifyString.stringifyString(item, ctx, onComment, onChompKeep);
@@ -2361,7 +2361,7 @@ var require_bool = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:bool",
       test: /^(?:[Tt]rue|TRUE|[Ff]alse|FALSE)$/,
-      resolve: (str3) => new Scalar.Scalar(str3[0] === "t" || str3[0] === "T"),
+      resolve: (str4) => new Scalar.Scalar(str4[0] === "t" || str4[0] === "T"),
       stringify({ source, value }, ctx) {
         if (source && boolTag.test.test(source)) {
           const sv = source[0] === "t" || source[0] === "T";
@@ -2413,7 +2413,7 @@ var require_float = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:float",
       test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
-      resolve: (str3) => str3.slice(-3).toLowerCase() === "nan" ? NaN : str3[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
+      resolve: (str4) => str4.slice(-3).toLowerCase() === "nan" ? NaN : str4[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
       stringify: stringifyNumber.stringifyNumber
     };
     var floatExp = {
@@ -2422,7 +2422,7 @@ var require_float = __commonJS({
       tag: "tag:yaml.org,2002:float",
       format: "EXP",
       test: /^[-+]?(?:\.[0-9]+|[0-9]+(?:\.[0-9]*)?)[eE][-+]?[0-9]+$/,
-      resolve: (str3) => parseFloat(str3),
+      resolve: (str4) => parseFloat(str4),
       stringify(node) {
         const num2 = Number(node.value);
         return isFinite(num2) ? num2.toExponential() : stringifyNumber.stringifyNumber(node);
@@ -2433,11 +2433,11 @@ var require_float = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:float",
       test: /^[-+]?(?:\.[0-9]+|[0-9]+\.[0-9]*)$/,
-      resolve(str3) {
-        const node = new Scalar.Scalar(parseFloat(str3));
-        const dot = str3.indexOf(".");
-        if (dot !== -1 && str3[str3.length - 1] === "0")
-          node.minFractionDigits = str3.length - dot - 1;
+      resolve(str4) {
+        const node = new Scalar.Scalar(parseFloat(str4));
+        const dot = str4.indexOf(".");
+        if (dot !== -1 && str4[str4.length - 1] === "0")
+          node.minFractionDigits = str4.length - dot - 1;
         return node;
       },
       stringify: stringifyNumber.stringifyNumber
@@ -2454,7 +2454,7 @@ var require_int = __commonJS({
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     var intIdentify = (value) => typeof value === "bigint" || Number.isInteger(value);
-    var intResolve = (str3, offset, radix, { intAsBigInt }) => intAsBigInt ? BigInt(str3) : parseInt(str3.substring(offset), radix);
+    var intResolve = (str4, offset, radix, { intAsBigInt }) => intAsBigInt ? BigInt(str4) : parseInt(str4.substring(offset), radix);
     function intStringify(node, radix, prefix) {
       const { value } = node;
       if (intIdentify(value) && value >= 0)
@@ -2467,7 +2467,7 @@ var require_int = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "OCT",
       test: /^0o[0-7]+$/,
-      resolve: (str3, _onError, opt) => intResolve(str3, 2, 8, opt),
+      resolve: (str4, _onError, opt) => intResolve(str4, 2, 8, opt),
       stringify: (node) => intStringify(node, 8, "0o")
     };
     var int = {
@@ -2475,7 +2475,7 @@ var require_int = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:int",
       test: /^[-+]?[0-9]+$/,
-      resolve: (str3, _onError, opt) => intResolve(str3, 0, 10, opt),
+      resolve: (str4, _onError, opt) => intResolve(str4, 0, 10, opt),
       stringify: stringifyNumber.stringifyNumber
     };
     var intHex = {
@@ -2484,7 +2484,7 @@ var require_int = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "HEX",
       test: /^0x[0-9a-fA-F]+$/,
-      resolve: (str3, _onError, opt) => intResolve(str3, 2, 16, opt),
+      resolve: (str4, _onError, opt) => intResolve(str4, 2, 16, opt),
       stringify: (node) => intStringify(node, 16, "0x")
     };
     exports.int = int;
@@ -2537,7 +2537,7 @@ var require_schema2 = __commonJS({
         identify: (value) => typeof value === "string",
         default: true,
         tag: "tag:yaml.org,2002:str",
-        resolve: (str3) => str3,
+        resolve: (str4) => str4,
         stringify: stringifyJSON
       },
       {
@@ -2554,7 +2554,7 @@ var require_schema2 = __commonJS({
         default: true,
         tag: "tag:yaml.org,2002:bool",
         test: /^true$|^false$/,
-        resolve: (str3) => str3 === "true",
+        resolve: (str4) => str4 === "true",
         stringify: stringifyJSON
       },
       {
@@ -2562,7 +2562,7 @@ var require_schema2 = __commonJS({
         default: true,
         tag: "tag:yaml.org,2002:int",
         test: /^-?(?:0|[1-9][0-9]*)$/,
-        resolve: (str3, _onError, { intAsBigInt }) => intAsBigInt ? BigInt(str3) : parseInt(str3, 10),
+        resolve: (str4, _onError, { intAsBigInt }) => intAsBigInt ? BigInt(str4) : parseInt(str4, 10),
         stringify: ({ value }) => intIdentify(value) ? value.toString() : JSON.stringify(value)
       },
       {
@@ -2570,7 +2570,7 @@ var require_schema2 = __commonJS({
         default: true,
         tag: "tag:yaml.org,2002:float",
         test: /^-?(?:0|[1-9][0-9]*)(?:\.[0-9]*)?(?:[eE][-+]?[0-9]+)?$/,
-        resolve: (str3) => parseFloat(str3),
+        resolve: (str4) => parseFloat(str4),
         stringify: stringifyJSON
       }
     ];
@@ -2578,9 +2578,9 @@ var require_schema2 = __commonJS({
       default: true,
       tag: "",
       test: /^/,
-      resolve(str3, onError) {
-        onError(`Unresolved plain scalar ${JSON.stringify(str3)}`);
-        return str3;
+      resolve(str4, onError) {
+        onError(`Unresolved plain scalar ${JSON.stringify(str4)}`);
+        return str4;
       }
     };
     var schema = [map.map, seq.seq].concat(jsonScalars, jsonError);
@@ -2612,10 +2612,10 @@ var require_binary = __commonJS({
         if (typeof node_buffer.Buffer === "function") {
           return node_buffer.Buffer.from(src, "base64");
         } else if (typeof atob === "function") {
-          const str3 = atob(src.replace(/[\n\r]/g, ""));
-          const buffer = new Uint8Array(str3.length);
-          for (let i = 0; i < str3.length; ++i)
-            buffer[i] = str3.charCodeAt(i);
+          const str4 = atob(src.replace(/[\n\r]/g, ""));
+          const buffer = new Uint8Array(str4.length);
+          for (let i = 0; i < str4.length; ++i)
+            buffer[i] = str4.charCodeAt(i);
           return buffer;
         } else {
           onError("This environment does not support reading binary tags; either Buffer or atob is required");
@@ -2626,28 +2626,28 @@ var require_binary = __commonJS({
         if (!value)
           return "";
         const buf = value;
-        let str3;
+        let str4;
         if (typeof node_buffer.Buffer === "function") {
-          str3 = buf instanceof node_buffer.Buffer ? buf.toString("base64") : node_buffer.Buffer.from(buf.buffer).toString("base64");
+          str4 = buf instanceof node_buffer.Buffer ? buf.toString("base64") : node_buffer.Buffer.from(buf.buffer).toString("base64");
         } else if (typeof btoa === "function") {
           let s = "";
           for (let i = 0; i < buf.length; ++i)
             s += String.fromCharCode(buf[i]);
-          str3 = btoa(s);
+          str4 = btoa(s);
         } else {
           throw new Error("This environment does not support writing binary tags; either Buffer or btoa is required");
         }
         type ?? (type = Scalar.Scalar.BLOCK_LITERAL);
         if (type !== Scalar.Scalar.QUOTE_DOUBLE) {
           const lineWidth = Math.max(ctx.options.lineWidth - ctx.indent.length, ctx.options.minContentWidth);
-          const n = Math.ceil(str3.length / lineWidth);
+          const n = Math.ceil(str4.length / lineWidth);
           const lines = new Array(n);
           for (let i = 0, o = 0; i < n; ++i, o += lineWidth) {
-            lines[i] = str3.substr(o, lineWidth);
+            lines[i] = str4.substr(o, lineWidth);
           }
-          str3 = lines.join(type === Scalar.Scalar.BLOCK_LITERAL ? "\n" : " ");
+          str4 = lines.join(type === Scalar.Scalar.BLOCK_LITERAL ? "\n" : " ");
         }
-        return stringifyString.stringifyString({ comment, type, value: str3 }, ctx, onComment, onChompKeep);
+        return stringifyString.stringifyString({ comment, type, value: str4 }, ctx, onComment, onChompKeep);
       }
     };
     exports.binary = binary;
@@ -2853,7 +2853,7 @@ var require_float2 = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:float",
       test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
-      resolve: (str3) => str3.slice(-3).toLowerCase() === "nan" ? NaN : str3[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
+      resolve: (str4) => str4.slice(-3).toLowerCase() === "nan" ? NaN : str4[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
       stringify: stringifyNumber.stringifyNumber
     };
     var floatExp = {
@@ -2862,7 +2862,7 @@ var require_float2 = __commonJS({
       tag: "tag:yaml.org,2002:float",
       format: "EXP",
       test: /^[-+]?(?:[0-9][0-9_]*)?(?:\.[0-9_]*)?[eE][-+]?[0-9]+$/,
-      resolve: (str3) => parseFloat(str3.replace(/_/g, "")),
+      resolve: (str4) => parseFloat(str4.replace(/_/g, "")),
       stringify(node) {
         const num2 = Number(node.value);
         return isFinite(num2) ? num2.toExponential() : stringifyNumber.stringifyNumber(node);
@@ -2873,11 +2873,11 @@ var require_float2 = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:float",
       test: /^[-+]?(?:[0-9][0-9_]*)?\.[0-9_]*$/,
-      resolve(str3) {
-        const node = new Scalar.Scalar(parseFloat(str3.replace(/_/g, "")));
-        const dot = str3.indexOf(".");
+      resolve(str4) {
+        const node = new Scalar.Scalar(parseFloat(str4.replace(/_/g, "")));
+        const dot = str4.indexOf(".");
         if (dot !== -1) {
-          const f = str3.substring(dot + 1).replace(/_/g, "");
+          const f = str4.substring(dot + 1).replace(/_/g, "");
           if (f[f.length - 1] === "0")
             node.minFractionDigits = f.length;
         }
@@ -2897,34 +2897,34 @@ var require_int2 = __commonJS({
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     var intIdentify = (value) => typeof value === "bigint" || Number.isInteger(value);
-    function intResolve(str3, offset, radix, { intAsBigInt }) {
-      const sign = str3[0];
+    function intResolve(str4, offset, radix, { intAsBigInt }) {
+      const sign = str4[0];
       if (sign === "-" || sign === "+")
         offset += 1;
-      str3 = str3.substring(offset).replace(/_/g, "");
+      str4 = str4.substring(offset).replace(/_/g, "");
       if (intAsBigInt) {
         switch (radix) {
           case 2:
-            str3 = `0b${str3}`;
+            str4 = `0b${str4}`;
             break;
           case 8:
-            str3 = `0o${str3}`;
+            str4 = `0o${str4}`;
             break;
           case 16:
-            str3 = `0x${str3}`;
+            str4 = `0x${str4}`;
             break;
         }
-        const n2 = BigInt(str3);
+        const n2 = BigInt(str4);
         return sign === "-" ? BigInt(-1) * n2 : n2;
       }
-      const n = parseInt(str3, radix);
+      const n = parseInt(str4, radix);
       return sign === "-" ? -1 * n : n;
     }
     function intStringify(node, radix, prefix) {
       const { value } = node;
       if (intIdentify(value)) {
-        const str3 = value.toString(radix);
-        return value < 0 ? "-" + prefix + str3.substr(1) : prefix + str3;
+        const str4 = value.toString(radix);
+        return value < 0 ? "-" + prefix + str4.substr(1) : prefix + str4;
       }
       return stringifyNumber.stringifyNumber(node);
     }
@@ -2934,7 +2934,7 @@ var require_int2 = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "BIN",
       test: /^[-+]?0b[0-1_]+$/,
-      resolve: (str3, _onError, opt) => intResolve(str3, 2, 2, opt),
+      resolve: (str4, _onError, opt) => intResolve(str4, 2, 2, opt),
       stringify: (node) => intStringify(node, 2, "0b")
     };
     var intOct = {
@@ -2943,7 +2943,7 @@ var require_int2 = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "OCT",
       test: /^[-+]?0[0-7_]+$/,
-      resolve: (str3, _onError, opt) => intResolve(str3, 1, 8, opt),
+      resolve: (str4, _onError, opt) => intResolve(str4, 1, 8, opt),
       stringify: (node) => intStringify(node, 8, "0")
     };
     var int = {
@@ -2951,7 +2951,7 @@ var require_int2 = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:int",
       test: /^[-+]?[0-9][0-9_]*$/,
-      resolve: (str3, _onError, opt) => intResolve(str3, 0, 10, opt),
+      resolve: (str4, _onError, opt) => intResolve(str4, 0, 10, opt),
       stringify: stringifyNumber.stringifyNumber
     };
     var intHex = {
@@ -2960,7 +2960,7 @@ var require_int2 = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "HEX",
       test: /^[-+]?0x[0-9a-fA-F_]+$/,
-      resolve: (str3, _onError, opt) => intResolve(str3, 2, 16, opt),
+      resolve: (str4, _onError, opt) => intResolve(str4, 2, 16, opt),
       stringify: (node) => intStringify(node, 16, "0x")
     };
     exports.int = int;
@@ -3064,9 +3064,9 @@ var require_timestamp = __commonJS({
   "../../node_modules/.pnpm/yaml@2.9.0/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js"(exports) {
     "use strict";
     var stringifyNumber = require_stringifyNumber();
-    function parseSexagesimal(str3, asBigInt) {
-      const sign = str3[0];
-      const parts = sign === "-" || sign === "+" ? str3.substring(1) : str3;
+    function parseSexagesimal(str4, asBigInt) {
+      const sign = str4[0];
+      const parts = sign === "-" || sign === "+" ? str4.substring(1) : str4;
       const num2 = (n) => asBigInt ? BigInt(n) : Number(n);
       const res = parts.replace(/_/g, "").split(":").reduce((res2, p) => res2 * num2(60) + num2(p), num2(0));
       return sign === "-" ? num2(-1) * res : res;
@@ -3103,7 +3103,7 @@ var require_timestamp = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "TIME",
       test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+$/,
-      resolve: (str3, _onError, { intAsBigInt }) => parseSexagesimal(str3, intAsBigInt),
+      resolve: (str4, _onError, { intAsBigInt }) => parseSexagesimal(str4, intAsBigInt),
       stringify: stringifySexagesimal
     };
     var floatTime = {
@@ -3112,7 +3112,7 @@ var require_timestamp = __commonJS({
       tag: "tag:yaml.org,2002:float",
       format: "TIME",
       test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\.[0-9_]*$/,
-      resolve: (str3) => parseSexagesimal(str3, false),
+      resolve: (str4) => parseSexagesimal(str4, false),
       stringify: stringifySexagesimal
     };
     var timestamp = {
@@ -3123,8 +3123,8 @@ var require_timestamp = __commonJS({
       // may be omitted altogether, resulting in a date format. In such a case, the time part is
       // assumed to be 00:00:00Z (start of day, UTC).
       test: RegExp("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})(?:(?:t|T|[ \\t]+)([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}(\\.[0-9]+)?)(?:[ \\t]*(Z|[-+][012]?[0-9](?::[0-9]{2})?))?)?$"),
-      resolve(str3) {
-        const match = str3.match(timestamp.test);
+      resolve(str4) {
+        const match = str4.match(timestamp.test);
         if (!match)
           throw new Error("!!timestamp expects a date, starting with yyyy-mm-dd");
         const [, year, month, day, hour, minute, second] = match.map(Number);
@@ -7579,10 +7579,10 @@ var require_utils = __commonJS({
       REGEX_SPECIAL_CHARS_GLOBAL
     } = require_constants();
     exports.isObject = (val) => val !== null && typeof val === "object" && !Array.isArray(val);
-    exports.hasRegexChars = (str3) => REGEX_SPECIAL_CHARS.test(str3);
-    exports.isRegexChar = (str3) => str3.length === 1 && exports.hasRegexChars(str3);
-    exports.escapeRegex = (str3) => str3.replace(REGEX_SPECIAL_CHARS_GLOBAL, "\\$1");
-    exports.toPosixSlashes = (str3) => str3.replace(REGEX_BACKSLASH, "/");
+    exports.hasRegexChars = (str4) => REGEX_SPECIAL_CHARS.test(str4);
+    exports.isRegexChar = (str4) => str4.length === 1 && exports.hasRegexChars(str4);
+    exports.escapeRegex = (str4) => str4.replace(REGEX_SPECIAL_CHARS_GLOBAL, "\\$1");
+    exports.toPosixSlashes = (str4) => str4.replace(REGEX_BACKSLASH, "/");
     exports.isWindows = () => {
       if (typeof navigator !== "undefined" && navigator.platform) {
         const platform = navigator.platform.toLowerCase();
@@ -7593,8 +7593,8 @@ var require_utils = __commonJS({
       }
       return false;
     };
-    exports.removeBackslashes = (str3) => {
-      return str3.replace(REGEX_REMOVE_BACKSLASH, (match) => {
+    exports.removeBackslashes = (str4) => {
+      return str4.replace(REGEX_REMOVE_BACKSLASH, (match) => {
         return match === "\\" ? "" : match;
       });
     };
@@ -7684,7 +7684,7 @@ var require_scan = __commonJS({
       const slashes = [];
       const tokens = [];
       const parts = [];
-      let str3 = input;
+      let str4 = input;
       let index = -1;
       let start = 0;
       let lastIndex = 0;
@@ -7703,10 +7703,10 @@ var require_scan = __commonJS({
       let code;
       let token = { value: "", depth: 0, isGlob: false };
       const eos = () => index >= length;
-      const peek = () => str3.charCodeAt(index + 1);
+      const peek = () => str4.charCodeAt(index + 1);
       const advance = () => {
         prev = code;
-        return str3.charCodeAt(++index);
+        return str4.charCodeAt(++index);
       };
       while (index < length) {
         code = advance();
@@ -7874,24 +7874,24 @@ var require_scan = __commonJS({
         isExtglob = false;
         isGlob = false;
       }
-      let base = str3;
+      let base = str4;
       let prefix = "";
       let glob = "";
       if (start > 0) {
-        prefix = str3.slice(0, start);
-        str3 = str3.slice(start);
+        prefix = str4.slice(0, start);
+        str4 = str4.slice(start);
         lastIndex -= start;
       }
       if (base && isGlob === true && lastIndex > 0) {
-        base = str3.slice(0, lastIndex);
-        glob = str3.slice(lastIndex);
+        base = str4.slice(0, lastIndex);
+        glob = str4.slice(lastIndex);
       } else if (isGlob === true) {
         base = "";
-        glob = str3;
+        glob = str4;
       } else {
-        base = str3;
+        base = str4;
       }
-      if (base && base !== "" && base !== "/" && base !== str3) {
+      if (base && base !== "" && base !== "/" && base !== str4) {
         if (isPathSeparator(base.charCodeAt(base.length - 1))) {
           base = base.slice(0, -1);
         }
@@ -8938,8 +8938,8 @@ var require_parse = __commonJS({
         if (opts2.noglobstar === true) return star;
         return `(${capture}(?:(?!${START_ANCHOR}${opts2.dot ? DOTS_SLASH : DOT_LITERAL}).)*?)`;
       };
-      const create = (str3) => {
-        switch (str3) {
+      const create = (str4) => {
+        switch (str4) {
           case "*":
             return `${nodot}${ONE_CHAR}${star}`;
           case ".*":
@@ -8957,7 +8957,7 @@ var require_parse = __commonJS({
           case "**/.*":
             return `(?:${nodot}${globstar(opts)}${SLASH_LITERAL})?${DOT_LITERAL}${ONE_CHAR}${star}`;
           default: {
-            const match = /^(.*?)\.(\w+)$/.exec(str3);
+            const match = /^(.*?)\.(\w+)$/.exec(str4);
             if (!match) return;
             const source2 = create(match[1]);
             if (!source2) return;
@@ -8988,9 +8988,9 @@ var require_picomatch = __commonJS({
     var picomatch3 = (glob, options, returnState = false) => {
       if (Array.isArray(glob)) {
         const fns = glob.map((input) => picomatch3(input, options, returnState));
-        const arrayMatcher = (str3) => {
+        const arrayMatcher = (str4) => {
           for (const isMatch of fns) {
-            const state2 = isMatch(str3);
+            const state2 = isMatch(str4);
             if (state2) return state2;
           }
           return false;
@@ -9066,7 +9066,7 @@ var require_picomatch = __commonJS({
       const regex = glob instanceof RegExp ? glob : picomatch3.makeRe(glob, options);
       return regex.test(utils.basename(input, { windows: posix }));
     };
-    picomatch3.isMatch = (str3, patterns, options) => picomatch3(patterns, options)(str3);
+    picomatch3.isMatch = (str4, patterns, options) => picomatch3(patterns, options)(str4);
     picomatch3.parse = (pattern, options) => {
       if (Array.isArray(pattern)) return pattern.map((p) => picomatch3.parse(p, options));
       return parse(pattern, { ...options, fastpaths: false });
@@ -9309,7 +9309,7 @@ async function call(scope, path, init) {
   const url = `${scope.apiUrl}/v1/${scope.tenant}/${scope.repo}${path}`;
   const res = await fetch(url, { ...init, headers: { ...headers, ...init?.headers } });
   if (!res.ok) {
-    let detail = `${res.status}`;
+    let detail = `The board did not answer this \u2014 it replied ${res.status} with nothing a person could read. If it keeps happening, run \`cycle doctor\` in the repository: it prints which board this is pointed at and whether it is reachable.`;
     try {
       const body = await res.json();
       detail = joinMessages(body.failures) ?? joinMessages(body.problems) ?? body.error ?? body.message ?? detail;
@@ -9399,21 +9399,21 @@ var init_api = __esm({
 });
 
 // ../../apps/mcp/src/checkout.ts
-import { existsSync as existsSync24, readFileSync as readFileSync28 } from "node:fs";
-import { dirname as dirname15, join as join31, resolve as resolve5 } from "node:path";
+import { existsSync as existsSync27, readFileSync as readFileSync31 } from "node:fs";
+import { dirname as dirname18, join as join34, resolve as resolve5 } from "node:path";
 function readCheckoutBinding(from = process.cwd()) {
   let dir = resolve5(from);
   for (; ; ) {
-    const file = join31(dir, ".zones", "board.json");
-    if (existsSync24(file)) {
+    const file = join34(dir, ".zones", "board.json");
+    if (existsSync27(file)) {
       try {
-        const j = JSON.parse(readFileSync28(file, "utf8"));
-        return { path: file, tenant: str2(j.tenant), repo: str2(j.repo), apiUrl: str2(j.api_url) };
+        const j = JSON.parse(readFileSync31(file, "utf8"));
+        return { path: file, tenant: str3(j.tenant), repo: str3(j.repo), apiUrl: str3(j.api_url) };
       } catch {
         return { path: file };
       }
     }
-    const up = dirname15(dir);
+    const up = dirname18(dir);
     if (up === dir) return null;
     dir = up;
   }
@@ -9421,11 +9421,11 @@ function readCheckoutBinding(from = process.cwd()) {
 function scopeOrigin(env = process.env) {
   return env.CC_API_URL || env.CC_TENANT || env.CC_REPO_ID ? "this server's own environment (CC_API_URL / CC_TENANT / CC_REPO_ID)" : "the CommitCycle CLI beside it (.zones/board.json, this machine's pairing, then the stored session)";
 }
-var str2;
+var str3;
 var init_checkout = __esm({
   "../../apps/mcp/src/checkout.ts"() {
     "use strict";
-    str2 = (v) => typeof v === "string" && v ? v : void 0;
+    str3 = (v) => typeof v === "string" && v ? v : void 0;
   }
 });
 
@@ -9436,6 +9436,7 @@ __export(server_exports, {
   handle: () => handle2,
   main: () => main,
   runTool: () => runTool,
+  toolFailureText: () => toolFailureText,
   toolsForScope: () => toolsForScope
 });
 import { createInterface as createInterface2 } from "node:readline";
@@ -9511,6 +9512,14 @@ It cannot start until the four questions are answered. Use cc_interview to draft
       return `No such tool: ${name}`;
   }
 }
+function toolFailureText(e) {
+  if (e instanceof BoardError) return e.message;
+  const err = e;
+  const raw = typeof err?.message === "string" && err.message ? err.message : String(e);
+  const code = typeof err?.cause?.code === "string" ? err.cause.code : "";
+  const network = /fetch failed|ECONNREFUSED|ENOTFOUND|EAI_AGAIN|ETIMEDOUT/.test(`${raw} ${code}`);
+  return network ? `The board could not be reached from this machine, so nothing was filed or changed. Check that you are online; if you are, run \`cycle doctor\` in the repository \u2014 it prints which board this is pointed at and whether it answers. (internal detail: ${raw})` : `This call failed in a way the CC server has no message for, so it may not have finished what it started. It is not going to guess at the cause. Run \`cycle doctor\` in the repository; if that reports everything healthy, this is a defect in CC rather than in your setup, and the detail below is what to report. (internal detail: ${raw})`;
+}
 function reply(id, result) {
   if (id === void 0) return;
   process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id, result }) + "\n");
@@ -9545,7 +9554,7 @@ async function handle2(msg, resolve7 = scopeFromEnv, readCheckout = readCheckout
         return reply(msg.id, { content: [{ type: "text", text }] });
       } catch (e) {
         return reply(msg.id, {
-          content: [{ type: "text", text: e.message }],
+          content: [{ type: "text", text: toolFailureText(e) }],
           isError: true
         });
       }
@@ -9600,9 +9609,9 @@ var init_server = __esm({
 
 // src/index.ts
 import { createInterface as createInterface3 } from "node:readline/promises";
-import { execFileSync as execFileSync13 } from "node:child_process";
-import { existsSync as existsSync25 } from "node:fs";
-import { dirname as dirname16, join as join32, resolve as resolve6 } from "node:path";
+import { execFileSync as execFileSync14 } from "node:child_process";
+import { existsSync as existsSync28 } from "node:fs";
+import { dirname as dirname19, join as join35, resolve as resolve6 } from "node:path";
 
 // src/branch.ts
 import { readFileSync, statSync } from "node:fs";
@@ -9639,12 +9648,13 @@ var taskIdFrom = taskIdFromBranch;
 var taskOnBranch = (root) => taskIdFrom(currentBranch(root));
 
 // src/init.ts
-import { execFileSync as execFileSync3 } from "node:child_process";
-import { existsSync as existsSync4, mkdirSync as mkdirSync3, readFileSync as readFileSync9, writeFileSync as writeFileSync6 } from "node:fs";
+import { execFileSync as execFileSync4 } from "node:child_process";
+import { existsSync as existsSync5, mkdirSync as mkdirSync3, readFileSync as readFileSync10, writeFileSync as writeFileSync6 } from "node:fs";
 
 // src/agents.ts
-import { existsSync, readFileSync as readFileSync2, rmSync, writeFileSync } from "node:fs";
-import { isAbsolute as isAbsolute2, join as join2 } from "node:path";
+import { existsSync as existsSync2, readFileSync as readFileSync3, rmSync, writeFileSync } from "node:fs";
+import { homedir as homedir2 } from "node:os";
+import { isAbsolute as isAbsolute2, join as join3 } from "node:path";
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/external.js
 var external_exports = {};
@@ -14037,6 +14047,13 @@ function taskLines(task, zones, guarded, now, exists) {
   ];
   if (task.goal) lines.push(`**What it should do.** ${task.goal}`, "");
   if (task.non_goals) lines.push(`**What it must NOT do.** ${task.non_goals}`, "");
+  const gate = (task.quality_gate ?? "").trim();
+  if (gate && gate.toLowerCase() !== "none") {
+    lines.push(
+      `**What closing it will ask for.** The quality gate is "${gate}", so \`cycle verify --close\` refuses without evidence, and the evidence has to be committed in this repository \u2014 a capture that is not in the repo is evidence of nothing. Write it while this task is open: handing in revokes the grant, and after that this branch cannot write one.`,
+      ""
+    );
+  }
   lines.push(
     task.open.length ? "**Open to you right now**, and nothing else:" : "**No protected zone is open to this task.** Everything below is closed.",
     ""
@@ -14062,12 +14079,40 @@ function taskLines(task, zones, guarded, now, exists) {
   }
   return lines;
 }
-function enforcementLines(enforcement, guarded) {
-  if (guarded) return [];
+function enforcementLines(enforcement, guarded, by) {
+  if (guarded) {
+    if (by === "plugin") {
+      return [
+        "### What is enforcing this is not in this repository",
+        "",
+        "The zone map below is being checked \u2014 by the CommitCycle plugin installed on this",
+        "machine, not by anything this repository configures. Writes into a closed zone are",
+        "denied here, and a clone of this repository on a machine without the plugin has no",
+        "wall at all.",
+        "",
+        "So do not read a denial as a bug in the repository, and do not read the absence of",
+        "a hook in `.claude/settings.json` as permission. `cycle doctor` names the bundle",
+        "that is deciding and how old it is.",
+        ""
+      ];
+    }
+    if (by === "both") {
+      return [
+        "### Two things are enforcing this, and they can disagree",
+        "",
+        "The zone map below is checked twice on every tool call: by the hook this repository",
+        "configures and by the CommitCycle plugin installed on this machine. They are separate",
+        "builds and can be different vintages, so a denial you cannot account for may be the",
+        "older one deciding. `cycle doctor` names both and says which one this session pinned.",
+        ""
+      ];
+    }
+    return [];
+  }
   return [
     "### Nothing here is enforcing this",
     "",
-    enforcement === "off" ? "The zone map below is policy this repository agreed. **No software on this machine is\nchecking it** \u2014 there is no CommitCycle binary installed, so no write will be blocked." : "The zone map below is policy this repository agreed. Whether anything on this machine\nis checking it could not be determined, so assume nothing is.",
+    enforcement === "off" ? "The zone map below is policy this repository agreed. **This repository configures no hook**,\nso nothing it ships will stop a write \u2014 and whether something installed on the machine\nreading this is checking anyway is a question only that machine can answer.\n`cycle doctor` answers it." : "The zone map below is policy this repository agreed. Whether anything on this machine\nis checking it could not be determined, so assume nothing is.",
     "",
     "Treat it as binding anyway. The policy is real, the record is real, and the diff is",
     "checked against what the task declared when it closes \u2014 so a write outside the map",
@@ -14129,6 +14174,9 @@ function renderEphemeralBlock(input) {
   const guarded = (input.enforcement ?? "unknown") === "on";
   const lines = [CC_BEGIN, "## CommitCycle", ""];
   lines.push(...taskLines(task, zones, guarded, now, exists));
+  if (input.enforcedBy) {
+    lines.push(...enforcementLines(input.enforcement ?? "unknown", guarded, input.enforcedBy));
+  }
   lines.push(unprotectedLine(true, guarded), CC_END);
   return lines.join("\n");
 }
@@ -14145,10 +14193,10 @@ function renderTaskRecord(r) {
     `state: ${r.state}`,
     "plan_task: \u2014",
     `owner: ${r.owner ?? "\u2014"}`,
-    "mode: standard",
+    `mode: ${r.mode || "standard"}`,
     `topics: [${(r.topics ?? []).join(", ")}]`,
     `branch: ${r.branch ?? "null"}`,
-    "time_box: null",
+    `time_box: ${r.time_box || "null"}`,
     `quality_gate: ${r.quality_gate ?? "none"}`,
     `priority: ${r.priority ?? "none"}`,
     `created: ${r.created ?? ""}`,
@@ -14369,12 +14417,658 @@ var ChallengeAnswerSchema = external_exports.object({
 // ../../apps/api/src/routes.ts
 var startedAt = Date.now() > 0 ? (/* @__PURE__ */ new Date()).toISOString() : null;
 
+// src/enforcement-age.ts
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync as readFileSync2, readdirSync, statSync as statSync2 } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, join as join2, resolve } from "node:path";
+var HOOK_SOURCE = ["packages/hook", "packages/contracts"];
+var WORKSPACE_CORE = ["packages", "hook", "dist", "core.js"];
+var COMMITTED_CORE = ["plugin", "hook", "dist", "core.js"];
+function git(root, args) {
+  try {
+    return execFileSync("git", ["-C", root, ...args], { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+  } catch {
+    return null;
+  }
+}
+function isAncestor(root, a, b) {
+  try {
+    execFileSync("git", ["-C", root, "merge-base", "--is-ancestor", a, b], { stdio: "ignore" });
+    return true;
+  } catch (err) {
+    const code = err.status;
+    return code === 1 ? false : null;
+  }
+}
+function lastCommit(root, paths) {
+  const out = git(root, ["log", "-1", "--format=%H%x00%cI", "--", ...paths]);
+  if (!out) return null;
+  const [rev, when] = out.split("\0");
+  if (!rev || !when) return null;
+  const at2 = new Date(when);
+  return Number.isNaN(at2.getTime()) ? null : { rev, when: at2 };
+}
+function newestSourceMtime(root) {
+  let newest = null;
+  const walk = (dir, depth) => {
+    if (depth > 8) return;
+    for (const entry of safeReaddir(dir)) {
+      if (entry === "node_modules" || entry === "dist" || entry.startsWith(".")) continue;
+      const full = join2(dir, entry);
+      let stat;
+      try {
+        stat = statSync2(full);
+      } catch {
+        continue;
+      }
+      if (stat.isDirectory()) {
+        walk(full, depth + 1);
+      } else if (!newest || stat.mtime > newest.at) {
+        newest = { path: full, at: stat.mtime };
+      }
+    }
+  };
+  for (const rel of HOOK_SOURCE) walk(join2(root, rel, "src"), 0);
+  return newest;
+}
+function facts(role, path, via) {
+  if (!path || !existsSync(path)) {
+    return { role, path, exists: false, sha256: null, bytes: null, built: null, via };
+  }
+  try {
+    const stat = statSync2(path);
+    const bytes = readFileSync2(path);
+    return {
+      role,
+      path,
+      exists: true,
+      sha256: createHash("sha256").update(bytes).digest("hex"),
+      bytes: stat.size,
+      built: stat.mtime,
+      via
+    };
+  } catch {
+    return { role, path, exists: false, sha256: null, bytes: null, built: null, via };
+  }
+}
+function safeReaddir(dir) {
+  try {
+    return readdirSync(dir);
+  } catch {
+    return [];
+  }
+}
+function pluginBundles(home, pid) {
+  const bundles = [];
+  const cache = join2(home, ".claude", "plugins", "cache");
+  for (const marketplace of safeReaddir(cache)) {
+    for (const plugin of safeReaddir(join2(cache, marketplace))) {
+      for (const version of safeReaddir(join2(cache, marketplace, plugin))) {
+        const root = join2(cache, marketplace, plugin, version);
+        const core = join2(root, "hook", "dist", "core.js");
+        if (!existsSync(core)) continue;
+        const heldBy = safeReaddir(join2(root, ".in_use")).filter((f) => !f.startsWith("."));
+        let startedAt2 = null;
+        if (pid && heldBy.includes(pid)) {
+          try {
+            const held = JSON.parse(readFileSync2(join2(root, ".in_use", pid), "utf8"));
+            if (held.procStart) {
+              const at2 = new Date(held.procStart);
+              if (!Number.isNaN(at2.getTime())) startedAt2 = at2;
+            }
+          } catch {
+          }
+        }
+        bundles.push({ root, marketplace, plugin, version, core, heldBy, startedAt: startedAt2 });
+      }
+    }
+  }
+  return bundles;
+}
+function preferredBundle(bundles, pid) {
+  if (!bundles.length) return null;
+  return (pid ? bundles.find((b) => b.heldBy.includes(pid)) : void 0) ?? [...bundles].sort((a, b) => compareVersions(b.version, a.version))[0];
+}
+function fromInUseMarker(home, pid) {
+  if (!pid) return null;
+  for (const b of pluginBundles(home, pid)) {
+    if (!b.heldBy.includes(pid)) continue;
+    return {
+      path: b.core,
+      via: `the harness's own in-use marker for pid ${pid} \u2014 ${b.marketplace}/${b.plugin} ${b.version}`,
+      startedAt: b.startedAt
+    };
+  }
+  return null;
+}
+function fromPath(env) {
+  for (const entry of (env.PATH ?? "").split(":")) {
+    if (!entry.includes(`${join2("plugins", "cache")}`) || !entry.endsWith(`${join2("x", "bin")}`.slice(1))) continue;
+    const core = join2(dirname(entry), "hook", "dist", "core.js");
+    if (existsSync(core)) {
+      return { path: core, via: `a plugin root on PATH (${dirname(entry)}) \u2014 no session marker, so this is inference`, startedAt: null };
+    }
+  }
+  return null;
+}
+function fromSettings(root, env) {
+  const settingsPath = join2(root, ".claude", "settings.json");
+  if (!existsSync(settingsPath)) return null;
+  try {
+    const settings = JSON.parse(readFileSync2(settingsPath, "utf8"));
+    const cmd = settings?.hooks?.PreToolUse?.[0]?.hooks?.[0]?.command;
+    if (!cmd) return null;
+    const wrapper = cmd.replace(/\$\{?CLAUDE_PROJECT_DIR\}?/g, root).replace(/\$\{?CLAUDE_PLUGIN_ROOT\}?/g, env.CLAUDE_PLUGIN_ROOT ?? "").trim();
+    if (!wrapper) return null;
+    return {
+      path: resolve(dirname(wrapper), "..", "dist", "core.js"),
+      via: `.claude/settings.json \u2192 ${cmd}`,
+      startedAt: null,
+      cmd,
+      wrapper
+    };
+  } catch {
+    return null;
+  }
+}
+function locateEnforcing(root, env, home) {
+  const pinned = env.CC_HOOK_CORE;
+  if (pinned) return { path: pinned, via: "CC_HOOK_CORE, set explicitly", startedAt: null };
+  const marker = fromInUseMarker(home, env.CLAUDE_PID ?? null);
+  if (marker) return marker;
+  const declared = env.CLAUDE_PLUGIN_ROOT;
+  if (declared) {
+    const core = join2(declared, "hook", "dist", "core.js");
+    if (existsSync(core)) return { path: core, via: "CLAUDE_PLUGIN_ROOT", startedAt: null };
+  }
+  return fromPath(env) ?? fromSettings(root, env) ?? { path: null, via: "nothing on this machine names one", startedAt: null };
+}
+var DAY = 24 * 60 * 60 * 1e3;
+function ageWords(built, now) {
+  if (!built) return "age unknown";
+  const days = Math.floor((now.getTime() - built.getTime()) / DAY);
+  if (days < 0) return "built in the future \u2014 the clock disagrees with itself";
+  if (days === 0) return "built today";
+  return `${days} day${days === 1 ? "" : "s"} old`;
+}
+function short(sha) {
+  return sha ? sha.slice(0, 12) : "unreadable";
+}
+function stamp(d) {
+  return d ? `${d.toISOString().replace("T", " ").slice(0, 16)}Z` : "unknown";
+}
+function describe(b, now) {
+  if (!b.exists) return `${b.path ?? "nowhere"} \u2014 not there`;
+  return `${b.path} \u2014 ${b.bytes} bytes, sha ${short(b.sha256)}, built ${stamp(b.built)} (${ageWords(b.built, now)})`;
+}
+function inspectEnforcement(root, opts = {}) {
+  const env = opts.env ?? process.env;
+  const home = opts.home ?? env.HOME ?? homedir();
+  const now = opts.now ?? /* @__PURE__ */ new Date();
+  const checks = [];
+  const shallow = git(root, ["rev-parse", "--is-shallow-repository"]) === "true";
+  const src = lastCommit(root, HOOK_SOURCE);
+  const source = { rev: src?.rev ?? null, when: src?.when ?? null, shallow };
+  const located = locateEnforcing(root, env, home);
+  const enforcing = facts("enforcing", located.path, located.via);
+  const workspace = facts("workspace", join2(root, ...WORKSPACE_CORE), "this checkout, built by `pnpm --filter @commitcycle/hook build`");
+  const committed = facts("committed", join2(root, ...COMMITTED_CORE), "committed, and what a marketplace install downloads");
+  if (!enforcing.path) {
+    checks.push({
+      name: "enforcing bundle",
+      status: "warn",
+      detail: "nothing on this machine says which hook bundle is judging this session",
+      fix: "Run this from inside the session you want to know about \u2014 the harness sets CLAUDE_PID and stamps the plugin root it pinned. Outside a session there is nothing first-hand to read, and CC_HOOK_CORE=<path> is how to name one by hand."
+    });
+  } else if (!enforcing.exists) {
+    checks.push({
+      name: "enforcing bundle",
+      status: "fail",
+      detail: `${enforcing.path} does not exist, and that is where the wrapper looks (${enforcing.via})`,
+      fix: "The wrapper is fail-closed, so this denies every tool call in the session, reads included. Build it (`pnpm --filter @commitcycle/hook build`) or reinstall the plugin \u2014 from a terminal, not from inside the session it is denying."
+    });
+  } else {
+    checks.push({
+      name: "enforcing bundle",
+      status: "ok",
+      detail: `${describe(enforcing, now)} \u2014 found via ${enforcing.via}`
+    });
+  }
+  const onDisk = newestSourceMtime(root);
+  const fromGit = source.when ? { at: source.when, said: `the last committed hook source change (${short(source.rev)})` } : null;
+  const fromDisk = onDisk ? { at: onDisk.at, said: `the newest file under the hook sources (${onDisk.path.startsWith(root) ? onDisk.path.slice(root.length + 1) : onDisk.path})` } : null;
+  const effective = fromGit && fromDisk ? fromDisk.at > fromGit.at ? fromDisk : fromGit : fromGit ?? fromDisk;
+  if (!workspace.exists) {
+    checks.push({
+      name: "built bundle vs source",
+      status: "warn",
+      detail: `nothing is built at ${join2(...WORKSPACE_CORE)} in this checkout`,
+      fix: "A session wired to this checkout would be denied every tool call. Run `pnpm --filter @commitcycle/hook build`. (A linked worktree starts this way \u2014 dist/ is gitignored and is not carried across.)"
+    });
+  } else if (effective && workspace.built && workspace.built < effective.at) {
+    checks.push({
+      name: "built bundle vs source",
+      status: "fail",
+      detail: `built ${stamp(workspace.built)}, which is older than ${effective.said} at ${stamp(effective.at)} \u2014 this build predates the rules it is enforcing`,
+      fix: "Run `pnpm --filter @commitcycle/hook build`. Then read the next line: a rebuild does not reach a session that already loaded the old one."
+    });
+  } else if (!effective) {
+    checks.push({
+      name: "built bundle vs source",
+      status: "warn",
+      detail: shallow ? "the clone is shallow, so no commit history can say when the hook source last changed" : "nothing could be read about when the hook source last changed, so the build has nothing to be older than",
+      fix: shallow ? "Fetch the history (`fetch-depth: 0` in CI, `git fetch --unshallow` locally). Without it this check cannot tell a fresh bundle from a stale one." : "Check that this is the repository the hook is built from."
+    });
+  } else {
+    checks.push({
+      name: "built bundle vs source",
+      status: "ok",
+      detail: `built ${stamp(workspace.built)}, after ${effective.said} at ${stamp(effective.at)}`
+    });
+  }
+  if (!committed.exists) {
+    checks.push({
+      name: "shipped bundle vs source",
+      status: "warn",
+      detail: `${join2(...COMMITTED_CORE)} is missing, so a marketplace install has no hook to run`,
+      fix: "Run `sh scripts/package-plugin.sh`. A plugin that claims enforcement and cannot enforce is worse than one that admits it has none."
+    });
+  } else if (workspace.exists && committed.sha256 === workspace.sha256) {
+    checks.push({
+      name: "shipped bundle vs source",
+      status: "ok",
+      detail: `byte-identical to the build in this checkout (sha ${short(committed.sha256)})`
+    });
+  } else {
+    const bundleCommit = lastCommit(root, [join2(...COMMITTED_CORE)]);
+    const verdict = source.rev && bundleCommit ? bundleCommit.rev === source.rev ? "same" : isAncestor(root, bundleCommit.rev, source.rev) === true ? "behind" : isAncestor(root, source.rev, bundleCommit.rev) === true ? "ahead" : "unknown" : "unknown";
+    if (verdict === "behind") {
+      const days = source.when && bundleCommit ? Math.floor((source.when.getTime() - bundleCommit.when.getTime()) / DAY) : null;
+      checks.push({
+        name: "shipped bundle vs source",
+        status: "fail",
+        detail: `last rebuilt by ${short(bundleCommit.rev)} on ${stamp(bundleCommit.when)}; the hook source changed after that, at ${short(source.rev)} on ${stamp(source.when)}${days !== null ? ` \u2014 ${days} day(s) of source it does not contain` : ""}`,
+        fix: "Everyone who installed the plugin is running the older rules. Rebuild and repackage: `pnpm --filter @commitcycle/hook build && pnpm --filter @commitcycle/cli build && sh scripts/package-plugin.sh`, and commit what it writes."
+      });
+    } else if (verdict === "unknown") {
+      checks.push({
+        name: "shipped bundle vs source",
+        status: "warn",
+        detail: shallow ? "the clone is shallow, so the committed bundle's provenance cannot be read" : "the committed bundle and the hook source have no ancestry between them that git can order",
+        fix: shallow ? "Fetch the history (`fetch-depth: 0` in CI). Until then a stale shipped bundle passes here unnoticed, which is the failure this check exists for." : "Rebuild and repackage rather than reason about it: `pnpm -r build && sh scripts/package-plugin.sh`."
+      });
+    } else if (!workspace.exists) {
+      checks.push({
+        name: "shipped bundle vs source",
+        status: "ok",
+        detail: `last rebuilt by ${short(bundleCommit?.rev ?? null)} on ${stamp(bundleCommit?.when ?? null)}, at or after the last hook source change (${short(source.rev)}, ${stamp(source.when)}) \u2014 nothing is built here to compare the bytes against`
+      });
+    } else {
+      checks.push({
+        name: "shipped bundle vs source",
+        status: "warn",
+        detail: `provenance says it is current (${short(bundleCommit?.rev ?? null)}, ${stamp(bundleCommit?.when ?? null)}), but it is not byte-identical to the build in this checkout (${short(committed.sha256)} vs ${short(workspace.sha256)})`,
+        fix: "Either this checkout's build is stale, or the bundle does not rebuild byte-for-byte here. Rebuild and repackage before cutting a release, and if the bytes still differ say so in the release note rather than guessing."
+      });
+    }
+  }
+  const reference = workspace.exists ? workspace : committed;
+  if (!enforcing.exists || !enforcing.sha256) {
+  } else if (!reference.exists || !reference.sha256) {
+    const local = decidingRulesOrNull(root, { env, home, now });
+    if (local && local.decidingPlugin && (local.state === "behind" || local.state === "differs")) {
+      checks.push({
+        name: "session vs bundle",
+        status: "fail",
+        detail: `the session is enforced by ${local.label} (sha ${short(local.bundle.sha256)}, built ${stamp(local.bundle.built)}, ${local.age}) \u2014 ${local.note}`,
+        fix: local.fix ?? void 0
+      });
+    } else if (local && local.decidingPlugin && local.state === "current") {
+      checks.push({
+        name: "session vs bundle",
+        status: "ok",
+        detail: `this session is running the newest CommitCycle bundle installed on this machine (${local.label}, sha ${short(local.bundle.sha256)}, ${local.age}) \u2014 nothing is built in this checkout, and nothing needs to be`
+      });
+    } else {
+      checks.push({
+        name: "session vs bundle",
+        status: "warn",
+        detail: "nothing is built in this checkout to compare the running session against",
+        fix: "Run `pnpm --filter @commitcycle/hook build`, then re-run this. Until then, the age of what is enforcing you is measurable and its correctness is not."
+      });
+    }
+  } else if (enforcing.sha256 === reference.sha256) {
+    checks.push({
+      name: "session vs bundle",
+      status: "ok",
+      detail: `this session is running the same artifact this checkout produces (sha ${short(enforcing.sha256)})`
+    });
+  } else {
+    const older = enforcing.built && reference.built && enforcing.built < reference.built;
+    const gap = enforcing.built && reference.built ? Math.abs(Math.floor((reference.built.getTime() - enforcing.built.getTime()) / DAY)) : null;
+    const repoAgrees = committed.exists && workspace.exists && committed.sha256 === workspace.sha256;
+    checks.push({
+      name: "session vs bundle",
+      status: "fail",
+      detail: `the session is enforced by ${enforcing.path} (sha ${short(enforcing.sha256)}, built ${stamp(enforcing.built)}), which is ${older ? "older" : "a different artifact"} than what this checkout produces at ${reference.path} (sha ${short(reference.sha256)}, built ${stamp(reference.built)})${gap !== null && gap > 0 ? ` \u2014 ${gap} day(s) apart` : ""}` + (repoAgrees ? ". The repository agrees with itself \u2014 the drift is between it and what this session loaded" : ""),
+      fix: "Rebuilding will NOT fix this: the harness pinned that copy" + (located.startedAt ? ` when the session started at ${stamp(located.startedAt)}` : " when the session started") + ", and it is outside this repository. Restart the session \u2014 for a plugin install, reinstall or update the plugin first \u2014 and re-run this to confirm. Until then nothing you build here is enforcing anything, and every green test is green about code that is not running."
+    });
+  }
+  const pid = env.CLAUDE_PID ?? null;
+  const plugins = pluginBundles(home, pid);
+  const pinned = (pid ? plugins.find((b) => b.heldBy.includes(pid)) : null) ?? null;
+  const settingsLoc = fromSettings(root, env);
+  const repoReg = settingsLoc?.path && settingsLoc.cmd && settingsLoc.wrapper ? { command: settingsLoc.cmd, core: settingsLoc.path, wrapper: settingsLoc.wrapper, exists: existsSync(settingsLoc.path) } : null;
+  const registrations = { repo: repoReg, plugins, pinned };
+  const registrationChecks = [];
+  if (repoReg?.exists && plugins.length) {
+    const plug = preferredBundle(plugins, pid);
+    const repoF = facts("workspace", repoReg.core, "registered by .claude/settings.json");
+    const plugF = facts("enforcing", plug.core, "the installed plugin");
+    if (repoF.sha256 && plugF.sha256) {
+      const keepOne = "Keep one: remove the PreToolUse entry from .claude/settings.json and let the plugin enforce, or `/plugin uninstall` and let the checkout enforce. Whichever you keep, restart the session \u2014 the pin is taken at start and a change here does not reach it.";
+      if (repoF.sha256 === plugF.sha256) {
+        registrationChecks.push({
+          name: "one hook, not two",
+          status: "ok",
+          detail: `two registrations are live and they are the same artifact (sha ${short(repoF.sha256)}): this repository's ${repoReg.command}, and the installed plugin ${plug.marketplace}/${plug.plugin} ${plug.version}`
+        });
+      } else {
+        registrationChecks.push({
+          name: "one hook, not two",
+          status: "fail",
+          detail: `two different hook bundles are registered for this repository at once \u2014 this checkout's ${repoReg.core} (sha ${short(repoF.sha256)}, built ${stamp(repoF.built)}, ${ageWords(repoF.built, now)}) via ${repoReg.command}, and the installed plugin ${plug.marketplace}/${plug.plugin} ${plug.version} at ${plug.core} (sha ${short(plugF.sha256)}, built ${stamp(plugF.built)}, ${ageWords(plugF.built, now)}). ` + (pinned ? `The harness pinned the plugin's for this session \u2014 that is the one deciding.` : `Nothing on this machine says which one this session pinned, so which set of rules is deciding is unknown.`),
+          fix: pinned ? `The plugin's copy answers every tool call in this session, so nothing you build in this checkout changes what is enforced \u2014 the same trap as the session/bundle line above, with a second registration rather than a second vintage. ${keepOne}` : `Run this from inside the session you want to know about (the harness sets CLAUDE_PID and stamps the plugin root it pinned). ${keepOne}`
+        });
+      }
+    }
+  }
+  return {
+    source,
+    enforcing,
+    workspace,
+    committed,
+    session: { pid: env.CLAUDE_PID ?? null, startedAt: located.startedAt },
+    checks,
+    registrations,
+    registrationChecks
+  };
+}
+function decidingRules(root, opts = {}) {
+  const env = opts.env ?? process.env;
+  const home = opts.home ?? env.HOME ?? homedir();
+  const now = opts.now ?? /* @__PURE__ */ new Date();
+  const pid = env.CLAUDE_PID ?? null;
+  const located = locateEnforcing(root, env, home);
+  const bundle = facts("enforcing", located.path, located.via);
+  const firstHand = located.via.includes("in-use marker");
+  const plugins = pluginBundles(home, pid);
+  const decidingPlugin = bundle.path ? plugins.find((b) => b.core === bundle.path) ?? null : null;
+  const newestInstalled = preferredBundle(plugins);
+  const label2 = decidingPlugin ? `the plugin ${decidingPlugin.marketplace}/${decidingPlugin.plugin} ${decidingPlugin.version}` : bundle.path === join2(root, ...WORKSPACE_CORE) ? "this checkout's own build" : bundle.path === join2(root, ...COMMITTED_CORE) ? "this checkout's committed bundle" : bundle.path ?? "nothing";
+  const age = ageWords(bundle.built, now);
+  const base = {
+    bundle,
+    firstHand,
+    label: label2,
+    decidingPlugin,
+    newestInstalled,
+    age,
+    headline: !bundle.path ? "unknown \u2014 nothing on this machine names the bundle judging this session" : !bundle.exists ? `${label2} \u2014 nothing at ${bundle.path}, so every tool call is denied` : `${label2} \u2014 ${age} (built ${stamp(bundle.built)}, sha ${short(bundle.sha256)})`,
+    provenance: firstHand ? `named by the harness's own in-use marker for this session` : `not stated by the harness \u2014 inferred from ${located.via}`
+  };
+  const restart = "Restart the session to pick it up. A rebuild or an update run inside this session does not reach it \u2014 the harness pinned its copy when the session started, and /reload-plugins does not reload the hook. Nothing here updates anything for you.";
+  if (!bundle.path) {
+    return {
+      ...base,
+      state: "unknown",
+      note: "Nothing on this machine says which bundle is judging this session, so its age cannot be stated.",
+      fix: "Run this from inside the session you want to know about \u2014 the harness sets CLAUDE_PID and stamps the plugin root it pinned. CC_HOOK_CORE=<path> names one by hand."
+    };
+  }
+  if (!bundle.exists) {
+    return {
+      ...base,
+      state: "missing",
+      note: `${bundle.path} is where the wrapper looks (${bundle.via}) and it is not there.`,
+      fix: "The wrapper is fail-closed, so this denies every tool call in the session, reads included. Reinstall the plugin, or build it \u2014 from a terminal, not from inside the session it is denying."
+    };
+  }
+  const named = located.via.startsWith("CC_HOOK_CORE");
+  const pinned = Boolean(decidingPlugin) || firstHand || located.via.includes("plugin root");
+  const remedy = named ? "CC_HOOK_CORE names that file explicitly, so nothing about this session changes until you unset it or point it at the current build. Nothing here changes it for you." : pinned ? restart : "Build this checkout's hook (`pnpm --filter @commitcycle/hook build`) if that is what should be deciding here. If the session pinned this copy at start instead, a rebuild will not reach it and a restart will. Nothing here does either for you.";
+  if (decidingPlugin && newestInstalled) {
+    const newer = newestInstalled.root !== decidingPlugin.root && compareVersions(newestInstalled.version, decidingPlugin.version) > 0;
+    if (newer) {
+      return {
+        ...base,
+        state: "behind",
+        note: `${newestInstalled.marketplace}/${newestInstalled.plugin} ${newestInstalled.version} is installed on this machine, and this session is being decided by ${decidingPlugin.version} \u2014 the copy it pinned when it started.`,
+        fix: remedy
+      };
+    }
+    const newestFacts = newestInstalled.root === decidingPlugin.root ? bundle : facts("enforcing", newestInstalled.core, "the newest installed plugin");
+    if (newestFacts.sha256 && bundle.sha256 && newestFacts.sha256 !== bundle.sha256) {
+      return {
+        ...base,
+        state: "differs",
+        note: `It is not the same artifact as ${newestInstalled.marketplace}/${newestInstalled.plugin} ${newestInstalled.version} (sha ${short(bundle.sha256)} vs ${short(newestFacts.sha256)}), and the two versions do not order.`,
+        fix: remedy
+      };
+    }
+  }
+  const workspace = facts("workspace", join2(root, ...WORKSPACE_CORE), "this checkout");
+  const sameFile = bundle.path === workspace.path;
+  const others = !decidingPlugin && plugins.length ? ` A CommitCycle plugin is also installed on this machine (${plugins.length} bundle${plugins.length === 1 ? "" : "s"} in the cache); \`cycle doctor\` says whether two hooks are registered for this repository at once.` : "";
+  if (workspace.exists && workspace.sha256 && bundle.sha256 && workspace.sha256 !== bundle.sha256 && !sameFile) {
+    const older = bundle.built && workspace.built && bundle.built < workspace.built;
+    return {
+      ...base,
+      state: older ? "behind" : "differs",
+      note: `The artifact deciding here is ${older ? "older" : "a different artifact"} than the build in this checkout at ${workspace.path} (sha ${short(bundle.sha256)} vs ${short(workspace.sha256)}).${others}`,
+      fix: remedy
+    };
+  }
+  if (sameFile || workspace.exists && workspace.sha256 === bundle.sha256) {
+    return { ...base, state: "current", note: others.trim() || null, fix: null };
+  }
+  if (decidingPlugin && newestInstalled) return { ...base, state: "current", note: null, fix: null };
+  return {
+    ...base,
+    state: "unverified",
+    note: `Nothing on this machine can say whether it is the newest \u2014 there is no plugin cache to compare it against and no build at ${join2(root, ...WORKSPACE_CORE)}.${others}`,
+    fix: null
+  };
+}
+function decidingRulesOrNull(root, opts = {}) {
+  try {
+    return decidingRules(root, opts);
+  } catch {
+    return null;
+  }
+}
+function compareVersions(a, b) {
+  const parse = (v) => v.split(".").map((s) => {
+    const n = Number.parseInt(s, 10);
+    return Number.isNaN(n) ? 0 : n;
+  });
+  const x = parse(a);
+  const y = parse(b);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) {
+    const d = (x[i] ?? 0) - (y[i] ?? 0);
+    if (d) return d;
+  }
+  return 0;
+}
+var ENFORCING_PLATFORMS = "macOS and Linux are the platforms that enforce today; Windows is post-MVP (D-25) and nothing blocks there yet";
+var JSON_ANSWER = /^\s*\{[\s\S]*\}\s*$/;
+var runCache = /* @__PURE__ */ new Map();
+function shebangOf(path) {
+  let head;
+  try {
+    head = readFileSync2(path, "utf8").slice(0, 512);
+  } catch {
+    return null;
+  }
+  if (!head.startsWith("#!")) return null;
+  const line = head.split("\n", 1)[0] ?? "";
+  const cr = line.endsWith("\r");
+  const first = line.slice(2).replace(/\r$/, "").trim().split(/\s+/)[0] ?? "";
+  if (!first) return null;
+  return { path: first, present: existsSync(first), cr };
+}
+function executeWrapper(path) {
+  try {
+    const stdout = execFileSync(path, [], {
+      input: "",
+      timeout: 5e3,
+      maxBuffer: 1 << 20,
+      stdio: ["pipe", "pipe", "ignore"],
+      env: { ...process.env, CC_HOOK_TIMEOUT: "2" }
+    }).toString();
+    return { ok: true, stdout };
+  } catch (err) {
+    const e = err;
+    const printed = e.stdout ? e.stdout.toString() : "";
+    if (printed.trim()) return { ok: true, stdout: printed };
+    const code = e.code ? String(e.code) : e.signal ? `killed by ${e.signal}` : typeof e.status === "number" ? `exit ${e.status}` : "an error with no code";
+    return { ok: false, code, message: (e.message ?? "").split("\n")[0] ?? "" };
+  }
+}
+function runWrapper(path) {
+  let key = path;
+  try {
+    const s = statSync2(path);
+    key = `${path}:${s.size}:${s.mtimeMs}`;
+  } catch {
+  }
+  const hit = runCache.get(key);
+  if (hit) return hit;
+  const out = executeWrapper(path);
+  runCache.set(key, out);
+  return out;
+}
+function pluginWrapper(bundle) {
+  const named = `${bundle.marketplace}/${bundle.plugin} ${bundle.version}`;
+  try {
+    const manifest = JSON.parse(readFileSync2(join2(bundle.root, "hooks", "hooks.json"), "utf8"));
+    const cmd = manifest?.hooks?.PreToolUse?.[0]?.hooks?.[0]?.command;
+    if (cmd) {
+      return {
+        path: cmd.replace(/\$\{?CLAUDE_PLUGIN_ROOT\}?/g, bundle.root).trim(),
+        via: `${named} \u2014 the PreToolUse command in its own hooks/hooks.json`
+      };
+    }
+  } catch {
+  }
+  return {
+    path: join2(bundle.root, "hook", "bin", "cc-hook.sh"),
+    via: `${named} \u2014 the packaged wrapper path, because its hooks/hooks.json could not be read`
+  };
+}
+function judge(c, platform, run) {
+  if (!existsSync(c.path)) {
+    return {
+      ...c,
+      exists: false,
+      interpreter: null,
+      verdict: "missing",
+      demonstrated: false,
+      evidence: `nothing is at ${c.path}, so the harness has nothing to execute`
+    };
+  }
+  const interpreter = shebangOf(c.path);
+  const out = run(c.path);
+  const base = { ...c, exists: true, interpreter, demonstrated: true };
+  if (out.ok) {
+    return JSON_ANSWER.test(out.stdout) ? { ...base, verdict: "runs", evidence: "it was executed here and answered with a JSON decision \u2014 demonstrated, not inferred" } : {
+      ...base,
+      verdict: "unproven",
+      evidence: "it was executed here and printed something that is not a JSON decision, so what the harness would get back is unsettled"
+    };
+  }
+  if (out.code === "EACCES" || out.code === "EPERM") {
+    return {
+      ...base,
+      verdict: "cannot-run",
+      chmod: true,
+      evidence: `executing it here failed with ${out.code} \u2014 the file is on disk and the execute bit is not set`
+    };
+  }
+  const why = interpreter ? interpreter.cr ? `its \`#!\` line names ${interpreter.path} with a trailing CR, so what the platform tries to open is "${interpreter.path}\\r" \u2014 the file has Windows line endings` : interpreter.present ? `its \`#!\` line names ${interpreter.path}, which is on this machine, and the platform refused the file anyway` : `its \`#!\` line names ${interpreter.path}, which is not on this machine` : "it carries no `#!` line this platform can act on";
+  if (out.code === "ENOENT" || out.code === "ENOEXEC" || interpreter && !interpreter.present || platform === "win32") {
+    return { ...base, verdict: "cannot-run", evidence: `executing it here failed with ${out.code} \u2014 ${why}` };
+  }
+  return {
+    ...base,
+    verdict: "unproven",
+    evidence: `executing it here failed with ${out.code}${out.message ? ` (${out.message})` : ""}, which does not settle whether the harness could run it`
+  };
+}
+var VERDICT_RANK = {
+  runs: 0,
+  unproven: 1,
+  "cannot-run": 2,
+  missing: 3,
+  unregistered: 4
+};
+function inspectWrapper(root, opts = {}, registrations) {
+  const env = opts.env ?? process.env;
+  const platform = opts.platform ?? process.platform;
+  try {
+    const home = opts.home ?? env.HOME ?? homedir();
+    const pid = env.CLAUDE_PID ?? null;
+    const run = opts.run ?? runWrapper;
+    const plugins = registrations?.plugins ?? pluginBundles(home, pid);
+    const plug = registrations?.pinned ?? preferredBundle(plugins, pid);
+    let repo = registrations?.repo ?? null;
+    if (!registrations) {
+      const loc = fromSettings(root, env);
+      repo = loc?.cmd && loc.wrapper ? { command: loc.cmd, wrapper: loc.wrapper } : null;
+    }
+    const candidates = [];
+    if (plug) candidates.push(judge({ ...pluginWrapper(plug), layer: "plugin" }, platform, run));
+    if (repo) {
+      candidates.push(judge(
+        { path: repo.wrapper, via: `.claude/settings.json \u2192 ${repo.command}`, layer: "repository" },
+        platform,
+        run
+      ));
+    }
+    const decided = [...candidates].sort((a, b) => VERDICT_RANK[a.verdict] - VERDICT_RANK[b.verdict])[0] ?? null;
+    return { platform, candidates, verdict: decided?.verdict ?? "unregistered", decided };
+  } catch {
+    return { platform, candidates: [], verdict: "unproven", decided: null };
+  }
+}
+function enforcementChecks(root, opts = {}) {
+  try {
+    return inspectEnforcement(root, opts).checks;
+  } catch (err) {
+    return [{
+      name: "enforcing bundle",
+      status: "warn",
+      detail: `the age of the enforcing bundle could not be measured: ${err.message}`,
+      fix: "Report this \u2014 an unmeasurable guard is the state this check exists to make visible."
+    }];
+  }
+}
+function enforcementReport(root, opts = {}) {
+  try {
+    return inspectEnforcement(root, opts);
+  } catch {
+    return null;
+  }
+}
+
 // src/agents.ts
 var BLOCK = CC_BLOCK;
 function readZoneLines(root) {
-  const path = join2(root, ".zones", "zones.yml");
-  if (!existsSync(path)) return null;
-  const parsed = parseZonesFile(readFileSync2(path, "utf8"));
+  const path = join3(root, ".zones", "zones.yml");
+  if (!existsSync2(path)) return null;
+  const parsed = parseZonesFile(readFileSync3(path, "utf8"));
   if (!parsed.ok) return null;
   return parsed.value.zones.map((z) => ({
     id: z.id,
@@ -14383,37 +15077,77 @@ function readZoneLines(root) {
     default_policy: z.default_policy
   }));
 }
+function hookWrapperOnDisk(root, command) {
+  const resolved2 = wrapperPathFrom(command).replace("$CLAUDE_PROJECT_DIR", root);
+  return existsSync2(isAbsolute2(resolved2) ? resolved2 : join3(root, resolved2));
+}
+function wrapperPathFrom(command) {
+  const trimmed = command.trim();
+  const quote = trimmed[0];
+  if (quote === '"' || quote === "'") {
+    const end = trimmed.indexOf(quote, 1);
+    if (end > 0) return trimmed.slice(1, end);
+  }
+  return trimmed.split(/\s+/)[0] ?? trimmed;
+}
 function detectEnforcement(root) {
   const configs = [
-    [join2(root, ".claude", "settings.json"), (raw) => {
+    [join3(root, ".claude", "settings.json"), (raw) => {
       const hooks = JSON.parse(raw).hooks;
       const pre = hooks?.PreToolUse?.[0]?.hooks?.[0]?.command;
       return typeof pre === "string" ? pre : null;
     }],
-    [join2(root, ".codex", "hooks.json"), (raw) => {
+    [join3(root, ".codex", "hooks.json"), (raw) => {
       const hooks = JSON.parse(raw).hooks;
       const pre = hooks?.PreToolUse?.[0]?.command;
+      return typeof pre === "string" ? pre : null;
+    }],
+    /* The two harnesses `cycle init --harness` can now open (CC-729). Without
+       them a repository set up for Cursor or Windsurf alone answered `off` here
+       and published "no software is checking it" into its own AGENTS.md while
+       its hook was wired — the safe direction of a wrong answer, and still a
+       wrong answer. Each reads the one blocking event init registers for that
+       harness: docs/13 §3 for Cursor, §4 for Windsurf. */
+    [join3(root, ".cursor", "hooks.json"), (raw) => {
+      const hooks = JSON.parse(raw).hooks;
+      const pre = hooks?.preToolUse?.[0]?.command;
+      return typeof pre === "string" ? pre : null;
+    }],
+    [join3(root, ".windsurf", "hooks.json"), (raw) => {
+      const hooks = JSON.parse(raw).hooks;
+      const pre = hooks?.pre_write_code?.[0]?.command;
       return typeof pre === "string" ? pre : null;
     }]
   ];
   for (const [path, read] of configs) {
-    if (!existsSync(path)) continue;
+    if (!existsSync2(path)) continue;
     try {
-      const command = read(readFileSync2(path, "utf8"));
-      const resolved2 = command?.replace("$CLAUDE_PROJECT_DIR", root);
-      if (resolved2 && existsSync(isAbsolute2(resolved2) ? resolved2 : join2(root, resolved2))) return "on";
+      const command = read(readFileSync3(path, "utf8"));
+      if (command && hookWrapperOnDisk(root, command)) return "on";
     } catch {
       continue;
     }
   }
   return "off";
 }
-var playbookReader = (root = ".") => (rel) => existsSync(join2(root, rel));
+function detectMachineEnforcement(root, opts = {}) {
+  const env = opts.env ?? process.env;
+  const home = opts.home ?? env.HOME ?? homedir2();
+  const repo = detectEnforcement(root) === "on";
+  const pid = env.CLAUDE_PID ?? null;
+  const named = preferredBundle(pluginBundles(home, pid), pid);
+  const plugin = named ? { marketplace: named.marketplace, plugin: named.plugin, version: named.version } : void 0;
+  if (repo && plugin) return { enforcement: "on", by: "both", plugin };
+  if (repo) return { enforcement: "on", by: "repo" };
+  if (plugin) return { enforcement: "on", by: "plugin", plugin };
+  return { enforcement: "off", by: "none" };
+}
+var playbookReader = (root = ".") => (rel) => existsSync2(join3(root, rel));
 function readBoardBinding(root) {
-  const path = join2(root, ".zones", "board.json");
-  if (!existsSync(path)) return null;
+  const path = join3(root, ".zones", "board.json");
+  if (!existsSync2(path)) return null;
   try {
-    const raw = JSON.parse(readFileSync2(path, "utf8"));
+    const raw = JSON.parse(readFileSync3(path, "utf8"));
     const url = typeof raw.api_url === "string" ? raw.api_url : "";
     const tenant = typeof raw.tenant === "string" ? raw.tenant : "";
     const repo = typeof raw.repo === "string" ? raw.repo : "";
@@ -14423,8 +15157,8 @@ function readBoardBinding(root) {
   }
 }
 function writeAgentsBlock(root, block) {
-  const path = join2(root, "AGENTS.md");
-  const existing = existsSync(path) ? readFileSync2(path, "utf8") : "";
+  const path = join3(root, "AGENTS.md");
+  const existing = existsSync2(path) ? readFileSync3(path, "utf8") : "";
   const next = BLOCK.test(existing) ? existing.replace(BLOCK, block) : (existing ? existing.trimEnd() + "\n\n" : "# Agent guide\n\n") + block + "\n";
   if (next === existing) return { path, changed: false };
   writeFileSync(path, next);
@@ -14433,17 +15167,17 @@ function writeAgentsBlock(root, block) {
 var LOCAL_CONTEXT_FILE = "CLAUDE.local.md";
 var LOCAL_PREAMBLE = "<!-- CommitCycle writes your active task here and removes it on hand-in.\n     Gitignored, so it never conflicts; keep your own notes outside the markers. -->";
 function writeLocalBlock(root, block) {
-  const path = join2(root, LOCAL_CONTEXT_FILE);
-  const existing = existsSync(path) ? readFileSync2(path, "utf8") : "";
+  const path = join3(root, LOCAL_CONTEXT_FILE);
+  const existing = existsSync2(path) ? readFileSync3(path, "utf8") : "";
   const next = BLOCK.test(existing) ? existing.replace(BLOCK, block) : (existing ? existing.trimEnd() + "\n\n" : LOCAL_PREAMBLE + "\n\n") + block + "\n";
   if (next === existing) return { path, changed: false };
   writeFileSync(path, next);
   return { path, changed: true };
 }
 function clearLocalBlock(root) {
-  const path = join2(root, LOCAL_CONTEXT_FILE);
-  if (!existsSync(path)) return { path, changed: false };
-  const existing = readFileSync2(path, "utf8");
+  const path = join3(root, LOCAL_CONTEXT_FILE);
+  if (!existsSync2(path)) return { path, changed: false };
+  const existing = readFileSync3(path, "utf8");
   if (!BLOCK.test(existing)) return { path, changed: false };
   const rest = existing.replace(BLOCK, "").replace(LOCAL_PREAMBLE, "").trim();
   if (rest === "") {
@@ -14455,14 +15189,14 @@ function clearLocalBlock(root) {
 }
 
 // src/heal.ts
-import { execFileSync } from "node:child_process";
-import { existsSync as existsSync2, readFileSync as readFileSync4, writeFileSync as writeFileSync3 } from "node:fs";
-import { join as join4 } from "node:path";
+import { execFileSync as execFileSync2 } from "node:child_process";
+import { existsSync as existsSync3, readFileSync as readFileSync5, writeFileSync as writeFileSync3 } from "node:fs";
+import { join as join5 } from "node:path";
 
 // ../../scripts/merge-agents.mjs
 import { spawnSync } from "node:child_process";
-import { readFileSync as readFileSync3, writeFileSync as writeFileSync2, rmSync as rmSync2 } from "node:fs";
-import { dirname, basename, join as join3 } from "node:path";
+import { readFileSync as readFileSync4, writeFileSync as writeFileSync2, rmSync as rmSync2 } from "node:fs";
+import { dirname as dirname2, basename, join as join4 } from "node:path";
 var CC_BLOCK2 = /<!-- cc:begin -->[\s\S]*?<!-- cc:end -->/;
 var PLACEHOLDER = "<!-- cc-merge-driver:placeholder -->";
 function extractBlock(text) {
@@ -14475,9 +15209,9 @@ function neutralize(text) {
 function mergeNeutralized(oursN, baseN, theirsN, scratchDir) {
   const tag = `${process.pid}.${Math.random().toString(36).slice(2)}`;
   const stem = `AGENTS.md.cc-merge.${tag}`;
-  const oursFile = join3(scratchDir, `${stem}.ours`);
-  const baseFile = join3(scratchDir, `${stem}.base`);
-  const theirsFile = join3(scratchDir, `${stem}.theirs`);
+  const oursFile = join4(scratchDir, `${stem}.ours`);
+  const baseFile = join4(scratchDir, `${stem}.base`);
+  const theirsFile = join4(scratchDir, `${stem}.theirs`);
   try {
     writeFileSync2(oursFile, oursN);
     writeFileSync2(baseFile, baseN);
@@ -14508,10 +15242,10 @@ function mergeAgents({ base, ours, theirs }, scratchDir) {
   return { text, conflict };
 }
 function runMergeDriver(basePath, oursPath, theirsPath) {
-  const base = readFileSync3(basePath, "utf8");
-  const ours = readFileSync3(oursPath, "utf8");
-  const theirs = readFileSync3(theirsPath, "utf8");
-  const { text, conflict } = mergeAgents({ base, ours, theirs }, dirname(oursPath) || ".");
+  const base = readFileSync4(basePath, "utf8");
+  const ours = readFileSync4(oursPath, "utf8");
+  const theirs = readFileSync4(theirsPath, "utf8");
+  const { text, conflict } = mergeAgents({ base, ours, theirs }, dirname2(oursPath) || ".");
   writeFileSync2(oursPath, text);
   return conflict ? 1 : 0;
 }
@@ -14531,19 +15265,19 @@ if (invokedDirectly) {
 var CC_AGENTS_MAPPING = /^\s*AGENTS\.md\s+.*\bmerge=cc-agents\b/m;
 var CC_AGENTS_ATTRIBUTE = "AGENTS.md merge=cc-agents";
 function driverCommand(root) {
-  return existsSync2(join4(root, "scripts", "merge-agents.mjs")) ? "node scripts/merge-agents.mjs %O %A %B" : "cycle merge-driver %O %A %B";
+  return existsSync3(join5(root, "scripts", "merge-agents.mjs")) ? "node scripts/merge-agents.mjs %O %A %B" : "cycle merge-driver %O %A %B";
 }
 function ensureMergeDriver(root) {
-  const attrsPath = join4(root, ".gitattributes");
+  const attrsPath = join5(root, ".gitattributes");
   let mapped = false;
   try {
-    mapped = existsSync2(attrsPath) && CC_AGENTS_MAPPING.test(readFileSync4(attrsPath, "utf8"));
+    mapped = existsSync3(attrsPath) && CC_AGENTS_MAPPING.test(readFileSync5(attrsPath, "utf8"));
   } catch {
     return { status: "no-mapping" };
   }
   if (!mapped) return { status: "no-mapping" };
   try {
-    const current = execFileSync("git", ["-C", root, "config", "--get", "merge.cc-agents.driver"], {
+    const current = execFileSync2("git", ["-C", root, "config", "--get", "merge.cc-agents.driver"], {
       stdio: ["ignore", "pipe", "ignore"]
     }).toString().trim();
     if (current) return { status: "present", command: current };
@@ -14551,11 +15285,11 @@ function ensureMergeDriver(root) {
   }
   const command = driverCommand(root);
   try {
-    execFileSync("git", ["-C", root, "config", "merge.cc-agents.driver", command], { stdio: "ignore" });
+    execFileSync2("git", ["-C", root, "config", "merge.cc-agents.driver", command], { stdio: "ignore" });
     try {
-      execFileSync("git", ["-C", root, "config", "--get", "merge.cc-agents.name"], { stdio: "ignore" });
+      execFileSync2("git", ["-C", root, "config", "--get", "merge.cc-agents.name"], { stdio: "ignore" });
     } catch {
-      execFileSync("git", [
+      execFileSync2("git", [
         "-C",
         root,
         "config",
@@ -14629,9 +15363,9 @@ function resolveCcHunks(text) {
   return { text: out.join("\n"), resolved: resolved2, human };
 }
 function healAgentsFile(root) {
-  const path = join4(root, "AGENTS.md");
-  if (!existsSync2(path)) return NO_HEAL;
-  const original = readFileSync4(path, "utf8");
+  const path = join5(root, "AGENTS.md");
+  if (!existsSync3(path)) return NO_HEAL;
+  const original = readFileSync5(path, "utf8");
   let text = original;
   const hunks = text.includes("<<<<<<< ") ? resolveCcHunks(text) : { text, resolved: 0, human: 0 };
   text = hunks.text;
@@ -14681,16 +15415,16 @@ function healAgentsFile(root) {
 }
 
 // src/init.ts
-import { dirname as dirname4, join as join10, relative as relative3 } from "node:path";
+import { dirname as dirname5, join as join11, relative as relative3 } from "node:path";
 
 // src/board-config.ts
-import { readFileSync as readFileSync7 } from "node:fs";
-import { join as join7 } from "node:path";
+import { readFileSync as readFileSync8 } from "node:fs";
+import { join as join8 } from "node:path";
 
 // src/login.ts
-import { chmodSync, mkdirSync, readFileSync as readFileSync5, writeFileSync as writeFileSync4 } from "node:fs";
-import { homedir } from "node:os";
-import { dirname as dirname2, join as join5 } from "node:path";
+import { chmodSync, mkdirSync, readFileSync as readFileSync6, writeFileSync as writeFileSync4 } from "node:fs";
+import { homedir as homedir3 } from "node:os";
+import { dirname as dirname3, join as join6 } from "node:path";
 import { createInterface } from "node:readline/promises";
 
 // src/protocol.ts
@@ -14745,12 +15479,12 @@ async function boardCall(opts, path, init) {
 }
 
 // src/login.ts
-var sessionPath = () => join5(homedir(), ".commitcycle", "session.json");
+var sessionPath = () => join6(homedir3(), ".commitcycle", "session.json");
 var norm = (apiUrl) => apiUrl.replace(/\/+$/, "");
 function allSessions() {
   let raw;
   try {
-    raw = JSON.parse(readFileSync5(sessionPath(), "utf8"));
+    raw = JSON.parse(readFileSync6(sessionPath(), "utf8"));
   } catch {
     return [];
   }
@@ -14771,7 +15505,7 @@ function rememberSession(entry) {
   const sessions = {};
   for (const s of [...kept, entry]) sessions[`${norm(s.api_url)}|${s.email}`] = s;
   const file = sessionPath();
-  mkdirSync(dirname2(file), { recursive: true });
+  mkdirSync(dirname3(file), { recursive: true });
   writeFileSync4(file, `${JSON.stringify({ sessions }, null, 2)}
 `);
   try {
@@ -14788,7 +15522,7 @@ function forgetSessions(apiUrl, email) {
   const sessions = {};
   for (const s of kept) sessions[`${norm(s.api_url)}|${s.email}`] = s;
   const file = sessionPath();
-  mkdirSync(dirname2(file), { recursive: true });
+  mkdirSync(dirname3(file), { recursive: true });
   writeFileSync4(file, `${JSON.stringify({ sessions }, null, 2)}
 `);
   try {
@@ -14796,6 +15530,25 @@ function forgetSessions(apiUrl, email) {
   } catch {
   }
   return before.length - kept.length;
+}
+async function runLogout(opts) {
+  const doFetch = opts.fetchImpl ?? fetch;
+  const base = norm(opts.apiUrl);
+  const going = allSessions().filter(
+    (s) => norm(s.api_url) === base && (!opts.email || s.email === opts.email)
+  );
+  const ended = [];
+  const stranded = [];
+  for (const s of going) {
+    try {
+      const res = await doFetch(`${base}/v1/auth/logout`, { method: "POST", headers: boardHeaders(s.token) });
+      if (res.ok || res.status === 401) ended.push(s.email);
+      else stranded.push({ email: s.email, why: `the board answered ${res.status}` });
+    } catch (cause) {
+      stranded.push({ email: s.email, why: cause.message || "the board could not be reached" });
+    }
+  }
+  return { forgotten: forgetSessions(opts.apiUrl, opts.email), ended, stranded };
 }
 function sessionFor(apiUrl, tenant) {
   const here = allSessions().filter((s) => norm(s.api_url) === norm(apiUrl));
@@ -14876,15 +15629,15 @@ async function runLogin(opts) {
 }
 
 // src/pair.ts
-import { execFileSync as execFileSync2 } from "node:child_process";
-import { chmodSync as chmodSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync6, writeFileSync as writeFileSync5 } from "node:fs";
-import { homedir as homedir2 } from "node:os";
-import { dirname as dirname3, join as join6 } from "node:path";
-var machinePath = () => join6(homedir2(), ".commitcycle", "machines.json");
+import { execFileSync as execFileSync3 } from "node:child_process";
+import { chmodSync as chmodSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync7, writeFileSync as writeFileSync5 } from "node:fs";
+import { homedir as homedir4 } from "node:os";
+import { dirname as dirname4, join as join7 } from "node:path";
+var machinePath = () => join7(homedir4(), ".commitcycle", "machines.json");
 function label(root) {
   const dir = root.split("/").pop() ?? "repo";
   try {
-    const host = execFileSync2("hostname", { stdio: "pipe" }).toString().trim().replace(/\.local$/, "");
+    const host = execFileSync3("hostname", { stdio: "pipe" }).toString().trim().replace(/\.local$/, "");
     return `${host} \xB7 ${dir}`;
   } catch {
     return dir;
@@ -14892,10 +15645,10 @@ function label(root) {
 }
 function remember(apiUrl, tenant, repo, token) {
   const path = machinePath();
-  mkdirSync2(dirname3(path), { recursive: true });
+  mkdirSync2(dirname4(path), { recursive: true });
   let all = {};
   try {
-    all = JSON.parse(readFileSync6(path, "utf8"));
+    all = JSON.parse(readFileSync7(path, "utf8"));
   } catch {
   }
   all[`${apiUrl.replace(/\/+$/, "")}|${tenant}/${repo}`] = { token, paired_at: (/* @__PURE__ */ new Date()).toISOString() };
@@ -14905,17 +15658,57 @@ function remember(apiUrl, tenant, repo, token) {
 }
 function machineToken(apiUrl, tenant, repo) {
   try {
-    const all = JSON.parse(readFileSync6(machinePath(), "utf8"));
+    const all = JSON.parse(readFileSync7(machinePath(), "utf8"));
     return all[`${apiUrl.replace(/\/+$/, "")}|${tenant}/${repo}`]?.token;
   } catch {
     return void 0;
   }
 }
+function forgetMachine(apiUrl, tenant, repo) {
+  const path = machinePath();
+  let all = {};
+  try {
+    all = JSON.parse(readFileSync7(path, "utf8"));
+  } catch {
+    return false;
+  }
+  const key = `${apiUrl.replace(/\/+$/, "")}|${tenant}/${repo}`;
+  if (!(key in all)) return false;
+  delete all[key];
+  writeFileSync5(path, `${JSON.stringify(all, null, 2)}
+`);
+  chmodSync2(path, 384);
+  return true;
+}
+async function runUnpair(opts) {
+  const doFetch = opts.fetchImpl ?? fetch;
+  const base = opts.apiUrl.replace(/\/+$/, "");
+  const token = machineToken(base, opts.tenant, opts.repo);
+  if (!token) return { revoked: false, forgotten: false, none: true };
+  let revoked = false;
+  let stranded;
+  let label2;
+  try {
+    const res = await doFetch(`${base}/v1/pair`, { method: "DELETE", headers: boardHeaders(token) });
+    if (res.ok) {
+      revoked = true;
+      label2 = (await res.json().catch(() => ({}))).label;
+    } else if (res.status === 401) {
+      revoked = true;
+    } else {
+      stranded = `the board answered ${res.status}`;
+    }
+  } catch (cause) {
+    stranded = cause.message || "the board could not be reached";
+  }
+  const forgotten = stranded ? false : forgetMachine(base, opts.tenant, opts.repo);
+  return { revoked, forgotten, stranded, label: label2 };
+}
 async function runPair(opts) {
   const doFetch = opts.fetchImpl ?? fetch;
   const log = opts.log ?? (() => {
   });
-  const sleep = opts.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
+  const sleep = opts.sleep ?? ((ms2) => new Promise((r) => setTimeout(r, ms2)));
   const base = opts.apiUrl.replace(/\/+$/, "");
   const started = await doFetch(`${base}/v1/pair`, {
     method: "POST",
@@ -14948,8 +15741,8 @@ async function runPair(opts) {
       const body = await res.json();
       if (!body.pending && body.token && body.tenant && body.repo) {
         remember(base, body.tenant, body.repo, body.token);
-        const boardPath = join6(opts.root, ".zones", "board.json");
-        mkdirSync2(dirname3(boardPath), { recursive: true });
+        const boardPath = join7(opts.root, ".zones", "board.json");
+        mkdirSync2(dirname4(boardPath), { recursive: true });
         writeFileSync5(boardPath, `${JSON.stringify({ api_url: base, tenant: body.tenant, repo: body.repo }, null, 2)}
 `);
         return { ok: true, tenant: body.tenant, repo: body.repo, failures: [] };
@@ -14986,8 +15779,8 @@ async function runConnect(opts) {
     };
   }
   remember(base, body.tenant, body.repo, body.token);
-  const boardPath = join6(opts.root, ".zones", "board.json");
-  mkdirSync2(dirname3(boardPath), { recursive: true });
+  const boardPath = join7(opts.root, ".zones", "board.json");
+  mkdirSync2(dirname4(boardPath), { recursive: true });
   writeFileSync5(boardPath, `${JSON.stringify({ api_url: base, tenant: body.tenant, repo: body.repo }, null, 2)}
 `);
   return { ok: true, tenant: body.tenant, repo: body.repo, failures: [] };
@@ -14999,21 +15792,21 @@ var repoOf = (root, file) => process.env.CC_REPO_ID ?? (typeof file.repo === "st
 function resolveBoard(root) {
   let file = {};
   try {
-    file = JSON.parse(readFileSync7(join7(root, ".zones", "board.json"), "utf8"));
+    file = JSON.parse(readFileSync8(join8(root, ".zones", "board.json"), "utf8"));
   } catch {
   }
-  const str3 = (v) => typeof v === "string" && v ? v : void 0;
-  const apiUrl = process.env.CC_API_URL ?? str3(file.api_url);
+  const str4 = (v) => typeof v === "string" && v ? v : void 0;
+  const apiUrl = process.env.CC_API_URL ?? str4(file.api_url);
   const tenant = tenantOf(file);
   const choice = apiUrl && tenant ? sessionFor(apiUrl, tenant) : {};
-  const usingSession = !process.env.CC_TOKEN && !str3(file.token) && !(apiUrl && tenant && machineToken(apiUrl, tenant, repoOf(root, file)));
+  const usingSession = !process.env.CC_TOKEN && !str4(file.token) && !(apiUrl && tenant && machineToken(apiUrl, tenant, repoOf(root, file)));
   return {
     apiUrl,
-    tenant: process.env.CC_TENANT ?? str3(file.tenant),
+    tenant: process.env.CC_TENANT ?? str4(file.tenant),
     ...usingSession && "wrongTenant" in choice ? { wrongIdentity: { tenant: choice.wrongTenant.tenant, held: choice.wrongTenant.held.map((s) => s.email) } } : {},
     // Derived last: the directory name is usually right, and being wrong is
     // visible the moment the scope is printed.
-    repo: process.env.CC_REPO_ID ?? str3(file.repo) ?? root.split("/").pop() ?? "repo",
+    repo: process.env.CC_REPO_ID ?? str4(file.repo) ?? root.split("/").pop() ?? "repo",
     /* Last in the chain and first in ordinary use: the session `cycle login`
        stored (CC-147). It comes last so an explicit env var or a committed
        machine token still wins, and it is looked up BY BOARD — a session
@@ -15024,13 +15817,13 @@ function resolveBoard(root) {
        laptop is the ordinary case for a CLI and the session is the one a
        browser holds — and it is scoped to one repository, so it is also the
        narrower of the two (CC-184). */
-    token: process.env.CC_TOKEN ?? str3(file.token) ?? (apiUrl && tenant ? machineToken(apiUrl, tenant, repoOf(root, file)) : void 0) ?? (apiUrl ? savedToken(apiUrl, tenant) : void 0)
+    token: process.env.CC_TOKEN ?? str4(file.token) ?? (apiUrl && tenant ? machineToken(apiUrl, tenant, repoOf(root, file)) : void 0) ?? (apiUrl ? savedToken(apiUrl, tenant) : void 0)
   };
 }
 
 // src/propose.ts
-import { existsSync as existsSync3, readFileSync as readFileSync8, readdirSync, statSync as statSync2 } from "node:fs";
-import { join as join8, relative } from "node:path";
+import { existsSync as existsSync4, readFileSync as readFileSync9, readdirSync as readdirSync2, statSync as statSync3 } from "node:fs";
+import { join as join9, relative } from "node:path";
 var SKIP_DIRS = /* @__PURE__ */ new Set([
   "node_modules",
   ".git",
@@ -15052,15 +15845,15 @@ function walkDirs(root, maxDepth = 4) {
     if (depth > maxDepth) return;
     let entries;
     try {
-      entries = readdirSync(dir);
+      entries = readdirSync2(dir);
     } catch {
       return;
     }
     for (const entry of entries) {
       if (SKIP_DIRS.has(entry) || entry.startsWith(".")) continue;
-      const full = join8(dir, entry);
+      const full = join9(dir, entry);
       try {
-        if (!statSync2(full).isDirectory()) continue;
+        if (!statSync3(full).isDirectory()) continue;
       } catch {
         continue;
       }
@@ -15116,7 +15909,7 @@ function schemaZone(root) {
     "**/schema.sql"
   ].filter((p) => {
     if (p.includes("*")) return true;
-    return existsSync3(join8(root, p));
+    return existsSync4(join9(root, p));
   });
   return {
     id: "schema",
@@ -15134,16 +15927,16 @@ function schemaZone(root) {
 function fileMentions(root, dir, keywords) {
   let entries;
   try {
-    entries = readdirSync(join8(root, dir));
+    entries = readdirSync2(join9(root, dir));
   } catch {
     return null;
   }
   for (const entry of entries.slice(0, 40)) {
-    const full = join8(root, dir, entry);
+    const full = join9(root, dir, entry);
     try {
-      if (statSync2(full).isDirectory()) continue;
+      if (statSync3(full).isDirectory()) continue;
       if (!/\.(ts|tsx|js|jsx|mjs|py|rb|go|java|php)$/.test(entry)) continue;
-      const text = readFileSync8(full, "utf8").slice(0, 2e4).toLowerCase();
+      const text = readFileSync9(full, "utf8").slice(0, 2e4).toLowerCase();
       for (const kw of keywords) if (text.includes(kw)) return kw;
     } catch {
     }
@@ -15180,7 +15973,7 @@ function proposeFromHeuristics(root) {
       source: "heuristic"
     });
   }
-  const envFiles = [".env", ".env.local", ".env.production"].filter((f) => existsSync3(join8(root, f)));
+  const envFiles = [".env", ".env.local", ".env.production"].filter((f) => existsSync4(join9(root, f)));
   if (envFiles.length) {
     found.push({
       id: "secrets",
@@ -15196,11 +15989,11 @@ function proposeFromHeuristics(root) {
   return found;
 }
 function proposeFromKnowledgeGraph(root) {
-  const file = join8(root, ".ua", "knowledge-graph.json");
-  if (!existsSync3(file)) return [];
+  const file = join9(root, ".ua", "knowledge-graph.json");
+  if (!existsSync4(file)) return [];
   let graph;
   try {
-    graph = JSON.parse(readFileSync8(file, "utf8"));
+    graph = JSON.parse(readFileSync9(file, "utf8"));
   } catch {
     return [];
   }
@@ -15240,8 +16033,8 @@ function proposeZones(root) {
 
 // src/validate.ts
 var import_picomatch2 = __toESM(require_picomatch2(), 1);
-import { readdirSync as readdirSync2, statSync as statSync3 } from "node:fs";
-import { join as join9, relative as relative2 } from "node:path";
+import { readdirSync as readdirSync3, statSync as statSync4 } from "node:fs";
+import { join as join10, relative as relative2 } from "node:path";
 var SKIP = /* @__PURE__ */ new Set(["node_modules", ".git", "dist", "build", ".next", "coverage", ".turbo"]);
 function listFiles(root, limit = 2e4) {
   const out = [];
@@ -15249,15 +16042,15 @@ function listFiles(root, limit = 2e4) {
     if (out.length >= limit) return;
     let entries;
     try {
-      entries = readdirSync2(dir);
+      entries = readdirSync3(dir);
     } catch {
       return;
     }
     for (const entry of entries) {
       if (SKIP.has(entry)) continue;
-      const full = join9(dir, entry);
+      const full = join10(dir, entry);
       try {
-        if (statSync3(full).isDirectory()) visit(full);
+        if (statSync4(full).isDirectory()) visit(full);
         else out.push(relative2(root, full).split("\\").join("/"));
       } catch {
       }
@@ -15321,6 +16114,119 @@ function validateCandidates(root, candidates) {
   return { accepted, findings };
 }
 
+// src/harnesses.ts
+var HARNESSES = ["claude-code", "codex", "cursor", "windsurf"];
+var DEFAULT_HARNESSES = ["claude-code", "codex"];
+function dialectArg(_id) {
+  return void 0;
+}
+function invocation(id, wrapper) {
+  const arg = dialectArg(id);
+  return arg ? `${wrapper} ${arg}` : wrapper;
+}
+function claudeCodeSettings(command) {
+  return JSON.stringify(
+    {
+      hooks: {
+        PreToolUse: [{ matcher: "*", hooks: [{ type: "command", command, timeout: 5 }] }],
+        PostToolUse: [{ matcher: "*", hooks: [{ type: "command", command, timeout: 10 }] }]
+      }
+    },
+    null,
+    2
+  ) + "\n";
+}
+function codexHooks(command) {
+  return JSON.stringify(
+    {
+      hooks: {
+        PreToolUse: [{ type: "command", command, timeout: 5 }],
+        PostToolUse: [{ type: "command", command, timeout: 10 }]
+      }
+    },
+    null,
+    2
+  ) + "\n";
+}
+function cursorHooks(command) {
+  return JSON.stringify({ hooks: { preToolUse: [{ command, failClosed: true }] } }, null, 2) + "\n";
+}
+function windsurfHooks(command) {
+  const entry = [{ command }];
+  return JSON.stringify(
+    {
+      hooks: {
+        pre_write_code: entry,
+        pre_read_code: entry,
+        pre_run_command: entry,
+        pre_mcp_tool_use: entry
+      }
+    },
+    null,
+    2
+  ) + "\n";
+}
+var SETUPS = {
+  "claude-code": {
+    id: "claude-code",
+    label: "Claude Code",
+    path: ".claude/settings.json",
+    render: claudeCodeSettings,
+    caveats: [
+      "The only harness whose wall this repository has ever seen fire. Everything below it is documentary (docs/13 \xA77)."
+    ]
+  },
+  codex: {
+    id: "codex",
+    label: "Codex",
+    path: ".codex/hooks.json",
+    caveats: [
+      'Codex loads project hooks only in a TRUSTED project: "If the project is untrusted, Codex ignores project .codex/ layers, including project-local hooks." Trust this project in Codex, or this file is inert and nothing here can tell (docs/13 \xA75.1).',
+      'No Codex install has ever run this entry \u2014 not in CC-144, not in the pass that documented it, not here. The shape is what OpenAI documents, and that is a different claim from "it works" (docs/13 \xA75.2, \xA78).'
+    ],
+    render: codexHooks
+  },
+  cursor: {
+    id: "cursor",
+    label: "Cursor",
+    path: ".cursor/hooks.json",
+    caveats: [
+      'Project hooks "auto-load in trusted workspaces" \u2014 in an untrusted one this file is inert and nothing here can tell (docs/13 \xA73).',
+      "failClosed: true is set, which is what makes a denial survive a crashed or slow wrapper. Cursor is fail-open without it, by its own default (docs/13 \xA73).",
+      "Only preToolUse is wired. Cursor blocks shell, MCP and file reads through separate events with their own reply schemas, and which of those the hook can answer was not established here \u2014 treat shell commands and file reads in this editor as unguarded (docs/13 \xA73).",
+      "Never exercised against a Cursor install."
+    ],
+    render: cursorHooks
+  },
+  windsurf: {
+    id: "windsurf",
+    label: "Windsurf (Devin Desktop)",
+    path: ".windsurf/hooks.json",
+    caveats: [
+      "Windsurf has NO JSON reply channel: a denial is the exit code and nothing else, so the reason has nowhere to go on the page as documented. A person blocked here may see the action stop with no explanation (docs/13 \xA74).",
+      "CC-728 is open against exactly that: the fail-closed wrapper turns every non-zero exit from the core into a generic failure, which is the one channel Windsurf reads. Until it lands, treat a Windsurf denial as unproven \u2014 this file is honest about what it asks for, not about what arrives.",
+      "Windsurf is being renamed to Devin Desktop underneath this path. A migration command for hook files shipped 2026-07-17, and whether .windsurf/hooks.json keeps working, and for how long, is documented nowhere (docs/13 \xA74, \xA78).",
+      "Never exercised against a Windsurf install."
+    ],
+    render: windsurfHooks
+  }
+};
+function parseHarnesses(values) {
+  const asked = values.flatMap((v) => v.split(",")).map((v) => v.trim().toLowerCase()).filter(Boolean);
+  const harnesses = [];
+  const unknown = [];
+  for (const name of asked) {
+    if (name === "all") {
+      for (const id2 of HARNESSES) if (!harnesses.includes(id2)) harnesses.push(id2);
+      continue;
+    }
+    const id = HARNESSES.includes(name) ? name : void 0;
+    if (!id) unknown.push(name);
+    else if (!harnesses.includes(id)) harnesses.push(id);
+  }
+  return { harnesses: HARNESSES.filter((h) => harnesses.includes(h)), unknown };
+}
+
 // src/init.ts
 var NO_OWNER = "TODO@example.com";
 function mcpJson(cliPath) {
@@ -15336,8 +16242,8 @@ function proposedOwner(root) {
   const signedIn = board2.apiUrl ? savedIdentity(board2.apiUrl) : void 0;
   if (signedIn) return { owner: signedIn, from: "the account you are signed in as" };
   try {
-    const git3 = execFileSync3("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim();
-    if (git3) return { owner: git3, from: "your git identity" };
+    const git4 = execFileSync4("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim();
+    if (git4) return { owner: git4, from: "your git identity" };
   } catch {
   }
   return { owner: NO_OWNER, from: "nothing on this machine names you" };
@@ -15380,34 +16286,34 @@ function yaml(zones, owner) {
   }
   return lines.join("\n");
 }
-function settingsJson(hookPath) {
-  return JSON.stringify(
-    {
-      hooks: {
-        PreToolUse: [{ matcher: "*", hooks: [{ type: "command", command: hookPath, timeout: 5 }] }],
-        PostToolUse: [{ matcher: "*", hooks: [{ type: "command", command: hookPath, timeout: 10 }] }]
-      }
-    },
-    null,
-    2
-  ) + "\n";
-}
-function codexHooksJson(hookPath) {
-  return JSON.stringify(
-    {
-      hooks: {
-        PreToolUse: [{ command: hookPath, timeout_ms: 5e3 }],
-        PostToolUse: [{ command: hookPath, timeout_ms: 1e4 }]
-      }
-    },
-    null,
-    2
-  ) + "\n";
+function writeHarnessConfig(root, id, wrapper, wrote, log) {
+  const setup = SETUPS[id];
+  const path = join11(root, setup.path);
+  const command = invocation(id, id === "claude-code" ? wrapper : wrapper.replace("$CLAUDE_PROJECT_DIR/", "./"));
+  mkdirSync3(dirname5(path), { recursive: true });
+  if (existsSync5(path)) {
+    wrote.push(`${setup.path} (already exists \u2014 left alone, add the hook yourself)`);
+    return false;
+  }
+  writeFileSync6(path, setup.render(command));
+  wrote.push(setup.path);
+  log(`
+  ${setup.label} \u2192 ${setup.path}`);
+  for (const c of setup.caveats) log(`    - ${c}`);
+  if (!dialectArg(id) && id !== "claude-code") {
+    log(
+      `    - This entry carries NO dialect argument, so the hook will answer ${setup.label} in Claude Code's
+      wire format, which ${setup.label} does not understand \u2014 and every harness here is fail-open on a
+      reply it cannot read. Treat this file as filed, not as enforcing (CC-729; the flag lives in
+      packages/hook/src/wire.ts, a zone this repository closed for reading, and REQ-79 asked for it).`
+    );
+  }
+  return true;
 }
 function configureAgentsMergeDriver(root, log) {
   const wrote = [];
-  const attrsPath = join10(root, ".gitattributes");
-  const current = existsSync4(attrsPath) ? readFileSync9(attrsPath, "utf8") : "";
+  const attrsPath = join11(root, ".gitattributes");
+  const current = existsSync5(attrsPath) ? readFileSync10(attrsPath, "utf8") : "";
   if (!CC_AGENTS_MAPPING.test(current)) {
     writeFileSync6(attrsPath, (current ? current.trimEnd() + "\n" : "") + CC_AGENTS_ATTRIBUTE + "\n");
     wrote.push(relative3(root, attrsPath));
@@ -15418,8 +16324,8 @@ function configureAgentsMergeDriver(root, log) {
   return wrote;
 }
 function ensureClaudeImportsAgents(root) {
-  const path = join10(root, "CLAUDE.md");
-  const existing = existsSync4(path) ? readFileSync9(path, "utf8") : "";
+  const path = join11(root, "CLAUDE.md");
+  const existing = existsSync5(path) ? readFileSync10(path, "utf8") : "";
   if (/^\s*@\.?\/?AGENTS\.md\s*$/m.test(existing)) return [];
   const preamble = "# Agent guide\n\nThe durable agent guide \u2014 the zone map, the board and the deploy rule \u2014 lives in\nAGENTS.md so every tool reads one copy. Claude Code loads it through the import\nbelow. Your active task is written to CLAUDE.local.md by `cycle start`.\n\n";
   const next = existing ? existing.trimEnd() + "\n\n@AGENTS.md\n" : preamble + "@AGENTS.md\n";
@@ -15461,31 +16367,36 @@ async function runInit(opts) {
   }
   const zonesYml = yaml(accepted, owner);
   const wrote = [];
-  const zonesPath = join10(root, ".zones", "zones.yml");
-  mkdirSync3(dirname4(zonesPath), { recursive: true });
+  const zonesPath = join11(root, ".zones", "zones.yml");
+  mkdirSync3(dirname5(zonesPath), { recursive: true });
   writeFileSync6(zonesPath, zonesYml);
   wrote.push(relative3(root, zonesPath));
-  const hookPath = opts.hookPath ?? "$CLAUDE_PROJECT_DIR/node_modules/@commitcycle/hook/bin/cc-hook.sh";
-  const settingsPath = join10(root, ".claude", "settings.json");
-  mkdirSync3(dirname4(settingsPath), { recursive: true });
-  if (existsSync4(settingsPath)) {
-    wrote.push(`${relative3(root, settingsPath)} (already exists \u2014 left alone, add the hook yourself)`);
+  const hookPath = [opts.hookPath, "$CLAUDE_PROJECT_DIR/node_modules/@commitcycle/hook/bin/cc-hook.sh"].find((c) => !!c && hookWrapperOnDisk(root, c));
+  const harnesses = (opts.harnesses ?? DEFAULT_HARNESSES).slice();
+  const configured = [];
+  if (hookPath) {
+    if (harnesses.length) {
+      log("\n  Hook configuration. Nothing below has been exercised against a running install except Claude Code");
+      log("  \u2014 every shape is read from the vendor's own documentation (docs/13-harness-hooks.md, 2026-09-07):");
+    }
+    for (const id of harnesses) {
+      if (writeHarnessConfig(root, id, hookPath, wrote, log)) configured.push(id);
+    }
   } else {
-    writeFileSync6(settingsPath, settingsJson(hookPath));
-    wrote.push(relative3(root, settingsPath));
+    log("\n  No hook configuration was written: there is no hook wrapper on this machine to point at,");
+    log("  and a harness told to run a script that is missing lets the write through without a word.");
+    log("  The wall is the plugin, and installing it enforces every repository you open:");
+    log("    /plugin marketplace add pow-paulinho/commitcycle-plugin");
+    log("    /plugin install commitcycle@commitcycle");
+    log("  Everything else set up here works without it \u2014 the zone map, the records, `cycle status`.");
   }
-  const codexPath = join10(root, ".codex", "hooks.json");
-  mkdirSync3(dirname4(codexPath), { recursive: true });
-  if (existsSync4(codexPath)) {
-    wrote.push(`${relative3(root, codexPath)} (already exists \u2014 left alone, add the hook yourself)`);
-  } else {
-    writeFileSync6(codexPath, codexHooksJson(hookPath.replace("$CLAUDE_PROJECT_DIR/", "./")));
-    wrote.push(relative3(root, codexPath));
-  }
-  const mcpPath = join10(root, ".mcp.json");
-  const cliPath = existsSync4(join10(root, "packages", "cli", "dist", "index.js")) ? "packages/cli/dist/index.js" : "node_modules/@commitcycle/cli/dist/index.js";
-  if (existsSync4(mcpPath)) {
+  const mcpPath = join11(root, ".mcp.json");
+  const cliPath = ["packages/cli/dist/index.js", "node_modules/commitcycle/bin/cycle.js"].find((p) => existsSync5(join11(root, p)));
+  if (existsSync5(mcpPath)) {
     wrote.push(`${relative3(root, mcpPath)} (already exists \u2014 left alone, add the server yourself)`);
+  } else if (!cliPath) {
+    log("\n  No .mcp.json was written: nothing in this project is a CommitCycle server to start.");
+    log("  The agent tools ship in the plugin above \u2014 install it and they arrive with it.");
   } else {
     writeFileSync6(mcpPath, mcpJson(cliPath));
     wrote.push(relative3(root, mcpPath));
@@ -15495,16 +16406,18 @@ async function runInit(opts) {
     // Written a few lines above this point, so Layer 1 can name the board from
     // the moment it exists rather than at the next `cycle sync` (CC-202).
     board: readBoardBinding(root),
-    /* Checked, not assumed (CC-209). `cycle init` usually installs the hook and
-       this answers `on` — but it is asked rather than presumed, because the
-       run that skipped the hook is exactly the one that must not claim a wall. */
+    /* Checked, not assumed (CC-209) — and since CC-641 the ordinary answer is
+       `off`, because init only configures a hook where one is already on disk.
+       The block says what is true of this repository; the plugin's user-wide
+       wall is a fact about a machine and reaches agents through CLAUDE.local.md,
+       which is the split `detectMachineEnforcement` exists to keep. */
     enforcement: detectEnforcement(root)
   }));
   wrote.push(relative3(root, agents.path));
   wrote.push(...ensureClaudeImportsAgents(root));
   wrote.push(...configureAgentsMergeDriver(root, log));
-  const gitignore = join10(root, ".gitignore");
-  const current = existsSync4(gitignore) ? readFileSync9(gitignore, "utf8") : "";
+  const gitignore = join11(root, ".gitignore");
+  const current = existsSync5(gitignore) ? readFileSync10(gitignore, "utf8") : "";
   let ignore = current;
   const ensureIgnored = (line, why) => {
     if (ignore.split("\n").some((l) => l.trim() === line)) return;
@@ -15518,32 +16431,19 @@ ${line}
     writeFileSync6(gitignore, ignore);
     wrote.push(".gitignore");
   }
-  const boardPath = join10(root, ".zones", "board.json");
-  if (opts.askText && !existsSync4(boardPath)) try {
-    const existing = resolveBoard(root);
-    const apiUrl = (await opts.askText("Which board does this repository report to?", existing.apiUrl ?? "https://dash.commitcycle.com")).trim();
-    const tenant = apiUrl ? (await opts.askText("Which organization? (the first half of the address in the console)", existing.tenant)).trim() : "";
-    if (apiUrl && tenant) {
-      const repoId = (await opts.askText("And the repo id?", root.split("/").pop() ?? "repo")).trim() || (root.split("/").pop() ?? "repo");
-      mkdirSync3(dirname4(boardPath), { recursive: true });
-      writeFileSync6(boardPath, `${JSON.stringify({ api_url: apiUrl, tenant, repo: repoId }, null, 2)}
-`);
-      wrote.push(relative3(root, boardPath));
-    } else {
-      log("\n  No board named, so nothing was written for one.");
-      log("  Everything local still works \u2014 the hook, the zone map, `cycle status`.");
-      log("  `cycle start`, `cycle sync` and `cycle submit` will refuse until .zones/board.json names one.");
-    }
-  } catch {
-    log("\n  No board named, so nothing was written for one.");
-    log("  Everything installed above still works \u2014 add one later by running `cycle init` again.");
+  if (!existsSync5(join11(root, ".zones", "board.json"))) {
+    log("\n  This repository does not name a board yet, so there is nowhere to file a task.");
+    log("  Run `cycle pair`: it shows a code, you confirm it in the browser, and it writes");
+    log("  .zones/board.json with the board, the organization and the repo id.");
+    log("  (`cycle pair --board <url>` for a board of your own; everything local works without one.)");
   }
   return {
     zonesYml,
     accepted,
     declined,
     wrote,
-    warnings: findings.filter((f) => f.severity === "warn").map((f) => `${f.candidate}: ${f.message}`)
+    warnings: findings.filter((f) => f.severity === "warn").map((f) => `${f.candidate}: ${f.message}`),
+    harnesses: configured
   };
 }
 
@@ -15553,16 +16453,16 @@ import { existsSync as existsSync11, readdirSync as readdirSync6, readFileSync a
 import { dirname as dirname10, join as join16, resolve as resolve3, sep } from "node:path";
 
 // src/pull.ts
-import { existsSync as existsSync6, mkdirSync as mkdirSync5, readdirSync as readdirSync3, readFileSync as readFileSync10, writeFileSync as writeFileSync7 } from "node:fs";
-import { dirname as dirname6, join as join12 } from "node:path";
+import { existsSync as existsSync7, mkdirSync as mkdirSync5, readdirSync as readdirSync4, readFileSync as readFileSync11, writeFileSync as writeFileSync7 } from "node:fs";
+import { dirname as dirname7, join as join13 } from "node:path";
 
 // src/own-writes.ts
-import { appendFileSync, existsSync as existsSync5, mkdirSync as mkdirSync4 } from "node:fs";
-import { dirname as dirname5, join as join11, relative as relative4, resolve } from "node:path";
-var eventLogPath = (root, taskId) => join11(root, ".zones", "state", "events", `${taskId}.jsonl`);
+import { appendFileSync, existsSync as existsSync6, mkdirSync as mkdirSync4 } from "node:fs";
+import { dirname as dirname6, join as join12, relative as relative4, resolve as resolve2 } from "node:path";
+var eventLogPath = (root, taskId) => join12(root, ".zones", "state", "events", `${taskId}.jsonl`);
 function recordOwnWrites(root, taskId, paths, now = /* @__PURE__ */ new Date()) {
   if (!taskId || !paths.length) return 0;
-  const lines = paths.map((p) => relative4(resolve(root), resolve(root, p)).split("\\").join("/")).filter((p) => p && !p.startsWith("..")).map((path) => JSON.stringify({
+  const lines = paths.map((p) => relative4(resolve2(root), resolve2(root, p)).split("\\").join("/")).filter((p) => p && !p.startsWith("..")).map((path) => JSON.stringify({
     t: now.toISOString(),
     type: "mutation",
     task_id: taskId,
@@ -15571,7 +16471,7 @@ function recordOwnWrites(root, taskId, paths, now = /* @__PURE__ */ new Date()) 
   if (!lines.length) return 0;
   try {
     const log = eventLogPath(root, taskId);
-    if (!existsSync5(dirname5(log))) mkdirSync4(dirname5(log), { recursive: true });
+    if (!existsSync6(dirname6(log))) mkdirSync4(dirname6(log), { recursive: true });
     appendFileSync(log, lines.join("\n") + "\n");
     return lines.length;
   } catch {
@@ -15582,21 +16482,21 @@ function recordOwnWrites(root, taskId, paths, now = /* @__PURE__ */ new Date()) 
 // src/pull.ts
 var STATE_ORDER = ["Triage", "Todo", "In Progress", "In Review", "Done"];
 function scanRecords(root) {
-  const dir = join12(root, ".zones", "tasks");
+  const dir = join13(root, ".zones", "tasks");
   const records = /* @__PURE__ */ new Map();
   const unreadable = [];
   let names;
   try {
-    names = readdirSync3(dir).filter((f) => f.endsWith(".md"));
+    names = readdirSync4(dir).filter((f) => f.endsWith(".md"));
   } catch {
     return { records, unreadable };
   }
   for (const name of names.sort()) {
     if (name === "README.md" || name === "TEMPLATE.md" || name.startsWith("_")) continue;
-    const path = join12(dir, name);
+    const path = join13(dir, name);
     let head;
     try {
-      head = readFileSync10(path, "utf8").slice(0, 2e3);
+      head = readFileSync11(path, "utf8").slice(0, 2e3);
     } catch {
       unreadable.push(path);
       continue;
@@ -15671,7 +16571,7 @@ function classifyRecords(local, board2) {
   return out;
 }
 function setRecordState(path, state) {
-  const text = readFileSync10(path, "utf8");
+  const text = readFileSync11(path, "utf8");
   if (!text.startsWith("---\n")) return false;
   const end = text.indexOf("\n---", 4);
   if (end < 0) return false;
@@ -15707,7 +16607,11 @@ function renderRecord(t, today, by) {
     `owner: ${t.owner || t.requested_by || "unknown"}`,
     `mode: ${t.mode || "standard"}`,
     `branch: ${t.branch || "null"}`,
-    "time_box: null",
+    /* The board's own box, not a constant (CC-668). This is the file `cycle
+       discard` reads to find a spike's deadline once the grant is gone, and a
+       materialised record that wrote `null` over a live time box would report
+       an expired spike as having no clock at all. */
+    `time_box: ${t.time_box || "null"}`,
     `quality_gate: ${t.quality_gate || "none"}`,
     `created: ${created}`,
     "---",
@@ -15863,9 +16767,9 @@ async function runPull(input) {
       log(`  ${t.id}: ${t.state} on the board with no record file \u2014 ${t.title.slice(0, 60)}`);
       continue;
     }
-    const path = join12(input.root, ".zones", "tasks", `${t.id}.md`);
-    if (existsSync6(path)) continue;
-    mkdirSync5(dirname6(path), { recursive: true });
+    const path = join13(input.root, ".zones", "tasks", `${t.id}.md`);
+    if (existsSync7(path)) continue;
+    mkdirSync5(dirname7(path), { recursive: true });
     writeFileSync7(path, renderRecord(byId.get(t.id), today, "`cycle pull --write-missing`"));
     written.push(t.id);
     log(`  ${t.id}: record written from the board \u2014 ${t.state}`);
@@ -15875,21 +16779,21 @@ async function runPull(input) {
   }
   recordOwnWrites(input.root, taskOnBranch(input.root), [
     ...adopted.map((id) => local.get(id).path),
-    ...written.map((id) => join12(".zones", "tasks", `${id}.md`))
+    ...written.map((id) => join13(".zones", "tasks", `${id}.md`))
   ]);
   return { ...c, status: "ok", adopted, written, unreadable, contested };
 }
 
 // src/reconcile.ts
-import { execFileSync as execFileSync5 } from "node:child_process";
-import { existsSync as existsSync8, mkdirSync as mkdirSync6, readdirSync as readdirSync4, readFileSync as readFileSync11, rmSync as rmSync3, writeFileSync as writeFileSync8 } from "node:fs";
-import { dirname as dirname7, join as join13 } from "node:path";
+import { execFileSync as execFileSync6 } from "node:child_process";
+import { existsSync as existsSync9, mkdirSync as mkdirSync6, readdirSync as readdirSync5, readFileSync as readFileSync12, rmSync as rmSync3, writeFileSync as writeFileSync8 } from "node:fs";
+import { dirname as dirname8, join as join14 } from "node:path";
 
 // src/worktrees.ts
-import { execFileSync as execFileSync4 } from "node:child_process";
-import { existsSync as existsSync7, realpathSync } from "node:fs";
+import { execFileSync as execFileSync5 } from "node:child_process";
+import { existsSync as existsSync8, realpathSync } from "node:fs";
 function listWorktrees(root) {
-  const out = execFileSync4("git", ["worktree", "list", "--porcelain"], {
+  const out = execFileSync5("git", ["worktree", "list", "--porcelain"], {
     cwd: root,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"]
@@ -15927,7 +16831,7 @@ function otherCheckoutHolding(root, taskId) {
   for (const wt of listWorktrees(root)) {
     if (wt.bare || !wt.branch) continue;
     if (taskIdFrom(wt.branch) !== taskId) continue;
-    if (wt.prunable || !existsSync7(wt.path)) continue;
+    if (wt.prunable || !existsSync8(wt.path)) continue;
     if (resolved(wt.path) === resolved(root)) continue;
     return wt.path;
   }
@@ -15937,7 +16841,7 @@ function holderLiveness(root, holderPath) {
   const target = resolved(holderPath);
   for (const wt of listWorktrees(root)) {
     if (resolved(wt.path) !== target) continue;
-    return wt.prunable || !existsSync7(wt.path) ? "stale" : "live";
+    return wt.prunable || !existsSync8(wt.path) ? "stale" : "live";
   }
   return "stale";
 }
@@ -15947,7 +16851,7 @@ function branchExists(root, branch) {
   if (!branch) return false;
   for (const ref of [branch, `origin/${branch}`]) {
     try {
-      execFileSync5("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
+      execFileSync6("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
       return true;
     } catch {
     }
@@ -15956,16 +16860,16 @@ function branchExists(root, branch) {
 }
 function grantFiles(root) {
   try {
-    return readdirSync4(join13(root, ".zones", "state", "grants")).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
+    return readdirSync5(join14(root, ".zones", "state", "grants")).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
   } catch {
     return [];
   }
 }
 function liveGrant(root, taskId, now) {
-  const path = join13(root, ".zones", "state", "grants", `${taskId}.json`);
-  if (!existsSync8(path)) return false;
+  const path = join14(root, ".zones", "state", "grants", `${taskId}.json`);
+  if (!existsSync9(path)) return false;
   try {
-    return resolveGrant(JSON.parse(readFileSync11(path, "utf8")), now).state === "active";
+    return resolveGrant(JSON.parse(readFileSync12(path, "utf8")), now).state === "active";
   } catch {
     return false;
   }
@@ -16022,9 +16926,9 @@ async function runReconcile(input) {
       } catch {
         continue;
       }
-      const path = join13(input.root, ".zones", "tasks", `${t.id}.md`);
-      if (existsSync8(path)) continue;
-      mkdirSync6(dirname7(path), { recursive: true });
+      const path = join14(input.root, ".zones", "tasks", `${t.id}.md`);
+      if (existsSync9(path)) continue;
+      mkdirSync6(dirname8(path), { recursive: true });
       writeFileSync8(path, renderRecord(byId.get(t.id), today, "`cycle sync`"));
       written.push(t.id);
       log(`  ${t.id}: record written from the board \u2014 ${t.state}`);
@@ -16035,7 +16939,7 @@ async function runReconcile(input) {
     if (id === input.taskId) continue;
     const t = byId.get(id);
     if (!t || t.state === "In Progress") continue;
-    rmSync3(join13(input.root, ".zones", "state", "grants", `${id}.json`), { force: true });
+    rmSync3(join14(input.root, ".zones", "state", "grants", `${id}.json`), { force: true });
     grantsRemoved.push(id);
     log(`  removed the stranded grant for ${id} \u2014 the board has it in ${t.state}, not In Progress`);
   }
@@ -16050,18 +16954,18 @@ async function runReconcile(input) {
   }
   recordOwnWrites(input.root, input.taskId, [
     ...adopted.map((id) => local.get(id).path),
-    ...written.map((id) => join13(".zones", "tasks", `${id}.md`))
+    ...written.map((id) => join14(".zones", "tasks", `${id}.md`))
   ]);
   return { status: "ran", adopted, written, grantsRemoved, collided: [] };
 }
 
 // src/update-notice.ts
-import { existsSync as existsSync9, mkdirSync as mkdirSync7, readFileSync as readFileSync12, writeFileSync as writeFileSync9 } from "node:fs";
-import { homedir as homedir3 } from "node:os";
-import { dirname as dirname8, join as join14 } from "node:path";
-var CLI_VERSION = "0.1.12";
+import { existsSync as existsSync10, mkdirSync as mkdirSync7, readFileSync as readFileSync13, writeFileSync as writeFileSync9 } from "node:fs";
+import { homedir as homedir5 } from "node:os";
+import { dirname as dirname9, join as join15 } from "node:path";
+var CLI_VERSION = "0.1.13";
 var CHECK_TTL_MS = 24 * 60 * 60 * 1e3;
-var updateCachePath = () => join14(homedir3(), ".commitcycle", "update-check.json");
+var updateCachePath = () => join15(homedir5(), ".commitcycle", "update-check.json");
 function isBehind(current, latest) {
   const cur = numericParts(current);
   const lat = numericParts(latest);
@@ -16078,6 +16982,60 @@ function isBehind(current, latest) {
 function updateLine(latest) {
   return `CommitCycle ${latest} is available \u2014 npm i -g commitcycle / /plugin update`;
 }
+function ago(then, now) {
+  if (!then) return "never";
+  const ms2 = now.getTime() - then.getTime();
+  if (ms2 < 0) return "at a time this machine puts in the future";
+  const mins = Math.floor(ms2 / 6e4);
+  if (mins < 2) return "just now";
+  if (mins < 60) return `${mins} minutes ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+}
+function hasLocalDrift(rules) {
+  return rules ? rules.state === "behind" || rules.state === "differs" || rules.state === "missing" : false;
+}
+function freshness(opts) {
+  const now = opts.now ?? /* @__PURE__ */ new Date();
+  const current = opts.current ?? CLI_VERSION;
+  const r = opts.rules;
+  const deciding = r ? [r.headline, r.provenance] : ["unknown \u2014 the artifact deciding this session could not be inspected"];
+  const remedy = [];
+  if (r?.note) remedy.push(r.note);
+  if (r?.fix) remedy.push(r.fix);
+  const localDrift = hasLocalDrift(r);
+  let release;
+  let updateAvailable = false;
+  if (opts.cache.latest && isBehind(current, opts.cache.latest)) {
+    updateAvailable = true;
+    release = `A newer release exists: ${opts.cache.latest}, and this build is ${current} (the board said so ${ago(opts.cache.latestAt ?? opts.cache.lastCheck, now)}).`;
+    remedy.push(`${updateLine(opts.cache.latest)} \u2014 then restart the session. An update installed while a session is running does not change what is deciding it.`);
+  } else if (opts.cache.latest) {
+    release = `No newer release as of the last check ${ago(opts.cache.latestAt ?? opts.cache.lastCheck, now)}: the board reported ${opts.cache.latest} and this build is ${current}.`;
+  } else if (opts.cache.lastCheck) {
+    release = `Whether a newer release exists is unknown \u2014 the last check ${ago(opts.cache.lastCheck, now)} got no version back from the board.`;
+  } else {
+    release = `Whether a newer release exists has not been checked from this machine.`;
+  }
+  return {
+    deciding,
+    release,
+    remedy,
+    actionable: localDrift || updateAvailable,
+    localDrift,
+    lines: [...deciding, release, ...remedy]
+  };
+}
+function freshnessFor(root, opts = {}) {
+  return freshness({
+    rules: decidingRulesOrNull(root, { now: opts.now, ...opts.enforcement }),
+    cache: readUpdateCache(opts.cachePath ?? updateCachePath()),
+    current: opts.current,
+    now: opts.now
+  });
+}
 async function fetchLatest(apiUrl, fetchImpl = fetch, timeoutMs = 1500) {
   const url = `${apiUrl.replace(/\/+$/, "")}/health`;
   const ac = new AbortController();
@@ -16093,21 +17051,61 @@ async function fetchLatest(apiUrl, fetchImpl = fetch, timeoutMs = 1500) {
     clearTimeout(timer);
   }
 }
-function dueForCheck(cachePath, now, ttlMs = CHECK_TTL_MS) {
+var EMPTY_CACHE = { lastCheck: null, latest: null, latestAt: null, decidingSha: null, decidingAt: null };
+var asDate = (v) => {
+  if (typeof v !== "string") return null;
+  const d = new Date(v);
+  return Number.isNaN(d.getTime()) ? null : d;
+};
+function readUpdateCache(cachePath) {
   try {
-    if (!existsSync9(cachePath)) return true;
-    const raw = JSON.parse(readFileSync12(cachePath, "utf8"));
-    const last = typeof raw.last_check === "string" ? Date.parse(raw.last_check) : NaN;
-    if (Number.isNaN(last)) return true;
-    return now.getTime() - last >= ttlMs;
+    if (!existsSync10(cachePath)) return EMPTY_CACHE;
+    const raw = JSON.parse(readFileSync13(cachePath, "utf8"));
+    return {
+      lastCheck: asDate(raw.last_check),
+      latest: typeof raw.latest === "string" && raw.latest ? raw.latest : null,
+      latestAt: asDate(raw.latest_at),
+      decidingSha: typeof raw.deciding_sha === "string" && raw.deciding_sha ? raw.deciding_sha : null,
+      decidingAt: asDate(raw.deciding_at)
+    };
   } catch {
-    return true;
+    return EMPTY_CACHE;
   }
 }
-function recordCheck(cachePath, now) {
+function dueForCheck(cachePath, now, ttlMs = CHECK_TTL_MS) {
+  const last = readUpdateCache(cachePath).lastCheck;
+  if (!last) return true;
+  return now.getTime() - last.getTime() >= ttlMs;
+}
+function recordCheck(cachePath, now, learned) {
+  const prior = readUpdateCache(cachePath);
+  writeCache(cachePath, {
+    lastCheck: now,
+    latest: learned?.latest ?? prior.latest,
+    latestAt: learned?.latest ? now : prior.latestAt,
+    decidingSha: learned?.decidingSha ?? prior.decidingSha,
+    decidingAt: prior.decidingAt
+  });
+}
+function recordDecidingSha(cachePath, sha, now) {
+  const prior = readUpdateCache(cachePath);
+  writeCache(cachePath, { ...prior, decidingSha: sha, decidingAt: now });
+}
+function localNoticeDue(cache, sha, now, ttlMs = CHECK_TTL_MS) {
+  if (cache.decidingSha !== sha) return true;
+  if (!cache.decidingAt) return true;
+  return now.getTime() - cache.decidingAt.getTime() >= ttlMs;
+}
+function writeCache(cachePath, c) {
   try {
-    mkdirSync7(dirname8(cachePath), { recursive: true });
-    writeFileSync9(cachePath, `${JSON.stringify({ last_check: now.toISOString() }, null, 2)}
+    mkdirSync7(dirname9(cachePath), { recursive: true });
+    writeFileSync9(cachePath, `${JSON.stringify({
+      ...c.lastCheck ? { last_check: c.lastCheck.toISOString() } : {},
+      ...c.latest ? { latest: c.latest } : {},
+      ...c.latestAt ? { latest_at: c.latestAt.toISOString() } : {},
+      ...c.decidingSha ? { deciding_sha: c.decidingSha } : {},
+      ...c.decidingAt ? { deciding_at: c.decidingAt.toISOString() } : {}
+    }, null, 2)}
 `);
   } catch {
   }
@@ -16124,14 +17122,34 @@ async function notifyIfBehind(opts) {
     if (env.CC_NO_UPDATE_NOTICE) return;
     const now = opts.now ?? /* @__PURE__ */ new Date();
     const cachePath = opts.cachePath ?? updateCachePath();
-    if (!dueForCheck(cachePath, now, opts.ttlMs)) return;
+    const write = opts.write ?? ((line) => process.stderr.write(line));
+    const due = dueForCheck(cachePath, now, opts.ttlMs);
+    let local = null;
+    if (opts.root) {
+      const cache = readUpdateCache(cachePath);
+      local = decidingRulesOrNull(opts.root, { env, now, ...opts.enforcement });
+      const sha = local?.bundle.sha256 ?? null;
+      if (local && hasLocalDrift(local) && localNoticeDue(cache, sha, now, opts.ttlMs)) {
+        write(`CommitCycle: ${local.headline}
+`);
+        for (const line of [local.note, local.fix]) if (line) write(`  ${line}
+`);
+        recordDecidingSha(cachePath, sha, now);
+      }
+    }
+    if (!due) return;
+    if (!opts.apiUrl) return;
     const latest = await fetchLatest(opts.apiUrl, opts.fetchImpl);
-    recordCheck(cachePath, now);
+    recordCheck(cachePath, now, { latest });
     if (!latest) return;
     const current = opts.current ?? CLI_VERSION;
     if (!isBehind(current, latest)) return;
-    (opts.write ?? ((line) => process.stderr.write(line)))(`${updateLine(latest)}
+    write(`${updateLine(latest)}
 `);
+    if (local?.decidingPlugin) {
+      write(`  Installing it will not change what is deciding this session \u2014 restart afterwards.
+`);
+    }
   } catch {
   }
 }
@@ -16139,397 +17157,6 @@ function numericParts(v) {
   const segs = v.trim().split(".").map((s) => parseInt(s, 10));
   if (!segs.length || Number.isNaN(segs[0])) return null;
   return segs.map((x) => Number.isNaN(x) ? 0 : x);
-}
-
-// src/enforcement-age.ts
-import { execFileSync as execFileSync6 } from "node:child_process";
-import { createHash } from "node:crypto";
-import { existsSync as existsSync10, readFileSync as readFileSync13, readdirSync as readdirSync5, statSync as statSync4 } from "node:fs";
-import { homedir as homedir4 } from "node:os";
-import { dirname as dirname9, join as join15, resolve as resolve2 } from "node:path";
-var HOOK_SOURCE = ["packages/hook", "packages/contracts"];
-var WORKSPACE_CORE = ["packages", "hook", "dist", "core.js"];
-var COMMITTED_CORE = ["plugin", "hook", "dist", "core.js"];
-function git(root, args) {
-  try {
-    return execFileSync6("git", ["-C", root, ...args], { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
-  } catch {
-    return null;
-  }
-}
-function isAncestor(root, a, b) {
-  try {
-    execFileSync6("git", ["-C", root, "merge-base", "--is-ancestor", a, b], { stdio: "ignore" });
-    return true;
-  } catch (err) {
-    const code = err.status;
-    return code === 1 ? false : null;
-  }
-}
-function lastCommit(root, paths) {
-  const out = git(root, ["log", "-1", "--format=%H%x00%cI", "--", ...paths]);
-  if (!out) return null;
-  const [rev, when] = out.split("\0");
-  if (!rev || !when) return null;
-  const at2 = new Date(when);
-  return Number.isNaN(at2.getTime()) ? null : { rev, when: at2 };
-}
-function newestSourceMtime(root) {
-  let newest = null;
-  const walk = (dir, depth) => {
-    if (depth > 8) return;
-    for (const entry of safeReaddir(dir)) {
-      if (entry === "node_modules" || entry === "dist" || entry.startsWith(".")) continue;
-      const full = join15(dir, entry);
-      let stat;
-      try {
-        stat = statSync4(full);
-      } catch {
-        continue;
-      }
-      if (stat.isDirectory()) {
-        walk(full, depth + 1);
-      } else if (!newest || stat.mtime > newest.at) {
-        newest = { path: full, at: stat.mtime };
-      }
-    }
-  };
-  for (const rel of HOOK_SOURCE) walk(join15(root, rel, "src"), 0);
-  return newest;
-}
-function facts(role, path, via) {
-  if (!path || !existsSync10(path)) {
-    return { role, path, exists: false, sha256: null, bytes: null, built: null, via };
-  }
-  try {
-    const stat = statSync4(path);
-    const bytes = readFileSync13(path);
-    return {
-      role,
-      path,
-      exists: true,
-      sha256: createHash("sha256").update(bytes).digest("hex"),
-      bytes: stat.size,
-      built: stat.mtime,
-      via
-    };
-  } catch {
-    return { role, path, exists: false, sha256: null, bytes: null, built: null, via };
-  }
-}
-function safeReaddir(dir) {
-  try {
-    return readdirSync5(dir);
-  } catch {
-    return [];
-  }
-}
-function pluginBundles(home, pid) {
-  const bundles = [];
-  const cache = join15(home, ".claude", "plugins", "cache");
-  for (const marketplace of safeReaddir(cache)) {
-    for (const plugin of safeReaddir(join15(cache, marketplace))) {
-      for (const version of safeReaddir(join15(cache, marketplace, plugin))) {
-        const root = join15(cache, marketplace, plugin, version);
-        const core = join15(root, "hook", "dist", "core.js");
-        if (!existsSync10(core)) continue;
-        const heldBy = safeReaddir(join15(root, ".in_use")).filter((f) => !f.startsWith("."));
-        let startedAt2 = null;
-        if (pid && heldBy.includes(pid)) {
-          try {
-            const held = JSON.parse(readFileSync13(join15(root, ".in_use", pid), "utf8"));
-            if (held.procStart) {
-              const at2 = new Date(held.procStart);
-              if (!Number.isNaN(at2.getTime())) startedAt2 = at2;
-            }
-          } catch {
-          }
-        }
-        bundles.push({ root, marketplace, plugin, version, core, heldBy, startedAt: startedAt2 });
-      }
-    }
-  }
-  return bundles;
-}
-function fromInUseMarker(home, pid) {
-  if (!pid) return null;
-  for (const b of pluginBundles(home, pid)) {
-    if (!b.heldBy.includes(pid)) continue;
-    return {
-      path: b.core,
-      via: `the harness's own in-use marker for pid ${pid} \u2014 ${b.marketplace}/${b.plugin} ${b.version}`,
-      startedAt: b.startedAt
-    };
-  }
-  return null;
-}
-function fromPath(env) {
-  for (const entry of (env.PATH ?? "").split(":")) {
-    if (!entry.includes(`${join15("plugins", "cache")}`) || !entry.endsWith(`${join15("x", "bin")}`.slice(1))) continue;
-    const core = join15(dirname9(entry), "hook", "dist", "core.js");
-    if (existsSync10(core)) {
-      return { path: core, via: `a plugin root on PATH (${dirname9(entry)}) \u2014 no session marker, so this is inference`, startedAt: null };
-    }
-  }
-  return null;
-}
-function fromSettings(root, env) {
-  const settingsPath = join15(root, ".claude", "settings.json");
-  if (!existsSync10(settingsPath)) return null;
-  try {
-    const settings = JSON.parse(readFileSync13(settingsPath, "utf8"));
-    const cmd = settings?.hooks?.PreToolUse?.[0]?.hooks?.[0]?.command;
-    if (!cmd) return null;
-    const wrapper = cmd.replace(/\$\{?CLAUDE_PROJECT_DIR\}?/g, root).replace(/\$\{?CLAUDE_PLUGIN_ROOT\}?/g, env.CLAUDE_PLUGIN_ROOT ?? "").trim();
-    if (!wrapper) return null;
-    return {
-      path: resolve2(dirname9(wrapper), "..", "dist", "core.js"),
-      via: `.claude/settings.json \u2192 ${cmd}`,
-      startedAt: null,
-      cmd
-    };
-  } catch {
-    return null;
-  }
-}
-function locateEnforcing(root, env, home) {
-  const pinned = env.CC_HOOK_CORE;
-  if (pinned) return { path: pinned, via: "CC_HOOK_CORE, set explicitly", startedAt: null };
-  const marker = fromInUseMarker(home, env.CLAUDE_PID ?? null);
-  if (marker) return marker;
-  const declared = env.CLAUDE_PLUGIN_ROOT;
-  if (declared) {
-    const core = join15(declared, "hook", "dist", "core.js");
-    if (existsSync10(core)) return { path: core, via: "CLAUDE_PLUGIN_ROOT", startedAt: null };
-  }
-  return fromPath(env) ?? fromSettings(root, env) ?? { path: null, via: "nothing on this machine names one", startedAt: null };
-}
-var DAY = 24 * 60 * 60 * 1e3;
-function ageWords(built, now) {
-  if (!built) return "age unknown";
-  const days = Math.floor((now.getTime() - built.getTime()) / DAY);
-  if (days < 0) return "built in the future \u2014 the clock disagrees with itself";
-  if (days === 0) return "built today";
-  return `${days} day${days === 1 ? "" : "s"} old`;
-}
-function short(sha) {
-  return sha ? sha.slice(0, 12) : "unreadable";
-}
-function stamp(d) {
-  return d ? `${d.toISOString().replace("T", " ").slice(0, 16)}Z` : "unknown";
-}
-function describe(b, now) {
-  if (!b.exists) return `${b.path ?? "nowhere"} \u2014 not there`;
-  return `${b.path} \u2014 ${b.bytes} bytes, sha ${short(b.sha256)}, built ${stamp(b.built)} (${ageWords(b.built, now)})`;
-}
-function inspectEnforcement(root, opts = {}) {
-  const env = opts.env ?? process.env;
-  const home = opts.home ?? env.HOME ?? homedir4();
-  const now = opts.now ?? /* @__PURE__ */ new Date();
-  const checks = [];
-  const shallow = git(root, ["rev-parse", "--is-shallow-repository"]) === "true";
-  const src = lastCommit(root, HOOK_SOURCE);
-  const source = { rev: src?.rev ?? null, when: src?.when ?? null, shallow };
-  const located = locateEnforcing(root, env, home);
-  const enforcing = facts("enforcing", located.path, located.via);
-  const workspace = facts("workspace", join15(root, ...WORKSPACE_CORE), "this checkout, built by `pnpm --filter @commitcycle/hook build`");
-  const committed = facts("committed", join15(root, ...COMMITTED_CORE), "committed, and what a marketplace install downloads");
-  if (!enforcing.path) {
-    checks.push({
-      name: "enforcing bundle",
-      status: "warn",
-      detail: "nothing on this machine says which hook bundle is judging this session",
-      fix: "Run this from inside the session you want to know about \u2014 the harness sets CLAUDE_PID and stamps the plugin root it pinned. Outside a session there is nothing first-hand to read, and CC_HOOK_CORE=<path> is how to name one by hand."
-    });
-  } else if (!enforcing.exists) {
-    checks.push({
-      name: "enforcing bundle",
-      status: "fail",
-      detail: `${enforcing.path} does not exist, and that is where the wrapper looks (${enforcing.via})`,
-      fix: "The wrapper is fail-closed, so this denies every tool call in the session, reads included. Build it (`pnpm --filter @commitcycle/hook build`) or reinstall the plugin \u2014 from a terminal, not from inside the session it is denying."
-    });
-  } else {
-    checks.push({
-      name: "enforcing bundle",
-      status: "ok",
-      detail: `${describe(enforcing, now)} \u2014 found via ${enforcing.via}`
-    });
-  }
-  const onDisk = newestSourceMtime(root);
-  const fromGit = source.when ? { at: source.when, said: `the last committed hook source change (${short(source.rev)})` } : null;
-  const fromDisk = onDisk ? { at: onDisk.at, said: `the newest file under the hook sources (${onDisk.path.startsWith(root) ? onDisk.path.slice(root.length + 1) : onDisk.path})` } : null;
-  const effective = fromGit && fromDisk ? fromDisk.at > fromGit.at ? fromDisk : fromGit : fromGit ?? fromDisk;
-  if (!workspace.exists) {
-    checks.push({
-      name: "built bundle vs source",
-      status: "warn",
-      detail: `nothing is built at ${join15(...WORKSPACE_CORE)} in this checkout`,
-      fix: "A session wired to this checkout would be denied every tool call. Run `pnpm --filter @commitcycle/hook build`. (A linked worktree starts this way \u2014 dist/ is gitignored and is not carried across.)"
-    });
-  } else if (effective && workspace.built && workspace.built < effective.at) {
-    checks.push({
-      name: "built bundle vs source",
-      status: "fail",
-      detail: `built ${stamp(workspace.built)}, which is older than ${effective.said} at ${stamp(effective.at)} \u2014 this build predates the rules it is enforcing`,
-      fix: "Run `pnpm --filter @commitcycle/hook build`. Then read the next line: a rebuild does not reach a session that already loaded the old one."
-    });
-  } else if (!effective) {
-    checks.push({
-      name: "built bundle vs source",
-      status: "warn",
-      detail: shallow ? "the clone is shallow, so no commit history can say when the hook source last changed" : "nothing could be read about when the hook source last changed, so the build has nothing to be older than",
-      fix: shallow ? "Fetch the history (`fetch-depth: 0` in CI, `git fetch --unshallow` locally). Without it this check cannot tell a fresh bundle from a stale one." : "Check that this is the repository the hook is built from."
-    });
-  } else {
-    checks.push({
-      name: "built bundle vs source",
-      status: "ok",
-      detail: `built ${stamp(workspace.built)}, after ${effective.said} at ${stamp(effective.at)}`
-    });
-  }
-  if (!committed.exists) {
-    checks.push({
-      name: "shipped bundle vs source",
-      status: "warn",
-      detail: `${join15(...COMMITTED_CORE)} is missing, so a marketplace install has no hook to run`,
-      fix: "Run `sh scripts/package-plugin.sh`. A plugin that claims enforcement and cannot enforce is worse than one that admits it has none."
-    });
-  } else if (workspace.exists && committed.sha256 === workspace.sha256) {
-    checks.push({
-      name: "shipped bundle vs source",
-      status: "ok",
-      detail: `byte-identical to the build in this checkout (sha ${short(committed.sha256)})`
-    });
-  } else {
-    const bundleCommit = lastCommit(root, [join15(...COMMITTED_CORE)]);
-    const verdict = source.rev && bundleCommit ? bundleCommit.rev === source.rev ? "same" : isAncestor(root, bundleCommit.rev, source.rev) === true ? "behind" : isAncestor(root, source.rev, bundleCommit.rev) === true ? "ahead" : "unknown" : "unknown";
-    if (verdict === "behind") {
-      const days = source.when && bundleCommit ? Math.floor((source.when.getTime() - bundleCommit.when.getTime()) / DAY) : null;
-      checks.push({
-        name: "shipped bundle vs source",
-        status: "fail",
-        detail: `last rebuilt by ${short(bundleCommit.rev)} on ${stamp(bundleCommit.when)}; the hook source changed after that, at ${short(source.rev)} on ${stamp(source.when)}${days !== null ? ` \u2014 ${days} day(s) of source it does not contain` : ""}`,
-        fix: "Everyone who installed the plugin is running the older rules. Rebuild and repackage: `pnpm --filter @commitcycle/hook build && pnpm --filter @commitcycle/cli build && sh scripts/package-plugin.sh`, and commit what it writes."
-      });
-    } else if (verdict === "unknown") {
-      checks.push({
-        name: "shipped bundle vs source",
-        status: "warn",
-        detail: shallow ? "the clone is shallow, so the committed bundle's provenance cannot be read" : "the committed bundle and the hook source have no ancestry between them that git can order",
-        fix: shallow ? "Fetch the history (`fetch-depth: 0` in CI). Until then a stale shipped bundle passes here unnoticed, which is the failure this check exists for." : "Rebuild and repackage rather than reason about it: `pnpm -r build && sh scripts/package-plugin.sh`."
-      });
-    } else if (!workspace.exists) {
-      checks.push({
-        name: "shipped bundle vs source",
-        status: "ok",
-        detail: `last rebuilt by ${short(bundleCommit?.rev ?? null)} on ${stamp(bundleCommit?.when ?? null)}, at or after the last hook source change (${short(source.rev)}, ${stamp(source.when)}) \u2014 nothing is built here to compare the bytes against`
-      });
-    } else {
-      checks.push({
-        name: "shipped bundle vs source",
-        status: "warn",
-        detail: `provenance says it is current (${short(bundleCommit?.rev ?? null)}, ${stamp(bundleCommit?.when ?? null)}), but it is not byte-identical to the build in this checkout (${short(committed.sha256)} vs ${short(workspace.sha256)})`,
-        fix: "Either this checkout's build is stale, or the bundle does not rebuild byte-for-byte here. Rebuild and repackage before cutting a release, and if the bytes still differ say so in the release note rather than guessing."
-      });
-    }
-  }
-  const reference = workspace.exists ? workspace : committed;
-  if (!enforcing.exists || !enforcing.sha256) {
-  } else if (!reference.exists || !reference.sha256) {
-    checks.push({
-      name: "session vs bundle",
-      status: "warn",
-      detail: "nothing is built in this checkout to compare the running session against",
-      fix: "Run `pnpm --filter @commitcycle/hook build`, then re-run this. Until then, the age of what is enforcing you is measurable and its correctness is not."
-    });
-  } else if (enforcing.sha256 === reference.sha256) {
-    checks.push({
-      name: "session vs bundle",
-      status: "ok",
-      detail: `this session is running the same artifact this checkout produces (sha ${short(enforcing.sha256)})`
-    });
-  } else {
-    const older = enforcing.built && reference.built && enforcing.built < reference.built;
-    const gap = enforcing.built && reference.built ? Math.abs(Math.floor((reference.built.getTime() - enforcing.built.getTime()) / DAY)) : null;
-    const repoAgrees = committed.exists && workspace.exists && committed.sha256 === workspace.sha256;
-    checks.push({
-      name: "session vs bundle",
-      status: "fail",
-      detail: `the session is enforced by ${enforcing.path} (sha ${short(enforcing.sha256)}, built ${stamp(enforcing.built)}), which is ${older ? "older" : "a different artifact"} than what this checkout produces at ${reference.path} (sha ${short(reference.sha256)}, built ${stamp(reference.built)})${gap !== null && gap > 0 ? ` \u2014 ${gap} day(s) apart` : ""}` + (repoAgrees ? ". The repository agrees with itself \u2014 the drift is between it and what this session loaded" : ""),
-      fix: "Rebuilding will NOT fix this: the harness pinned that copy" + (located.startedAt ? ` when the session started at ${stamp(located.startedAt)}` : " when the session started") + ", and it is outside this repository. Restart the session \u2014 for a plugin install, reinstall or update the plugin first \u2014 and re-run this to confirm. Until then nothing you build here is enforcing anything, and every green test is green about code that is not running."
-    });
-  }
-  const pid = env.CLAUDE_PID ?? null;
-  const plugins = pluginBundles(home, pid);
-  const pinned = (pid ? plugins.find((b) => b.heldBy.includes(pid)) : null) ?? null;
-  const settingsLoc = fromSettings(root, env);
-  const repoReg = settingsLoc?.path && settingsLoc.cmd ? { command: settingsLoc.cmd, core: settingsLoc.path, exists: existsSync10(settingsLoc.path) } : null;
-  const registrations = { repo: repoReg, plugins, pinned };
-  const registrationChecks = [];
-  if (repoReg?.exists && plugins.length) {
-    const plug = pinned ?? [...plugins].sort((a, b) => compareVersions(b.version, a.version))[0];
-    const repoF = facts("workspace", repoReg.core, "registered by .claude/settings.json");
-    const plugF = facts("enforcing", plug.core, "the installed plugin");
-    if (repoF.sha256 && plugF.sha256) {
-      const keepOne = "Keep one: remove the PreToolUse entry from .claude/settings.json and let the plugin enforce, or `/plugin uninstall` and let the checkout enforce. Whichever you keep, restart the session \u2014 the pin is taken at start and a change here does not reach it.";
-      if (repoF.sha256 === plugF.sha256) {
-        registrationChecks.push({
-          name: "one hook, not two",
-          status: "ok",
-          detail: `two registrations are live and they are the same artifact (sha ${short(repoF.sha256)}): this repository's ${repoReg.command}, and the installed plugin ${plug.marketplace}/${plug.plugin} ${plug.version}`
-        });
-      } else {
-        registrationChecks.push({
-          name: "one hook, not two",
-          status: "fail",
-          detail: `two different hook bundles are registered for this repository at once \u2014 this checkout's ${repoReg.core} (sha ${short(repoF.sha256)}, built ${stamp(repoF.built)}, ${ageWords(repoF.built, now)}) via ${repoReg.command}, and the installed plugin ${plug.marketplace}/${plug.plugin} ${plug.version} at ${plug.core} (sha ${short(plugF.sha256)}, built ${stamp(plugF.built)}, ${ageWords(plugF.built, now)}). ` + (pinned ? `The harness pinned the plugin's for this session \u2014 that is the one deciding.` : `Nothing on this machine says which one this session pinned, so which set of rules is deciding is unknown.`),
-          fix: pinned ? `The plugin's copy answers every tool call in this session, so nothing you build in this checkout changes what is enforced \u2014 the same trap as the session/bundle line above, with a second registration rather than a second vintage. ${keepOne}` : `Run this from inside the session you want to know about (the harness sets CLAUDE_PID and stamps the plugin root it pinned). ${keepOne}`
-        });
-      }
-    }
-  }
-  return {
-    source,
-    enforcing,
-    workspace,
-    committed,
-    session: { pid: env.CLAUDE_PID ?? null, startedAt: located.startedAt },
-    checks,
-    registrations,
-    registrationChecks
-  };
-}
-function compareVersions(a, b) {
-  const parse = (v) => v.split(".").map((s) => {
-    const n = Number.parseInt(s, 10);
-    return Number.isNaN(n) ? 0 : n;
-  });
-  const x = parse(a);
-  const y = parse(b);
-  for (let i = 0; i < Math.max(x.length, y.length); i++) {
-    const d = (x[i] ?? 0) - (y[i] ?? 0);
-    if (d) return d;
-  }
-  return 0;
-}
-function enforcementChecks(root, opts = {}) {
-  try {
-    return inspectEnforcement(root, opts).checks;
-  } catch (err) {
-    return [{
-      name: "enforcing bundle",
-      status: "warn",
-      detail: `the age of the enforcing bundle could not be measured: ${err.message}`,
-      fix: "Report this \u2014 an unmeasurable guard is the state this check exists to make visible."
-    }];
-  }
-}
-function enforcementReport(root, opts = {}) {
-  try {
-    return inspectEnforcement(root, opts);
-  } catch {
-    return null;
-  }
 }
 
 // src/doctor.ts
@@ -16594,7 +17221,7 @@ async function updateCheck(apiUrl, current = CLI_VERSION, fetchImpl = fetch) {
 }
 async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PURE__ */ new Date()) {
   const { records: local, unreadable } = scanRecords(root);
-  if (!local.size && !unreadable.length) return [];
+  const unchecked = local.size ? `${local.size} record file(s) went unchecked` : "zero record files here, and whether the board holds work they should describe went unchecked";
   let tasks;
   try {
     const res = await fetchImpl(
@@ -16605,7 +17232,7 @@ async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PUR
       return [{
         name: "records match the board",
         status: "warn",
-        detail: `the board answered ${res.status} \u2014 ${local.size} record file(s) went unchecked`,
+        detail: `the board answered ${res.status} \u2014 ${unchecked}`,
         fix: res.status === 401 ? "Run `cycle login`. Until the board answers, nothing here can tell a stale record from a correct one." : "Read the board's logs. An unreadable board cannot confirm that the files on disk describe real work."
       }];
     }
@@ -16614,7 +17241,7 @@ async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PUR
     return [{
       name: "records match the board",
       status: "warn",
-      detail: `no answer from ${board2.apiUrl} \u2014 ${local.size} record file(s) went unchecked`,
+      detail: `no answer from ${board2.apiUrl} \u2014 ${unchecked}`,
       fix: "Start the board, or fix the address."
     }];
   }
@@ -16630,6 +17257,7 @@ async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PUR
   }
   const states = classifyRecords(local, tasks);
   const orphaned = states.orphaned;
+  if (!local.size && !unreadable.length && !states.unrecorded.length) return [];
   const checks = [];
   if (collided.length) {
     checks.push({
@@ -16710,12 +17338,99 @@ async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PUR
       fix: "Either they were filed against a different board, or this board is not the one this repository reports to. Check `cycle doctor`'s board scope line before assuming the files are wrong."
     });
   }
-  if (!collided.length && !orphaned.length) {
+  if (!collided.length && !orphaned.length && local.size) {
     checks.push({
       name: "records match the board",
       status: "ok",
       detail: `${local.size} record file(s) name the work the board holds`
     });
+  }
+  return checks;
+}
+async function zoneOwnerCheck(root, board2, fetchImpl = fetch) {
+  const zonesPath = join16(root, ".zones", "zones.yml");
+  if (!existsSync11(zonesPath)) return [];
+  const parsed = parseZonesFile(readFileSync14(zonesPath, "utf8"));
+  if (!parsed.ok || parsed.value.zones.length === 0) return [];
+  const declared = parsed.value.zones;
+  const org = board2.tenant ?? "this organization";
+  const unchecked = (detail, fix) => [{
+    name: "zone owners unchecked",
+    status: "warn",
+    detail,
+    fix
+  }];
+  let report;
+  try {
+    const res = await fetchImpl(
+      `${board2.apiUrl.replace(/\/+$/, "")}/v1/${board2.tenant}/${board2.repo}/zone-owners`,
+      { headers: boardHeaders(board2.token) }
+    );
+    if (res.status === 404) {
+      return unchecked(
+        `this board does not answer /zone-owners, so whether ${declared.length} zone owner(s) are members of ${org} went unchecked`,
+        "Either the board is older than this check, or its address and scope name a board this repository does not belong to. Run `cycle doctor` again once it is updated \u2014 nothing here is blocked by it."
+      );
+    }
+    if (!res.ok) {
+      return unchecked(
+        `the board answered ${res.status} \u2014 whether ${declared.length} zone owner(s) are members of ${org} went unchecked`,
+        res.status === 401 ? "Run `cycle login`. Until the board answers, an owner who is nobody looks exactly like one who is." : "Read the board's logs. A board that cannot answer cannot confirm that a zone routes its approvals to a real person."
+      );
+    }
+    report = await res.json();
+  } catch {
+    return unchecked(
+      `no answer from ${board2.apiUrl} \u2014 whether ${declared.length} zone owner(s) are members of ${org} went unchecked`,
+      "Start the board, or fix the address. Offline, membership is not a fact this CLI holds."
+    );
+  }
+  if (!report?.determined) {
+    return unchecked(
+      `membership could not be established for ${org}, so ${declared.length} zone owner(s) went unchecked`,
+      `${report?.reason ?? "The board did not say why."} Nothing here is broken by it \u2014 but until it answers, an owner who is nobody looks exactly like one who is.`
+    );
+  }
+  const byId = new Map((report.zones ?? []).map((z) => [z.zone_id, z]));
+  const strangers = [];
+  const unowned = [];
+  const notPushed = [];
+  for (const z of declared) {
+    const row = byId.get(z.id);
+    if (!row) {
+      notPushed.push(z.id);
+      continue;
+    }
+    if (row.resolution === "stranger") strangers.push(`${z.id} \u2192 ${row.owner ?? z.owner}`);
+    else if (row.resolution === "unowned" && !z.owner.toUpperCase().includes("TODO")) unowned.push(z.id);
+    else if (row.resolution === "unknown") notPushed.push(z.id);
+  }
+  const checks = [];
+  if (strangers.length || unowned.length) {
+    const parts = [];
+    if (strangers.length) parts.push(`${strangers.join(", ")} \u2014 not a member of ${org}`);
+    if (unowned.length) parts.push(`${unowned.join(", ")} \u2014 no owner declared`);
+    checks.push({
+      name: "zone owners are members",
+      status: "warn",
+      detail: parts.join("; "),
+      /* Two remedies, because these are two different mistakes: an address
+         nobody holds, and no address at all. Neither blocks anything today —
+         said out loud, so nobody reads this as a reason to stop. */
+      fix: `A request filed against these zones goes to somebody who cannot answer it. Add the address to ${org} on the board (Settings \u2192 Members), or edit the owner in .zones/zones.yml to somebody who is already there, then \`cycle sync\`. Nothing is blocked by this \u2014 a zone whose owner is a stranger still refuses and still grants exactly as before.`
+    });
+  } else if (!notPushed.length) {
+    checks.push({
+      name: "zone owners are members",
+      status: "ok",
+      detail: `${declared.length} zone owner(s) resolve to members of ${org}` + (typeof report.seats === "number" ? ` (${report.seats} seat${report.seats === 1 ? "" : "s"})` : "")
+    });
+  }
+  if (notPushed.length) {
+    checks.push(...unchecked(
+      `${notPushed.length} zone(s) in .zones/zones.yml are not on the board, so their owners went unchecked: ` + notPushed.slice(0, 6).join(", ") + (notPushed.length > 6 ? ", \u2026" : ""),
+      "Run `cycle sync` \u2014 the board judges the map it holds, and it does not hold these yet."
+    ));
   }
   return checks;
 }
@@ -16848,6 +17563,127 @@ function agentsMergeDriverChecks(root) {
     fix: 'Without the driver, git falls back to a normal merge and AGENTS.md\'s cc:begin/cc:end block conflicts on every PR again (CC-543). `cycle sync` registers it on every pass now (CC-590) \u2014 run that, or set it by hand: `git config merge.cc-agents.driver "node scripts/merge-agents.mjs %O %A %B"` (no vendored script? the binary carries the driver: "cycle merge-driver %O %A %B"). Note it is `.driver` git consults \u2014 `.name` alone registers nothing.'
   }];
 }
+function surfaceOfTool(tool) {
+  const parts = tool.split("__");
+  if (parts.length >= 3 && parts[0] === "mcp" && parts[1]) return `mcp:${parts[1]}`;
+  return `harness:${tool}`;
+}
+function censusOfLog(root) {
+  const census = { events: 0, unwatched: 0, surfaces: /* @__PURE__ */ new Map() };
+  const dir = join16(root, ".zones", "state", "events");
+  let files = [];
+  try {
+    files = readdirSync6(dir).filter((f) => f.endsWith(".jsonl"));
+  } catch {
+    return census;
+  }
+  for (const file of files) {
+    let lines = [];
+    try {
+      lines = readFileSync14(join16(dir, file), "utf8").split("\n");
+    } catch {
+      continue;
+    }
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      census.events++;
+      try {
+        const e = JSON.parse(line);
+        if (e.type !== "unwatched" || !e.tool) continue;
+        census.unwatched++;
+        const s = surfaceOfTool(e.tool);
+        census.surfaces.set(s, (census.surfaces.get(s) ?? 0) + 1);
+      } catch {
+      }
+    }
+  }
+  return census;
+}
+function surfaceBound(pattern, surface) {
+  if (pattern === surface) return true;
+  if (!pattern.includes("*") && !pattern.includes("?")) return false;
+  const rx = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*").replace(/\?/g, ".");
+  try {
+    return new RegExp(`^${rx}$`, "i").test(surface);
+  } catch {
+    return false;
+  }
+}
+function boundSurfacePatterns(root) {
+  const out = [];
+  for (const id of grantFiles(root)) {
+    try {
+      const raw = JSON.parse(readFileSync14(join16(root, ".zones", "state", "grants", `${id}.json`), "utf8"));
+      const field = raw?.zone_surfaces;
+      if (!Array.isArray(field)) continue;
+      for (const entry of field) {
+        const surfaces = entry?.surfaces;
+        if (!Array.isArray(surfaces)) continue;
+        for (const s of surfaces) if (typeof s === "string" && s) out.push(s);
+      }
+    } catch {
+    }
+  }
+  return out;
+}
+function toolSurfaceCheck(root, report) {
+  const census = censusOfLog(root);
+  const patterns = boundSurfacePatterns(root);
+  const observed = [...census.surfaces.entries()].sort((a, b) => b[1] - a[1]);
+  const unaccounted = observed.filter(([surface]) => !patterns.some((p) => surfaceBound(p, surface)));
+  const share = census.events ? `${census.unwatched} of ${census.events} recorded events are calls the matrix does not model` : "no events recorded in this checkout yet";
+  const judge2 = report?.enforcing.exists && report.enforcing.built ? ` \xB7 the bundle judging this session was built ${report.enforcing.built.toISOString().slice(0, 10)}` : "";
+  const watched = "Edit, Write, Read and Bash by name; every other call is judged on the evidence it carries \u2014 a path under a path-shaped key, a statement under a statement-shaped key \u2014 and allowed-and-recorded when it carries none";
+  if (observed.length === 0) {
+    return {
+      name: "tool surfaces",
+      status: "warn",
+      detail: `${watched} \xB7 ${share}${judge2}`,
+      fix: "No unmodelled call has been recorded here yet, so nothing has been measured. Run a task and re-check; an empty log is also what a repository with no hook running looks like."
+    };
+  }
+  if (unaccounted.length === 0) {
+    return {
+      name: "tool surfaces",
+      status: "ok",
+      detail: `${watched} \xB7 ${share}, from ${observed.length} surface(s), all accounted for${judge2}`
+    };
+  }
+  const top = unaccounted.slice(0, 6).map(([s, n]) => `${s} (${n})`).join(", ");
+  const more = unaccounted.length > 6 ? `, +${unaccounted.length - 6} more` : "";
+  return {
+    name: "tool surfaces",
+    status: "warn",
+    detail: `${watched} \xB7 ${share}, from ${observed.length} surface(s); ${unaccounted.length} bound to no zone: ${top}${more}${judge2}`,
+    fix: "Those surfaces are allowed whenever they declare nothing this hook can read. Bind each one to the zone it can reach, or mark it as touching nothing protected, through the grant's `zone_surfaces`. The board does not project that field yet \u2014 until it does this row stays a warning, which is the honest state: an allow-by-default that nobody has accounted for."
+  };
+}
+function unenforcedHere(wrap, subject, plugin) {
+  const c = wrap.decided;
+  if (!c) return { name: "hook installed", status: "fail", detail: `${subject}, and nothing can be said about what invokes it` };
+  if (wrap.verdict === "missing") {
+    return {
+      name: "hook installed",
+      status: "fail",
+      detail: `${subject}, but the wrapper the harness invokes is not on disk: ${c.path} (${c.via}). A hook that does not answer is a hook Claude Code passes (D-13), so nothing is enforcing zones here.`,
+      fix: plugin ? "Reinstall or update the plugin (`/plugin install commitcycle@commitcycle`): the installed bundle registers a hook and has no wrapper behind it, which is an incomplete install rather than a platform problem." : "Point the PreToolUse command at a wrapper that exists, or install the plugin, which brings its own."
+    };
+  }
+  if (c.chmod) {
+    return {
+      name: "hook installed",
+      status: "fail",
+      detail: `${subject}, and the harness cannot execute ${c.path}: ${c.evidence}. Nothing is enforcing zones here \u2014 Claude Code is fail-open when a hook does not answer (D-13).`,
+      fix: `Run: chmod +x ${c.path}`
+    };
+  }
+  return {
+    name: "hook installed",
+    status: "fail",
+    detail: `${subject}, and this platform (${wrap.platform}) cannot run the wrapper it invokes: ${c.path} \u2014 ${c.evidence}. So no denial can ever appear here: the harness gets no answer and Claude Code is fail-open (D-13). Nothing is enforcing zones in this session, whatever the bundle lines below say. ${ENFORCING_PLATFORMS}.`,
+    fix: "There is no local repair to make: the wrapper is a POSIX `sh` script and this platform has no interpreter for it. Work where the same install does enforce \u2014 macOS, Linux, or a Linux environment on this machine (WSL), where the harness runs this same wrapper under Linux. Until then treat this checkout as unenforced while you edit: Layer 3 (the GitHub Action) is the only thing still checking, and it checks at merge time, not at edit time."
+  };
+}
 function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
   const checks = [];
   if (!existsSync11(join16(root, ".git"))) {
@@ -16901,14 +17737,34 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
     }
   }
   const report = enforcementReport(root, { now, ...opts });
+  const wrapper = inspectWrapper(root, { now, ...opts }, report?.registrations ?? null);
+  const unreachable = wrapper.verdict === "cannot-run" || wrapper.verdict === "missing";
+  const plug = report ? report.registrations.pinned ?? preferredBundle(report.registrations.plugins) : null;
+  const plugName = plug ? `${plug.marketplace}/${plug.plugin} ${plug.version}` : null;
+  const brokenSuffix = plugName ? unreachable ? ` \u2014 and the plugin ${plugName} is installed but cannot be invoked here either (${wrapper.decided?.evidence ?? "nothing runs it"}), so nothing is enforcing zones at all. ${ENFORCING_PLATFORMS}` : ` \u2014 the plugin ${plugName} is enforcing instead, so this repository's own wiring is broken rather than absent` : "";
   const settingsPath = join16(root, ".claude", "settings.json");
   if (!existsSync11(settingsPath)) {
-    checks.push({
-      name: "hook installed",
-      status: "fail",
-      detail: ".claude/settings.json is missing, so nothing is enforced",
-      fix: "Run `cycle init`. Note: without the hook, CC only catches things at merge time."
-    });
+    if (plugName && unreachable) {
+      checks.push(unenforcedHere(wrapper, `the plugin ${plugName} is installed on this machine`, true));
+    } else if (plugName) {
+      checks.push({
+        name: "hook installed",
+        status: "ok",
+        detail: `this repository configures none, and does not need to here: the plugin ${plugName} is installed on this machine and enforces every repository the harness opens. It travels with the machine, not with the code \u2014 a clone elsewhere has no wall. The next check names the bundle it loads`
+      });
+    } else {
+      checks.push({
+        name: "hook installed",
+        status: "fail",
+        detail: report ? ".claude/settings.json is missing, and no CommitCycle plugin is installed on this machine \u2014 nothing is enforced" : ".claude/settings.json is missing, so nothing is enforced",
+        /* The plugin leads, because it is the artefact that carries a wrapper
+           (CC-641). This used to offer `cycle init` first, and after CC-641 init
+           writes no hook configuration unless a wrapper is already on disk — so
+           on the machine reading this line, running it would change nothing and
+           the advice would have been a second lap of the same absence. */
+        fix: "Install the plugin: `/plugin install commitcycle@commitcycle` \u2014 it brings its own hook and enforces every repository you open. `cycle init` configures a hook only where a wrapper is already on disk. Note: until one is, CC only catches things at merge time." + (wrapper.platform === "win32" ? ` One caveat for this platform (${wrapper.platform}): the hook the plugin brings is a POSIX \`sh\` wrapper, so installing it here would not enforce anything. ${ENFORCING_PLATFORMS}.` : "")
+      });
+    }
   } else {
     try {
       const settings = JSON.parse(readFileSync14(settingsPath, "utf8"));
@@ -16917,9 +17773,18 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
         checks.push({
           name: "hook installed",
           status: "fail",
-          detail: "settings.json has no PreToolUse hook",
-          fix: "Run `cycle init` to write it, or add the hook by hand."
+          detail: `settings.json has no PreToolUse hook${brokenSuffix}`,
+          /* Not `cycle init`: it has never overwritten a settings.json somebody
+             else wrote, and since CC-641 it writes hook configuration at all
+             only where a wrapper is on disk (CC-641). */
+          fix: "Install the plugin (`/plugin install commitcycle@commitcycle`), which brings its own hook, or add a PreToolUse hook to this file by hand pointing at a wrapper you have."
         });
+      } else if (unreachable && existsSync11(cmd.replace("$CLAUDE_PROJECT_DIR", root))) {
+        checks.push(unenforcedHere(
+          wrapper,
+          plugName ? `this repository registers ${cmd} and the plugin ${plugName} is installed too` : `settings.json registers ${cmd}`,
+          wrapper.decided?.layer === "plugin"
+        ));
       } else {
         const resolved2 = cmd.replace("$CLAUDE_PROJECT_DIR", root);
         const there = existsSync11(resolved2);
@@ -16930,11 +17795,14 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
              and it was the gap CC-442 measured: three vintages of the core
              were live on one machine, deciding differently, while this printed
              `ok` about a path — true, and not the question. It says which path
-             and refers the age of what that path loads to the checks below. */
-          detail: there ? `${cmd} \u2014 the path, which is all this line can see; the age of the core it loads is the next check` : `settings.json points at ${cmd}, which does not exist`,
-          fix: there ? void 0 : "The path is wrong or the package is not installed. Nothing is being enforced right now."
+             and refers the age of what that path loads to the checks below —
+             and when a plugin is installed too, it says so here, because two
+             live registrations are a fact about this repository that the
+             repo-only wording would hide (CC-567, CC-569). */
+          detail: there ? plugName ? `${cmd} \u2014 the path this repository configures; the plugin ${plugName} is installed on this machine too, so two registrations are live for this repository \u2014 the 'one hook, not two' check below says whether they are the same artifact` : `${cmd} \u2014 the path, which is all this line can see; the age of the core it loads is the next check` : `settings.json points at ${cmd}, which does not exist${brokenSuffix}`,
+          fix: there ? void 0 : plugName ? "The path is wrong or the package is not installed. Only the plugin is enforcing right now." : "The path is wrong or the package is not installed. Nothing is being enforced right now."
         });
-        if (there) {
+        if (there && wrapper.platform !== "win32") {
           try {
             const mode = statSync5(resolved2).mode;
             if (!(mode & 73)) {
@@ -16953,12 +17821,29 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
       checks.push({
         name: "hook installed",
         status: "fail",
-        detail: ".claude/settings.json is not valid JSON",
+        detail: `.claude/settings.json is not valid JSON${brokenSuffix}`,
         fix: "Fix the JSON \u2014 Claude Code will not load hooks from a broken settings file."
       });
     }
   }
-  checks.push(...report?.checks ?? enforcementChecks(root, { now }));
+  const ageChecks = (report?.checks ?? enforcementChecks(root, { now })).map((c) => {
+    if (unreachable && c.name === "enforcing bundle" && c.status === "ok" && wrapper.decided) {
+      return {
+        ...c,
+        detail: `${c.detail} \u2014 but nothing invokes it here: the wrapper ${wrapper.decided.path} ${wrapper.verdict === "missing" ? "is not on disk" : `cannot run on this platform (${wrapper.platform})`}, so this bundle is loaded by nobody. The 'hook installed' line above is the one to read`
+      };
+    }
+    if (!report || c.name !== "enforcing bundle" || c.status !== "ok" || !report.enforcing.path) return c;
+    const core = report.enforcing.path;
+    if (!report.registrations.plugins.length && report.registrations.repo?.core === core) {
+      return { ...c, detail: `${c.detail} \u2014 that is this checkout, the hook the repository configures` };
+    }
+    if (!report.registrations.repo && report.registrations.plugins.some((b) => b.core === core)) {
+      return { ...c, detail: `${c.detail} \u2014 that is the plugin installed on this machine, not this checkout` };
+    }
+    return c;
+  });
+  checks.push(...ageChecks);
   checks.push(...report?.registrationChecks ?? []);
   const branch = currentBranch(root);
   const taskId = taskIdFrom(branch);
@@ -16993,7 +17878,15 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
             name: "active task",
             status: "fail",
             detail: `the grant for ${taskId} expired at ${state.grant.expires}`,
-            fix: "This is why writes stopped working. Ask for it to be re-issued."
+            /* A fix string is contract text (CC-588), and this one named nobody
+               who exists: "ask for it to be re-issued" was written for a board
+               with a second human on it, and at n=1 it is a dead end with no
+               command behind it (CC-667, GF19). `cycle renew` is the command.
+               It re-issues exactly what the grant already held — a renewal
+               cannot widen one — and on a board with more than one member it
+               refuses and names the path that is theirs, so this sentence stays
+               true whoever runs it. */
+            fix: "This is why writes stopped working. `cycle renew` asks the board for the same grant again \u2014 the same zones, the same branch, a new expiry \u2014 and can never widen it. On a board with more than one member it says so and names who to ask."
           });
         } else if (state.state === "active") {
           const open = state.open.map((z) => `${z.id}:${z.mode}`).join(", ") || "no zones open";
@@ -17077,7 +17970,14 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
       name: "board scope",
       status: "warn",
       detail: "no tenant in CC_TENANT or .zones/board.json, so no board command will run",
-      fix: "Set CC_TENANT, or name the tenant in .zones/board.json \u2014 the first half of the address in the console, e.g. `pow` in pow/commitcycle. There is no default: guessing writes into a tenant nobody created."
+      /* The command first, the field second (CC-641). "The first half of the
+         address in the console" is only an instruction to somebody who already
+         has a console — for everyone else it is the question `cycle pair` was
+         built to remove, and this was the third place in the cold start that
+         asked it. The refusal stands unchanged: a guessed tenant writes into an
+         organization nobody created (CC-87, D-49), which is why the name comes
+         from the board rather than from here. */
+      fix: 'Run `cycle pair`: a code here, confirmed in your browser, and the board writes .zones/board.json with the organization in it. If you already know the name it is CC_TENANT, or "tenant" in that file \u2014 the first half of the address in the console, e.g. `pow` in pow/commitcycle. There is no default: guessing writes into a tenant nobody created.'
     });
   } else {
     const from = process.env.CC_TENANT || process.env.CC_API_URL ? "the environment" : ".zones/board.json";
@@ -17087,11 +17987,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
       detail: board2.apiUrl ? `${board2.tenant}/${board2.repo} at ${board2.apiUrl}, from ${from}` : `${board2.tenant}/${board2.repo} \u2014 no board address, local commands only`
     });
   }
-  checks.push({
-    name: "tool surfaces",
-    status: "ok",
-    detail: "Edit, Write, Read and Bash by name; anything else is a write if it declares a path, and allowed-and-recorded if it does not"
-  });
+  checks.push(toolSurfaceCheck(root, report));
   const signedInAs = board2.apiUrl ? savedIdentity(board2.apiUrl) : void 0;
   let gitIdentity;
   try {
@@ -17142,109 +18038,69 @@ Working, with ${warns} thing(s) worth knowing about.` : "\nEverything checks out
 }
 
 // src/status.ts
-import { existsSync as existsSync12, readFileSync as readFileSync15, realpathSync as realpathSync2 } from "node:fs";
-import { join as join17 } from "node:path";
-function samePath(a, b) {
-  const r = (p) => {
-    try {
-      return realpathSync2(p);
-    } catch {
-      return p;
-    }
-  };
-  return r(a) === r(b);
+import { existsSync as existsSync16, readFileSync as readFileSync19, realpathSync as realpathSync2 } from "node:fs";
+import { join as join21 } from "node:path";
+
+// src/spike.ts
+import { execFileSync as execFileSync9, spawnSync as spawnSync2 } from "node:child_process";
+import { appendFileSync as appendFileSync2, existsSync as existsSync15, mkdirSync as mkdirSync8, readFileSync as readFileSync18, rmSync as rmSync4 } from "node:fs";
+import { dirname as dirname11, join as join20 } from "node:path";
+
+// src/verify.ts
+import { execFileSync as execFileSync8 } from "node:child_process";
+import { existsSync as existsSync14, readdirSync as readdirSync8, readFileSync as readFileSync17 } from "node:fs";
+import { join as join19 } from "node:path";
+
+// src/capture.ts
+function asksForEvidence(gate) {
+  const g = (gate ?? "").trim();
+  if (!g || g.toLowerCase() === "none") return null;
+  return g;
 }
-function runStatus(root, now = /* @__PURE__ */ new Date()) {
-  const out = [];
-  const resolved2 = currentBranch(root);
-  const branch = resolved2 ?? "(no branch \u2014 a detached HEAD, or no readable .git)";
-  const taskId = taskIdFrom(resolved2);
-  out.push(`Branch   ${branch}`);
-  out.push(`Task     ${taskId ?? "none \u2014 writes are denied until you are on a task branch"}`);
-  const board2 = resolveBoard(root);
-  out.push(`Board    ${board2.tenant ? `${board2.tenant}/${board2.repo}${board2.apiUrl ? ` at ${board2.apiUrl}` : " (no address \u2014 local commands only)"}` : "no tenant in CC_TENANT or .zones/board.json \u2014 board commands will refuse rather than guess"}`);
-  let open = [];
-  let expiresAt = null;
-  let spike = false;
-  const deferred = [];
-  if (taskId) {
-    const grantPath = join17(root, ".zones", "state", "grants", `${taskId}.json`);
-    if (existsSync12(grantPath)) {
-      try {
-        const state = resolveGrant(JSON.parse(readFileSync15(grantPath, "utf8")), now);
-        if (state.state === "active") {
-          open = state.open;
-          expiresAt = state.grant.expires;
-          spike = state.grant.mode === "spike";
-        } else if (state.state === "expired") {
-          deferred.push(`
-The grant expired at ${state.grant.expires} \u2014 that is why writes stopped.`);
-        }
-        if (state.state !== "none" && state.grant.branch && state.grant.branch !== branch) {
-          deferred.push(
-            `
-The grant was issued for a different branch:
-  grant   ${state.grant.branch}
-  here    ${branch}
-One of the two is wrong, and ${taskId} resolves either way because the id is read
-from the branch name. Fix the record before closing \u2014 a manifest computed here
-would be attributed to work the grant never covered.`
-          );
-        }
-        const holder = state.state !== "none" ? state.grant.holder : void 0;
-        if (holder && !samePath(holder.path, root)) {
-          deferred.push(
-            `
-This grant is held by another checkout:
-  holder  ${holder.path} (on ${holder.branch})
-  here    ${root}
-The grant was issued for that directory; write access lives where it is held.`
-          );
-        }
-      } catch {
-      }
-    }
+function captureAtStart(taskId, gate) {
+  const g = asksForEvidence(gate);
+  if (!g) return null;
+  return `The quality gate on ${taskId} is "${g}", so \`cycle verify --close\` will ask for evidence
+  and refuse without it. Capture it as the work produces it and commit it on this branch \u2014
+  the repo is the source of truth, not object storage. The hand-in takes this grant back, so
+  a capture that is not committed by then is one this branch can no longer write.`;
+}
+function captureAtRehearsal(taskId, gate, attached) {
+  const g = asksForEvidence(gate);
+  if (!g || attached > 0) return null;
+  return `the close will ask for evidence and this run attached none \u2014 ${taskId} declares the quality gate "${g}" (its record; the board's copy is the one that decides). Attach it when you close, with --evidence and a URL or a path committed here. This is the last rehearsal that runs while the grant is alive: \`cycle submit\` hands it back, and a capture that is not committed by then cannot be written from this branch at all.`;
+}
+function captureHint(taskId, gate, captured = false) {
+  const g = asksForEvidence(gate);
+  if (!g) return null;
+  if (captured) {
+    return `The quality gate on ${taskId} is "${g}", and the capture you named is committed here.
+  Pass it again at the close \u2014 \`--evidence\` is read by the close, never by the hand-in:
+
+      cycle verify --close --evidence <the same one>`;
   }
-  if (spike) {
-    out.push(`Mode     spike \u2014 the database schema stays closed whatever is approved`);
-  }
-  out.push(...deferred);
-  const zonesPath = join17(root, ".zones", "zones.yml");
-  if (!existsSync12(zonesPath)) {
-    out.push("\nNo zone map. Run `cycle init`.");
-    return out.join("\n");
-  }
-  const parsed = parseZonesFile(readFileSync15(zonesPath, "utf8"));
-  if (!parsed.ok) {
-    out.push(`
-The zone map is invalid: ${parsed.issues[0]?.message}`);
-    out.push("Writes are denied until it parses. Run `cycle doctor`.");
-    return out.join("\n");
-  }
-  out.push("");
-  out.push("Zones");
-  for (const z of parsed.value.zones) {
-    const granted = open.find((o) => o.id === z.id);
-    const state = granted ? `open for ${granted.mode}` : z.default_policy === "open" ? "open" : z.default_policy === "read-only" ? "readable, closed for writing" : "closed";
-    out.push(`  ${z.id.padEnd(16)} ${state.padEnd(28)} ${z.paths.join(", ")}`);
-  }
-  out.push("");
-  out.push("Everything else is unprotected \u2014 no approval needed inside a task.");
-  if (expiresAt) {
-    const mins = Math.round((Date.parse(expiresAt) - now.getTime()) / 6e4);
-    out.push(`Access expires in ${mins > 60 ? `${Math.round(mins / 60)}h` : `${mins}m`}.`);
-  }
-  return out.join("\n");
+  return `The quality gate on ${taskId} is "${g}", so \`cycle verify --close\` will ask for evidence
+  and refuse without it. Attach it with --evidence, which takes a URL or a path and repeats:
+
+      cycle verify --close --evidence https://\u2026
+      cycle verify --close --evidence <a path you have committed>
+
+  A path has to be committed in this repository first \u2014 the repo is the source of truth, not
+  object storage, and a capture the record cannot resolve is evidence of nothing.
+
+  The grant went back with this hand-in, so the capture cannot be written from here any more.
+  If it is not committed yet: \`cycle start ${taskId} --reason "<why it is coming back>"\` returns
+  the task to In Progress and re-issues the grant. The close is unchanged and waits where it is.`;
 }
 
-// src/handoff.ts
-import { existsSync as existsSync14, mkdirSync as mkdirSync8, readdirSync as readdirSync8, readFileSync as readFileSync17, writeFileSync as writeFileSync11 } from "node:fs";
-import { basename as basename2, dirname as dirname11, isAbsolute as isAbsolute3, join as join19, relative as relative5, resolve as resolve4 } from "node:path";
+// src/record.ts
+import { existsSync as existsSync13, readFileSync as readFileSync16 } from "node:fs";
+import { join as join18 } from "node:path";
 
 // src/playbooks.ts
 var import_yaml2 = __toESM(require_dist(), 1);
-import { existsSync as existsSync13, readdirSync as readdirSync7, readFileSync as readFileSync16, writeFileSync as writeFileSync10 } from "node:fs";
-import { join as join18 } from "node:path";
+import { existsSync as existsSync12, readdirSync as readdirSync7, readFileSync as readFileSync15, writeFileSync as writeFileSync10 } from "node:fs";
+import { join as join17 } from "node:path";
 var REQUIRED_SECTIONS = [
   "## What an agent must know",
   "## Critical decisions",
@@ -17254,14 +18110,14 @@ var REQUIRED_SECTIONS = [
 var NAME_RULES = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 var CITATION = /\b(D-\d+|CC-\d+|E\d+)\b|§|\.[a-z]{2,8}\b/;
 function scanPlaybooks(root) {
-  const dir = join18(root, ".zones", "playbooks");
-  if (!existsSync13(dir)) return null;
+  const dir = join17(root, ".zones", "playbooks");
+  if (!existsSync12(dir)) return null;
   const warnings = [];
   const books = [];
   const files = readdirSync7(dir).filter((f) => f.endsWith(".md") && f !== "README.md").sort();
   for (const file of files) {
     const rel = `.zones/playbooks/${file}`;
-    const raw = readFileSync16(join18(dir, file), "utf8");
+    const raw = readFileSync15(join17(dir, file), "utf8");
     const fm = parseFrontmatter(raw);
     if (!fm) {
       warnings.push(`${rel} has no frontmatter \u2014 not a playbook the loader can trust`);
@@ -17291,7 +18147,7 @@ function scanPlaybooks(root) {
   return { books, warnings };
 }
 function writePlaybooksReadme(root, scan) {
-  const path = join18(root, ".zones", "playbooks", "README.md");
+  const path = join17(root, ".zones", "playbooks", "README.md");
   const active = scan.books.filter((b) => b.status !== "archived");
   const rows = active.map((b) => `| ${b.display} | [${b.topic}.md](${b.topic}.md) |`);
   const next = [
@@ -17314,7 +18170,7 @@ function writePlaybooksReadme(root, scan) {
     "`zones.yml`, the gate, or a decision row \u2014 they cite them.",
     ""
   ].join("\n");
-  const current = existsSync13(path) ? readFileSync16(path, "utf8") : "";
+  const current = existsSync12(path) ? readFileSync15(path, "utf8") : "";
   if (current === next) return "unchanged";
   writeFileSync10(path, next);
   return "updated";
@@ -17367,7 +18223,987 @@ function sectionBullets(body, heading) {
   return bullets;
 }
 
+// src/record.ts
+function readTaskRecord(root, taskId) {
+  const path = join18(root, ".zones", "tasks", `${taskId}.md`);
+  if (!existsSync13(path)) return null;
+  const fm = parseFrontmatter(readFileSync16(path, "utf8"));
+  if (!fm) return null;
+  const topics = Array.isArray(fm.data.topics) ? fm.data.topics.filter((t) => typeof t === "string") : [];
+  return {
+    title: typeof fm.data.title === "string" ? fm.data.title : void 0,
+    topics,
+    /* Read, never trusted over the board. It is here for the hand-in hint,
+       which is advice about what the close will ask for — the check itself
+       stays the transition's, and a record that disagrees with the board is the
+       record being stale (CC-416). */
+    qualityGate: typeof fm.data.quality_gate === "string" ? fm.data.quality_gate : void 0
+  };
+}
+
+// src/verify.ts
+var git2 = (root, cmd) => (
+  // stderr is piped, not inherited: forkPoint probes refs that may not exist,
+  // and a repo with no remote would otherwise print two `fatal:` lines on
+  // every verify. Failures still throw, with stderr on the error object.
+  execFileSync8("/bin/sh", ["-c", `git ${cmd}`], {
+    cwd: root,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"]
+  }).replace(/\n+$/, "")
+);
+function forkPoint(root, explicit) {
+  if (explicit) return { sha: git2(root, `rev-parse ${explicit}`), how: `the --base you passed (${explicit})` };
+  for (const candidate of ["origin/main", "origin/master", "main", "master"]) {
+    try {
+      return { sha: git2(root, `merge-base HEAD ${candidate}`), how: `the merge base with ${candidate}` };
+    } catch {
+    }
+  }
+  return { sha: git2(root, "rev-list --max-parents=0 HEAD | tail -1"), how: "the root commit \u2014 no main or master ref exists" };
+}
+function buildManifest(root, base) {
+  const files = /* @__PURE__ */ new Map();
+  const record = (status, path) => {
+    if (path.startsWith(".zones/state/")) return;
+    if (path.startsWith(".claude/worktrees/")) return;
+    const s = status.startsWith("A") || status === "??" ? "A" : status.startsWith("D") ? "D" : "M";
+    if (!files.has(path) || files.get(path) === "M") files.set(path, s);
+  };
+  for (const line of git2(root, `diff --name-status ${base}...HEAD`).split("\n")) {
+    const [status, ...rest] = line.split("	");
+    if (status && rest.length) record(status, rest[rest.length - 1]);
+  }
+  for (const line of git2(root, "status --porcelain --untracked-files=all").split("\n")) {
+    if (!line.trim()) continue;
+    record(line.slice(0, 2).trim(), line.slice(3).trim());
+  }
+  return {
+    branch: git2(root, "rev-parse --abbrev-ref HEAD"),
+    base,
+    head: git2(root, "rev-parse HEAD"),
+    files: [...files].map(([path, status]) => ({ path, status }))
+  };
+}
+function trunk(root) {
+  for (const ref of ["origin/main", "origin/master", "main", "master"]) {
+    try {
+      git2(root, `rev-parse --verify ${ref}`);
+      return ref;
+    } catch {
+    }
+  }
+  return null;
+}
+function branchOf(root, taskId) {
+  let name;
+  try {
+    const fm = readFileSync17(join19(root, ".zones", "tasks", `${taskId}.md`), "utf8").slice(0, 2e3);
+    name = /^branch:[ \t]*(.+)$/m.exec(fm)?.[1]?.trim();
+  } catch {
+    return null;
+  }
+  if (!name || name === "null") return null;
+  for (const ref of [name, `origin/${name}`]) {
+    try {
+      execFileSync8("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
+      return ref;
+    } catch {
+    }
+  }
+  return null;
+}
+function subjectOf(root, sha) {
+  try {
+    return git2(root, `log -1 --format=%s ${sha}`);
+  } catch {
+    return "(unreadable)";
+  }
+}
+function reachableFrom(root, sha, ref) {
+  try {
+    execFileSync8("git", ["-C", root, "merge-base", "--is-ancestor", sha, ref], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+function alreadyMerged(root, ref) {
+  try {
+    execFileSync8("git", ["-C", root, "merge-base", "--is-ancestor", "HEAD", ref], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+function historyCommits(root, taskId, ref) {
+  try {
+    const out = git2(root, `log --no-merges --format=%H%x09%s ${ref}`);
+    const anchor = new RegExp(`^${taskId}(?![0-9])`);
+    const found = [];
+    for (const line of out.split("\n")) {
+      const tab = line.indexOf("	");
+      if (tab < 0) continue;
+      const sha = line.slice(0, tab).trim();
+      if (sha && anchor.test(line.slice(tab + 1).trim())) found.push(sha);
+    }
+    return found;
+  } catch {
+    return [];
+  }
+}
+function buildHistoryManifest(root, taskId, shas) {
+  const files = /* @__PURE__ */ new Map();
+  for (const sha of [...shas].reverse()) {
+    for (const line of git2(root, `show --pretty= --name-status ${sha}`).split("\n")) {
+      const [status, ...rest] = line.split("	");
+      if (!status || !rest.length) continue;
+      const path = rest[rest.length - 1];
+      if (path.startsWith(".zones/state/")) continue;
+      const s = status.startsWith("A") ? "A" : status.startsWith("D") ? "D" : "M";
+      if (!files.has(path) || files.get(path) === "M") files.set(path, s);
+    }
+  }
+  const oldest = shas[shas.length - 1];
+  const newest = shas[0];
+  let base = oldest;
+  try {
+    base = git2(root, `rev-parse ${oldest}^`);
+  } catch {
+  }
+  return {
+    // Named, not disguised. Anything reading the audit record later should see
+    // at a glance that this manifest came from the log and not from a branch.
+    branch: `history:${taskId} (${shas.length} commit(s) in the trunk)`,
+    base,
+    head: newest,
+    files: [...files].map(([path, status]) => ({ path, status }))
+  };
+}
+var GUARD_FILES = [
+  { pattern: ".zones/zones.yml", why: "the zone map: every boundary the hook enforces and this gate checks against" },
+  { pattern: ".claude/settings.json", why: "the hook registration: whether anything runs before a write at all" },
+  { pattern: ".mcp.json", why: "the MCP servers this repository hands a session" },
+  { pattern: ".github/workflows/**", why: "the CI job: the checks nobody runs locally" },
+  { pattern: "plugin/**", why: "the enforcement bundle a session pins when it starts" }
+];
+function guardChanges(manifest) {
+  const found = [];
+  for (const { pattern, why } of GUARD_FILES) {
+    const prefix = pattern.endsWith("/**") ? pattern.slice(0, -2) : null;
+    for (const f of manifest.files) {
+      if (prefix ? f.path.startsWith(prefix) : f.path === pattern) found.push({ path: f.path, status: f.status, why });
+    }
+  }
+  return found;
+}
+function grantOnDisk(root, taskId) {
+  const path = join19(root, ".zones", "state", "grants", `${taskId}.json`);
+  if (!existsSync14(path)) return { kind: "none" };
+  try {
+    const g = JSON.parse(readFileSync17(path, "utf8"));
+    return { kind: "grant", zones: g.zones ?? [] };
+  } catch {
+    return { kind: "unreadable" };
+  }
+}
+function mutatedPaths(root) {
+  const dir = join19(root, ".zones", "state", "events");
+  if (!existsSync14(dir)) return [];
+  const logs = readdirSync8(dir).filter((f) => f.endsWith(".jsonl"));
+  const observed = [];
+  const selfRecorded = [];
+  for (const file of logs) {
+    for (const line of readFileSync17(join19(dir, file), "utf8").split("\n").filter(Boolean)) {
+      try {
+        const e = JSON.parse(line);
+        if (e.type !== "mutation" || !e.path) continue;
+        (e.tool ? observed : selfRecorded).push(e.path);
+      } catch {
+      }
+    }
+  }
+  if (!observed.length) return [];
+  return [...observed, ...selfRecorded];
+}
+function runVerify(opts) {
+  const { root } = opts;
+  const log = opts.log ?? (() => {
+  });
+  const onBranch = taskOnBranch(root);
+  if (!opts.fromHistory && opts.taskId && opts.taskId !== onBranch) {
+    return {
+      ok: false,
+      taskId: onBranch,
+      manifest: null,
+      generated: [],
+      unprotected: [],
+      guard: [],
+      warnings: [],
+      failures: [{
+        field: "task",
+        message: onBranch ? `You asked for ${opts.taskId} but this branch is bound to ${onBranch}. Check out ${opts.taskId}'s branch first, or drop the id to act on ${onBranch}. (--from-history reads a task out of history on purpose; without it the branch is the source of truth.)` : `You asked for ${opts.taskId} but this checkout is on no task branch, so there is nothing to bind it to. Check out ${opts.taskId}'s branch first.`
+      }]
+    };
+  }
+  const taskId = (opts.fromHistory ? opts.taskId : void 0) ?? onBranch;
+  if (!taskId) {
+    return {
+      ok: false,
+      taskId: null,
+      manifest: null,
+      generated: [],
+      unprotected: [],
+      guard: [],
+      warnings: [],
+      failures: [{
+        field: "branch",
+        message: opts.fromHistory ? "Not on a task branch, and no task named. With --from-history, pass the id: `cycle verify --from-history CC-40`." : "Not on a task branch. There is nothing to verify against."
+      }]
+    };
+  }
+  const zonesPath = join19(root, ".zones", "zones.yml");
+  if (!existsSync14(zonesPath)) {
+    return {
+      ok: false,
+      taskId,
+      manifest: null,
+      generated: [],
+      unprotected: [],
+      guard: [],
+      warnings: [],
+      failures: [{ field: "zones", message: "No .zones/zones.yml. Run `cycle init` first." }]
+    };
+  }
+  const parsed = parseZonesFile(readFileSync17(zonesPath, "utf8"));
+  if (!parsed.ok) {
+    return {
+      ok: false,
+      taskId,
+      manifest: null,
+      generated: [],
+      unprotected: [],
+      guard: [],
+      warnings: [],
+      failures: [{ field: "zones", message: `zones.yml is invalid: ${parsed.issues[0]?.message}` }]
+    };
+  }
+  const ref = trunk(root);
+  const early = [];
+  const notes = [];
+  let manifest;
+  if (opts.fromHistory) {
+    if (!ref) {
+      return {
+        ok: false,
+        taskId,
+        manifest: null,
+        generated: [],
+        unprotected: [],
+        guard: [],
+        warnings: [],
+        failures: [{ field: "manifest", message: "No trunk ref (origin/main, main, \u2026), so there is no history to read the task out of." }]
+      };
+    }
+    const shas = historyCommits(root, taskId, ref);
+    if (!shas.length) {
+      return {
+        ok: false,
+        taskId,
+        manifest: null,
+        generated: [],
+        unprotected: [],
+        guard: [],
+        warnings: [],
+        failures: [{
+          field: "manifest",
+          message: `No commit in ${ref} has a subject beginning "${taskId}", so there is no history to build a manifest from. Either the work never landed, or it landed under commit messages that do not name the task \u2014 and in the second case nothing here can tell which files were its. Close it from its branch, or say why it cannot be.`
+        }]
+      };
+    }
+    const branch = branchOf(root, taskId);
+    const strays = branch ? shas.filter((sha) => !reachableFrom(root, sha, branch)) : shas;
+    manifest = buildHistoryManifest(root, taskId, shas);
+    log(`  ${manifest.files.length} file(s) across ${shas.length} commit(s) in ${ref} whose subject names ${taskId}`);
+    if (strays.length) {
+      notes.push({
+        field: "manifest",
+        message: `${strays.length} of ${shas.length} attributed commit(s) are not on ` + (branch ? `"${branch}", the branch this task's record names` : "any branch \u2014 the record names none") + `:
+${strays.map((s) => `      ${s.slice(0, 8)} ${subjectOf(root, s).slice(0, 88)}`).join("\n")}
+    Read them. A second branch for the same task is fine; a commit describing different work means two tasks share this id, and closing would put the wrong diff in the audit record (D-49).`
+      });
+    }
+    log("  attributed by commit subject, not by branch topology \u2014 a commit that omitted its task id is invisible here");
+  } else {
+    const fork = forkPoint(root, opts.base);
+    manifest = buildManifest(root, fork.sha);
+    log(`  ${manifest.files.length} file(s) changed since ${fork.sha.slice(0, 8)} \u2014 ${fork.how}`);
+    if (!manifest.files.length && ref && alreadyMerged(root, ref)) {
+      const shas = historyCommits(root, taskId, ref);
+      early.push({
+        field: "manifest",
+        message: `Nothing has changed since the fork point, and this branch is already in ${ref} \u2014 so the diff is empty because the work is behind you, not because there was none. Closing on this manifest would check nothing. ` + (shas.length ? `${shas.length} commit(s) in ${ref} name ${taskId}: re-run with \`--from-history\` to verify against those.` : `No commit in ${ref} names ${taskId} in its subject either, so there is nothing to verify against here.`)
+      });
+    }
+  }
+  const guard = guardChanges(manifest);
+  const acknowledged = opts.guardChange?.trim() ?? "";
+  const guardFailures = [];
+  const guardLines = guard.map((g) => `      ${g.path} (${g.status}) \u2014 ${g.why}`).join("\n");
+  if (guard.length && !acknowledged) {
+    guardFailures.push({
+      field: "guard",
+      message: (opts.guardChange === void 0 ? `${guard.length} changed file(s) define the guard itself:` : `--guard-change needs the reason as its value, and arrived empty. ${guard.length} changed file(s) define the guard itself:`) + `
+${guardLines}
+    Moving the boundary is allowed \u2014 \`cycle protect\` writes zones.yml on purpose, and this is not that command being refused. What is refused is the move passing unsaid. Re-run with \`--guard-change "<why>"\`; the reason lands in its own section of the audit record, where it can be questioned by whoever reads the receipt.`
+    });
+  } else if (guard.length) {
+    log(`  the guard moved \u2014 ${guard.length} changed file(s) define it:`);
+    for (const g of guard) log(`    ${g.path} (${g.status}) \u2014 ${g.why}`);
+    log(`  acknowledged: ${acknowledged}`);
+  } else if (opts.guardChange !== void 0) {
+    notes.push({
+      field: "guard",
+      message: "You passed --guard-change and nothing in this diff defines the guard \u2014 no zones.yml, hook registration, .mcp.json, workflow or plugin file changed \u2014 so nothing was acknowledged and the audit record carries no guard section."
+    });
+  }
+  const grant = grantOnDisk(root, taskId);
+  const declared = grant.kind === "grant" ? grant.zones : null;
+  const extra = [];
+  if (grant.kind === "none") {
+    extra.push({
+      field: "manifest",
+      message: "No local grant, so the declared-zones check did not run here \u2014 it runs at the transition, against the board's copy of the spec. Everything else below was checked."
+    });
+  } else if (grant.kind === "unreadable") {
+    extra.push({
+      field: "grant",
+      message: `The grant at .zones/state/grants/${taskId}.json exists but is not readable JSON, so the declared-zones check did not run here \u2014 it runs at the transition. \`cycle sync\` rewrites the grant.`
+    });
+  } else if (declared.length === 0) {
+    log("  the grant on disk opens no protected zones");
+    extra.push({
+      field: "grant",
+      message: "The grant on disk opens zero protected zones, so any change inside one will refuse as undeclared. That is correct if this task declared none \u2014 if the board says otherwise, the grant is stale: run `cycle sync` and verify again."
+    });
+  } else {
+    log(`  declared, from the grant: ${declared.map((z) => `${z.id}:${z.mode}`).join(", ")}`);
+  }
+  const capture = [];
+  const rehearsal = captureAtRehearsal(
+    taskId,
+    readTaskRecord(root, taskId)?.qualityGate,
+    (opts.evidence ?? []).length
+  );
+  if (rehearsal) capture.push({ field: "evidence", message: rehearsal });
+  const { failures, warnings } = checkClosing({
+    task: {
+      id: taskId,
+      affected_zones: declared ?? parsed.value.zones.map((z) => ({ id: z.id, mode: "write" })),
+      quality_gate: "none"
+    },
+    zones: parsed.value.zones.map((z) => ({
+      zone_id: z.id,
+      name: z.name,
+      risk: z.risk,
+      owner: z.owner,
+      paths: z.paths,
+      default_policy: z.default_policy,
+      secrets: z.secrets ?? false
+    })),
+    generated: parsed.value.generated,
+    unprotected: parsed.value.unprotected,
+    manifest,
+    mutated: mutatedPaths(root),
+    evidence: opts.evidence ?? []
+  });
+  return {
+    ok: failures.length === 0 && early.length === 0 && guardFailures.length === 0,
+    taskId,
+    manifest,
+    generated: parsed.value.generated,
+    unprotected: parsed.value.unprotected,
+    guard,
+    // First, because it is the reason the rest of the answer is not worth much;
+    // the guard next, because it is the answer that changes what the rest means.
+    failures: [...early, ...guardFailures, ...failures],
+    // The capture note first among the warnings: it is the only one that is
+    // about something the reader can still do, and it stops being doable at the
+    // next command (CC-732).
+    warnings: [...capture, ...notes, ...extra, ...warnings]
+  };
+}
+
+// src/spike.ts
+var SPIKE_DAYS = 7;
+var SPIKE_WARN_DAY = 5;
+var DAY_MS = 864e5;
+var spikePrefix = (taskId) => `spike_${taskId.replace(/[^A-Za-z0-9]/g, "")}_`;
+function spikeIdentifiers(taskId) {
+  const literal = `spike_${taskId}`;
+  const sql = `spike_${taskId.replace(/[^A-Za-z0-9]/g, "")}`;
+  return sql === literal ? [literal] : [literal, sql];
+}
+function readSpikeEnv(root) {
+  const path = join20(root, ".zones", "zones.yml");
+  if (!existsSync15(path)) {
+    return { env: null, cleanup: null, verify: null, why: "this repository has no .zones/zones.yml \u2014 run `cycle init`" };
+  }
+  const parsed = parseZonesFile(readFileSync18(path, "utf8"));
+  if (!parsed.ok) {
+    return { env: null, cleanup: null, verify: null, why: `.zones/zones.yml does not parse: ${parsed.issues[0]?.message ?? "unknown"}` };
+  }
+  const c = parsed.value.config;
+  const str4 = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
+  const env = { env: str4(c?.spike_env), cleanup: str4(c?.spike_cleanup), verify: str4(c?.spike_verify) };
+  return env.verify ? env : { ...env, why: "zones.yml sets spike_verify: null" };
+}
+function spikeFacts(root, taskId, now = /* @__PURE__ */ new Date()) {
+  const from = [];
+  let issuedAt = null;
+  const grantPath = join20(root, ".zones", "state", "grants", `${taskId}.json`);
+  if (existsSync15(grantPath)) {
+    try {
+      const state = resolveGrant(JSON.parse(readFileSync18(grantPath, "utf8")), now);
+      if (state.state !== "none") {
+        if (state.grant.mode === "spike") from.push("the grant says mode: spike");
+        issuedAt = state.grant.issued_at ?? null;
+      }
+    } catch {
+    }
+  }
+  let recordedBox = null;
+  const recordPath = join20(root, ".zones", "tasks", `${taskId}.md`);
+  if (existsSync15(recordPath)) {
+    const head = readFileSync18(recordPath, "utf8").slice(0, 2e3);
+    if (/^mode:[ \t]*spike[ \t]*$/m.test(head)) from.push(`the record says mode: spike`);
+    const box = /^time_box:[ \t]*(.+)$/m.exec(head)?.[1]?.trim();
+    if (box && box !== "null" && !Number.isNaN(Date.parse(box))) recordedBox = box;
+  }
+  const branch = currentBranch(root);
+  if (branch?.startsWith("spike/") && taskIdFrom(branch) === taskId) {
+    from.push(`the branch is ${branch}`);
+  }
+  return { taskId, isSpike: from.length > 0, from, issuedAt, recordedBox };
+}
+function spikeTimeBox(facts2, now = /* @__PURE__ */ new Date()) {
+  const at2 = facts2.recordedBox ?? (facts2.issuedAt ? new Date(Date.parse(facts2.issuedAt) + SPIKE_DAYS * DAY_MS).toISOString() : null);
+  if (!at2) return null;
+  const how = facts2.recordedBox ? "time_box on the task record" : `${SPIKE_DAYS} days from the grant's issue date (${facts2.issuedAt})`;
+  const start = Date.parse(at2) - SPIKE_DAYS * DAY_MS;
+  const elapsed = Math.floor((now.getTime() - start) / DAY_MS);
+  const expired = now.getTime() >= Date.parse(at2);
+  return { at: at2, how, elapsed, expired, warning: !expired && elapsed >= SPIKE_WARN_DAY };
+}
+function timeBoxLines(taskId, box) {
+  const day = `day ${Math.max(0, box.elapsed)} of ${SPIKE_DAYS}`;
+  if (box.expired) {
+    const over = Math.max(1, box.elapsed - SPIKE_DAYS + 1);
+    return [
+      `Time box the ${SPIKE_DAYS}-day box expired ${box.at} \u2014 ${over} day(s) ago (${box.how})`,
+      "",
+      "  The time box has run out. Nothing has been deleted, and nothing will be:",
+      "  CC proposes and you answer. Two ways out, and the cheaper one is the default",
+      "  on purpose \u2014 the usual end of an experiment is that it goes away.",
+      "",
+      `    cycle discard ${taskId}   take it back out, and prove nothing was left behind`,
+      `    cycle promote ${taskId}   keep it \u2014 one confirmation more than discarding`,
+      "",
+      "  Doing neither is also an answer. The box is a question, not a deadline the",
+      "  tool enforces against you."
+    ];
+  }
+  if (box.warning) {
+    return [
+      `Time box expires ${box.at} \u2014 ${day} (${box.how})`,
+      "",
+      `  Past day ${SPIKE_WARN_DAY}. On day ${SPIKE_DAYS} this becomes a proposal to discard, which is`,
+      "  still only a proposal \u2014 CC deletes nothing on a clock. Worth deciding now,",
+      "  while you still remember what the spike was for."
+    ];
+  }
+  return [`Time box expires ${box.at} \u2014 ${day} (${box.how})`];
+}
+function runConfigured(root, command, prefix) {
+  const res = spawnSync2("/bin/sh", ["-c", `${command} ${prefix}`], {
+    cwd: root,
+    encoding: "utf8",
+    timeout: 12e4
+  });
+  const out = `${res.stdout ?? ""}${res.stderr ?? ""}`.trim();
+  if (res.error) return { code: 1, out: `${out}${out ? "\n" : ""}${res.error.message}` };
+  return { code: res.status ?? 1, out };
+}
+var git3 = (root, args) => execFileSync9("git", ["-C", root, ...args], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).replace(/\n+$/, "");
+var OURS = [".zones/state/", ".claude/worktrees/"];
+var isOurs = (path) => OURS.some((p) => path.startsWith(p));
+function changedFiles(root, base) {
+  const files = /* @__PURE__ */ new Map();
+  for (const line of git3(root, ["diff", "--name-status", `${base}...HEAD`]).split("\n")) {
+    const [status, ...rest] = line.split("	");
+    const path = rest[rest.length - 1];
+    if (status && path && !isOurs(path)) files.set(path, status.startsWith("A") ? "A" : status.startsWith("D") ? "D" : "M");
+  }
+  for (const line of git3(root, ["status", "--porcelain", "--untracked-files=all"]).split("\n")) {
+    if (!line.trim()) continue;
+    const path = line.slice(3).trim();
+    const raw = line.slice(0, 2).trim();
+    if (!path || isOurs(path)) continue;
+    if (!files.has(path) || files.get(path) === "M") files.set(path, raw === "??" || raw.startsWith("A") ? "A" : raw.startsWith("D") ? "D" : "M");
+  }
+  return [...files].map(([path, status]) => ({ status, path }));
+}
+function identifierHits(root, identifiers) {
+  const hits = /* @__PURE__ */ new Set();
+  for (const id of identifiers) {
+    const res = spawnSync2("git", ["-C", root, "grep", "-l", "-I", "-F", "--untracked", "-e", id], {
+      encoding: "utf8",
+      timeout: 6e4
+    });
+    if (res.status !== 0 && res.status !== 1) return null;
+    for (const line of (res.stdout ?? "").split("\n")) {
+      const path = line.trim();
+      if (path && !isOurs(path)) hits.add(path);
+    }
+  }
+  return [...hits].sort();
+}
+function appendEvent(root, taskId, type, actor, reason, now) {
+  const path = join20(root, ".zones", "state", "events", `${taskId}.jsonl`);
+  try {
+    mkdirSync8(dirname11(path), { recursive: true });
+    const line = JSON.stringify({ t: now.toISOString(), type, task_id: taskId, actor, reason });
+    appendFileSync2(path, `${line}
+`);
+    return path;
+  } catch {
+    return null;
+  }
+}
+function runDiscard(opts) {
+  const log = opts.log ?? (() => {
+  });
+  const now = opts.now ?? /* @__PURE__ */ new Date();
+  const root = opts.root;
+  const taskId = opts.taskId ?? taskIdFrom(currentBranch(root));
+  const refuse = (lines) => {
+    for (const l of lines) log(l);
+    return { ok: false, status: "refused", taskId, proofs: [], reverted: [] };
+  };
+  if (!taskId) {
+    return refuse([
+      "",
+      "No task. `cycle discard` takes a spike back out, and the branch does not name one.",
+      "Pass the id \u2014 `cycle discard CC-123` \u2014 or stand on the task's own branch.",
+      ""
+    ]);
+  }
+  const facts2 = spikeFacts(root, taskId, now);
+  if (!facts2.isSpike) {
+    return refuse([
+      "",
+      `${taskId} is not a spike, so there is nothing here to discard.`,
+      "",
+      "  Nothing in this repository says `mode: spike` for it: not the grant, not",
+      `  .zones/tasks/${taskId}.md, not the branch name.`,
+      "",
+      "  `cycle discard` only takes spikes back out. Ordinary work is undone the",
+      "  ordinary way \u2014 git \u2014 and abandoned the ordinary way:",
+      `    cycle pause ${taskId} --reason "..."   hand the grant back, keep the branch`,
+      "",
+      "Nothing was done.",
+      ""
+    ]);
+  }
+  const env = readSpikeEnv(root);
+  const prefix = spikePrefix(taskId);
+  const identifiers = spikeIdentifiers(taskId);
+  let base;
+  try {
+    base = forkPoint(root);
+  } catch (err) {
+    return refuse([
+      "",
+      `Cannot find where this branch started, so there is no base to prove an empty diff against:`,
+      `  ${err.message.split("\n")[0]}`,
+      "",
+      "Nothing was done.",
+      ""
+    ]);
+  }
+  const plan = changedFiles(root, base.sha);
+  const before = identifierHits(root, identifiers);
+  if (before?.length && !env.cleanup && !opts.manual) {
+    return refuse([
+      "",
+      `cycle discard ${taskId} \u2014 refused, and nothing was done.`,
+      "",
+      "  This spike names exploration identifiers, and this repository declares no",
+      "  way to take them back out of wherever they went:",
+      "",
+      ...before.slice(0, 8).map((p) => `    ${p}`),
+      ...before.length > 8 ? [`    \u2026 and ${before.length - 8} more`] : [],
+      "",
+      `    .zones/zones.yml   config.spike_cleanup: ${env.cleanup ?? "null"}`,
+      `                       config.spike_verify:  ${env.verify ?? "null"}`,
+      `                       config.spike_env:     ${env.env ?? "null"}`,
+      ...env.why && !env.why.startsWith("zones.yml sets") ? [`                       (${env.why})`] : [],
+      "",
+      "  Reverting the files would leave whatever those identifiers named \u2014 tables,",
+      "  rows, queues, buckets \u2014 exactly where the spike put them, and this command",
+      "  would report a clean repository while it did. D-17 scopes zero residue to",
+      "  the repo AND the declared exploration environment; an undeclared one is not",
+      "  a clean one, and CC does not guess at a database.",
+      "",
+      "  Two ways on:",
+      "",
+      "    Fill in spike_cleanup and spike_verify in .zones/zones.yml \u2014 the project's",
+      `    own commands, which CC runs and never invents. Both are handed \`${prefix}\`.`,
+      "    Then re-run this.",
+      "",
+      `    cycle discard ${taskId} --manual "what you will clean up by hand"`,
+      "    \u2014 the environment becomes a recorded manual step in the trail, which is",
+      "    exactly what D-17 already does with flags held in third-party services.",
+      ""
+    ]);
+  }
+  log("");
+  log(`Discarding ${taskId} \u2014 ${facts2.from.join(", ")}.`);
+  const box = spikeTimeBox(facts2, now);
+  if (box) log(`  time box  ${box.expired ? `expired ${box.at}` : `expires ${box.at}`} (${box.how})`);
+  log("");
+  log("  Reversion plan");
+  log(`    repository   reset to ${base.sha.slice(0, 10)} \u2014 ${base.how}`);
+  log(plan.length ? `                 ${plan.length} file(s) to undo: ${plan.slice(0, 6).map((f) => f.path).join(", ")}${plan.length > 6 ? ", \u2026" : ""}` : "                 nothing to undo \u2014 this branch is already at its base");
+  log(`    environment  ${env.cleanup ? `${env.cleanup} ${prefix}` : "nothing configured \u2014 see the proof below"}${env.env ? `   (spike_env: ${env.env})` : ""}`);
+  if (opts.manual) log(`    manual       ${opts.manual}`);
+  log("");
+  log("  Running it.");
+  let cleanup = null;
+  if (env.cleanup) {
+    cleanup = runConfigured(root, env.cleanup, prefix);
+    log(`    ${cleanup.code === 0 ? "\xB7" : "!"} ${env.cleanup} ${prefix} exited ${cleanup.code}`);
+    for (const line of cleanup.out.split("\n").filter(Boolean).slice(0, 5)) log(`      ${line}`);
+    if (cleanup.code !== 0) {
+      log("");
+      log("  The project's own cleanup command failed, so the repository has NOT been");
+      log("  reverted: undoing the files now would destroy the only description of what");
+      log("  is still out there. Fix the command, or re-run with --manual, and try again.");
+      log("");
+      return { ok: false, status: "refused", taskId, proofs: [], reverted: [] };
+    }
+  } else {
+    log("    \xB7 no spike_cleanup configured \u2014 nothing was run, and nothing was invented");
+  }
+  const wasAt = git3(root, ["rev-parse", "HEAD"]);
+  git3(root, ["reset", "--hard", base.sha]);
+  git3(root, ["clean", "-fd", "-e", ".zones/state", "-e", ".claude/worktrees"]);
+  log(`    \xB7 repository reset to ${base.sha.slice(0, 10)}; HEAD was ${wasAt.slice(0, 10)}`);
+  const after = changedFiles(root, base.sha);
+  const diffProof = after.length ? { name: "repository diff", status: "residue", detail: `${after.length} file(s) still differ from ${base.sha.slice(0, 10)}: ${after.slice(0, 5).map((f) => f.path).join(", ")}` } : { name: "repository diff", status: "clean", detail: `nothing differs from ${base.sha.slice(0, 10)} \u2014 ${base.how}` };
+  const left = identifierHits(root, identifiers);
+  const idProof = left === null ? { name: "identifiers", status: "unproven", detail: "the search itself failed \u2014 this arm proves nothing" } : left.length ? { name: "identifiers", status: "residue", detail: `${identifiers.join(" / ")} still in ${left.slice(0, 5).join(", ")}` } : { name: "identifiers", status: "clean", detail: `no file names ${identifiers.join(" or ")}` };
+  let envProof;
+  if (env.verify) {
+    const ran = runConfigured(root, env.verify, prefix);
+    envProof = ran.code !== 0 ? { name: "spike_verify", status: "unproven", detail: `${env.verify} exited ${ran.code} \u2014 it did not answer` } : ran.out ? { name: "spike_verify", status: "residue", detail: ran.out.split("\n")[0] } : { name: "spike_verify", status: "clean", detail: `${env.verify} printed nothing` };
+  } else if (opts.manual) {
+    envProof = { name: "spike_verify", status: "manual", detail: opts.manual };
+  } else {
+    envProof = {
+      name: "spike_verify",
+      status: "not declared",
+      detail: `${env.why ?? "nothing configured"} \u2014 nothing here can speak for anything outside this repository`
+    };
+  }
+  const proofs = [diffProof, idProof, envProof];
+  log("");
+  log("  Proof \u2014 three checks, and each one says whether it ran");
+  for (const p of proofs) log(`    ${p.name.padEnd(18)} ${p.status.padEnd(13)} ${p.detail}`);
+  const residue = proofs.some((p) => p.status === "residue" || p.status === "unproven");
+  const proven = proofs.filter((p) => p.status === "clean").length;
+  log("");
+  if (residue) {
+    log(`  ${taskId} is NOT proven clean. The reversion ran; the checks above are what`);
+    log("  it left, and at least one of them found something or could not look.");
+  } else if (proven === proofs.length) {
+    log(`  ${taskId} is out, and the three lines above are why \u2014 reported, not asserted.`);
+  } else if (opts.manual) {
+    log(`  ${proven} of ${proofs.length} proven, and the third is your word rather than a check:`);
+    log("  the environment is a recorded manual step now, in this task's log where it can");
+    log("  be read back. That is what D-17 already does with flags held in third-party");
+    log("  services, and it is the honest ceiling for an environment CC was never told");
+    log("  how to reach.");
+  } else {
+    log(`  ${proven} of ${proofs.length} proven. This repository is clean; the exploration environment was`);
+    log("  never declared, and CC does not guess at one \u2014 so this discard claims the");
+    log("  repository and says nothing at all about anywhere else.");
+    if (!before?.length) {
+      log("  Nothing in the spike named a spike_ identifier, which is the only signal there");
+      log("  was that an environment was ever in play.");
+    }
+  }
+  log("");
+  if (wasAt !== base.sha) log(`  The committed work was ${wasAt} \u2014 \`git reset --hard ${wasAt.slice(0, 10)}\` gets it back.`);
+  const eventPath = appendEvent(root, taskId, "discard", opts.actor, [
+    `discarded: ${plan.length} file(s) reverted to ${base.sha.slice(0, 10)}`,
+    `cleanup ${env.cleanup ? `ran (exit ${cleanup?.code ?? 0})` : "not configured"}`,
+    `proof ${proofs.map((p) => `${p.name.split(" ").pop()}=${p.status.replace(/ /g, "-")}`).join(" ")}`,
+    opts.manual ? `manual: ${opts.manual}` : null
+  ].filter(Boolean).join(" \u2014 "), now);
+  if (eventPath) log("  Written to this task's event log; `cycle sync` mirrors it to the board.");
+  log(`  The board still holds ${taskId} where the gate left it \u2014 \`cycle pause ${taskId} --reason "\u2026"\``);
+  log("  hands the grant back. Discard undoes work; the gate is still the only thing");
+  log("  that moves a state (E15).");
+  log("");
+  return { ok: !residue, status: "discarded", taskId, proofs, reverted: plan, wasAt };
+}
+async function runPromote(opts) {
+  const log = opts.log ?? (() => {
+  });
+  const now = opts.now ?? /* @__PURE__ */ new Date();
+  const root = opts.root;
+  const taskId = opts.taskId ?? taskIdFrom(currentBranch(root));
+  const refuse = (lines) => {
+    for (const l of lines) log(l);
+    return { ok: false, status: "refused", taskId, kept: [] };
+  };
+  if (!taskId) {
+    return refuse([
+      "",
+      "No task. `cycle promote` keeps what a spike found, and the branch does not name one.",
+      "Pass the id \u2014 `cycle promote CC-123` \u2014 or stand on the task's own branch.",
+      ""
+    ]);
+  }
+  const facts2 = spikeFacts(root, taskId, now);
+  if (!facts2.isSpike) {
+    return refuse([
+      "",
+      `${taskId} is not a spike, so there is nothing here to promote.`,
+      "",
+      "  Promotion is the exit from exploration: it clears the provisional marks and",
+      "  opens the conversation about the schema zone a spike is never allowed to",
+      "  touch. Ordinary work does not go through it \u2014 it goes through the gate.",
+      `    cycle submit                      hand ${taskId} in for review`,
+      "",
+      "Nothing was done.",
+      ""
+    ]);
+  }
+  let base;
+  try {
+    base = forkPoint(root);
+  } catch (err) {
+    return refuse(["", `Cannot find where this branch started: ${err.message.split("\n")[0]}`, "", "Nothing was done.", ""]);
+  }
+  const kept = changedFiles(root, base.sha);
+  log("");
+  log(`cycle promote ${taskId} \u2014 keep what this spike found.`);
+  log("");
+  log("  Discarding costs one command. Promoting costs one command and the question");
+  log("  below, and the gap is deliberate: the usual end of an experiment is that it");
+  log("  goes away, so the cheaper path is the one that throws it out.");
+  log("");
+  log(`  Keeping  ${kept.length} file(s) against ${base.sha.slice(0, 10)} (${base.how})`);
+  for (const f of kept.slice(0, 12)) log(`    ${f.status}  ${f.path}`);
+  if (kept.length > 12) log(`    \u2026 and ${kept.length - 12} more`);
+  log("");
+  if (!opts.confirm) {
+    return refuse([
+      "  Nothing to ask with \u2014 this is not an interactive terminal, and promoting is",
+      "  the one thing here that costs a confirmation. There is no --yes: the price is",
+      "  the design (CC-45), and a flag that removes it would make keeping a spike as",
+      "  cheap as throwing it away.",
+      "",
+      "Nothing was promoted.",
+      ""
+    ]);
+  }
+  const yes = await opts.confirm(`  Promote ${taskId} and keep this work?`);
+  if (!yes) {
+    log("");
+    log(`  Nothing was promoted. \`cycle discard ${taskId}\` takes it back out instead.`);
+    log("");
+    return { ok: false, status: "declined", taskId, kept };
+  }
+  const provisional = join20(root, ".zones", "state", "provisional", `${taskId}.json`);
+  let cleared = false;
+  if (existsSync15(provisional)) {
+    try {
+      rmSync4(provisional);
+      cleared = true;
+    } catch {
+    }
+  }
+  appendEvent(root, taskId, "promote", opts.actor, [
+    `promoted: ${kept.length} file(s) kept against ${base.sha.slice(0, 10)}`,
+    `confirmed by ${opts.actor}`,
+    cleared ? "provisional marks cleared" : "no provisional marks on disk"
+  ].join(" \u2014 "), now);
+  log("");
+  log(`  \xB7 promoted \u2014 the event is in this task's log; \`cycle sync\` mirrors it`);
+  log(cleared ? "  \xB7 provisional marks cleared" : `  \xB7 no provisional marks to clear (.zones/state/provisional/${taskId}.json does not exist;`);
+  if (!cleared) log("    nothing writes it yet \u2014 T2.2 left it to its consumers)");
+  const env = readSpikeEnv(root);
+  const zonesPath = join20(root, ".zones", "zones.yml");
+  const hasSchema = existsSync15(zonesPath) && /^\s*-\s*id:\s*schema\s*$/m.test(readFileSync18(zonesPath, "utf8"));
+  log("");
+  if (hasSchema) {
+    log("  The schema zone stayed closed for the whole spike, whatever the grant said");
+    log("  (contracts \xA72, and it is not negotiable by grant). Promoting is where you ask:");
+    log("");
+    log(`    cycle request-access ${taskId} --zone schema --mode write \\`);
+    log(`      --reason "promoting ${taskId}: ${spikePrefix(taskId)}* becomes real schema" \\`);
+    log('      --alternative "keep the sandbox tables and revisit after review"');
+    log("");
+    log("  Ready to send, not sent. Whether the schema opens is the zone owner's call,");
+    log("  and a promotion that granted itself the zone would be the product answering");
+    log("  its own question.");
+  } else {
+    log("  This repository declares no `schema` zone, so there is nothing for promotion");
+    log("  to ask about \u2014 the request step is the one a spike owes, and it is not owed here.");
+  }
+  if (env.cleanup) {
+    log("");
+    log(`  ${spikePrefix(taskId)} objects are still in ${env.env ?? "the exploration environment"}. Promotion does not`);
+    log("  rename them \u2014 that is a migration, and migrations live in the zone above.");
+  }
+  log("");
+  log("  Nothing else moved. The work is on the branch, the task is where the gate left");
+  log(`  it, and \`cycle submit\` is still how ${taskId} is handed in.`);
+  log("");
+  return { ok: true, status: "promoted", taskId, kept };
+}
+
+// src/status.ts
+function samePath(a, b) {
+  const r = (p) => {
+    try {
+      return realpathSync2(p);
+    } catch {
+      return p;
+    }
+  };
+  return r(a) === r(b);
+}
+function runStatus(root, now = /* @__PURE__ */ new Date(), opts = {}) {
+  const out = [];
+  const resolved2 = currentBranch(root);
+  const branch = resolved2 ?? "(no branch \u2014 a detached HEAD, or no readable .git)";
+  const taskId = taskIdFrom(resolved2);
+  out.push(`Branch   ${branch}`);
+  out.push(`Task     ${taskId ?? "none \u2014 writes are denied until you are on a task branch"}`);
+  const board2 = resolveBoard(root);
+  out.push(`Board    ${board2.tenant ? `${board2.tenant}/${board2.repo}${board2.apiUrl ? ` at ${board2.apiUrl}` : " (no address \u2014 local commands only)"}` : "no tenant in CC_TENANT or .zones/board.json \u2014 board commands will refuse rather than guess"}`);
+  let fresh = opts.freshness ?? null;
+  if (!fresh) {
+    try {
+      fresh = freshnessFor(root, { now, cachePath: opts.cachePath, enforcement: opts.enforcement });
+    } catch {
+    }
+  }
+  if (fresh) {
+    out.push(`Rules    ${fresh.deciding[0]}`);
+    for (const line of fresh.deciding.slice(1)) out.push(`         ${line}`);
+  }
+  let open = [];
+  let expiresAt = null;
+  let spike = false;
+  const deferred = [];
+  if (taskId) {
+    const grantPath = join21(root, ".zones", "state", "grants", `${taskId}.json`);
+    if (existsSync16(grantPath)) {
+      try {
+        const state = resolveGrant(JSON.parse(readFileSync19(grantPath, "utf8")), now);
+        if (state.state === "active") {
+          open = state.open;
+          expiresAt = state.grant.expires;
+          spike = state.grant.mode === "spike";
+        } else if (state.state === "expired") {
+          deferred.push(
+            `
+The grant expired at ${state.grant.expires} \u2014 that is why writes stopped.
+Run \`cycle renew\`: it asks the board for the same grant again \u2014 the same zones, a new
+expiry \u2014 and can never widen it. (With more than one person on the board it says so and
+names who to ask.)`
+          );
+        }
+        if (state.state !== "none" && state.grant.branch && state.grant.branch !== branch) {
+          deferred.push(
+            `
+The grant was issued for a different branch:
+  grant   ${state.grant.branch}
+  here    ${branch}
+One of the two is wrong, and ${taskId} resolves either way because the id is read
+from the branch name. Fix the record before closing \u2014 a manifest computed here
+would be attributed to work the grant never covered.`
+          );
+        }
+        const holder = state.state !== "none" ? state.grant.holder : void 0;
+        if (holder && !samePath(holder.path, root)) {
+          deferred.push(
+            `
+This grant is held by another checkout:
+  holder  ${holder.path} (on ${holder.branch})
+  here    ${root}
+The grant was issued for that directory; write access lives where it is held.`
+          );
+        }
+      } catch {
+      }
+    }
+  }
+  const facts2 = taskId ? spikeFacts(root, taskId, now) : null;
+  if (spike || facts2?.isSpike) {
+    out.push(`Mode     spike \u2014 the database schema stays closed whatever is approved`);
+  }
+  if (facts2?.isSpike) {
+    const box = spikeTimeBox(facts2, now);
+    if (box) out.push(...timeBoxLines(taskId, box));
+  }
+  out.push(...deferred);
+  const zonesPath = join21(root, ".zones", "zones.yml");
+  if (!existsSync16(zonesPath)) {
+    out.push("\nNo zone map. Run `cycle init`.");
+    return out.join("\n");
+  }
+  const parsed = parseZonesFile(readFileSync19(zonesPath, "utf8"));
+  if (!parsed.ok) {
+    out.push(`
+The zone map is invalid: ${parsed.issues[0]?.message}`);
+    out.push("Writes are denied until it parses. Run `cycle doctor`.");
+    return out.join("\n");
+  }
+  out.push("");
+  out.push("Zones");
+  for (const z of parsed.value.zones) {
+    const granted = open.find((o) => o.id === z.id);
+    const state = granted ? `open for ${granted.mode}` : z.default_policy === "open" ? "open" : z.default_policy === "read-only" ? "readable, closed for writing" : "closed";
+    out.push(`  ${z.id.padEnd(16)} ${state.padEnd(28)} ${z.paths.join(", ")}`);
+  }
+  out.push("");
+  out.push("Everything else is unprotected \u2014 no approval needed inside a task.");
+  if (fresh) {
+    out.push("");
+    out.push(fresh.actionable ? "Freshness \u2014 this needs a person" : "Freshness");
+    out.push(`  ${fresh.release}`);
+    for (const line of fresh.remedy) out.push(`  ${line}`);
+    if (!fresh.actionable && fresh.remedy.length === 0) {
+      out.push("  Nothing here updates anything for you; this is a notice.");
+    }
+  }
+  if (expiresAt) {
+    if (fresh) out.push("");
+    const mins = Math.round((Date.parse(expiresAt) - now.getTime()) / 6e4);
+    out.push(`Access expires in ${mins > 60 ? `${Math.round(mins / 60)}h` : `${mins}m`}.`);
+  }
+  return out.join("\n");
+}
+
 // src/handoff.ts
+import { existsSync as existsSync17, mkdirSync as mkdirSync9, readdirSync as readdirSync9, readFileSync as readFileSync20, writeFileSync as writeFileSync11 } from "node:fs";
+import { basename as basename2, dirname as dirname12, isAbsolute as isAbsolute3, join as join22, relative as relative5, resolve as resolve4 } from "node:path";
 var LIVE = /* @__PURE__ */ new Set(["Todo", "In Progress", "In Review"]);
 var clip = (s, max = 150) => {
   const flat = s.replace(/\s+/g, " ").trim();
@@ -17376,13 +19212,13 @@ var clip = (s, max = 150) => {
 var cell = (s, max = 150) => clip(s, max).split("|").join("\\|");
 var idNum = (id) => Number(/-(\d+)$/.exec(id)?.[1] ?? 0);
 function scanAudits(root) {
-  const dir = join19(root, ".zones", "audit");
+  const dir = join22(root, ".zones", "audit");
   const audits = [];
   const missingTask = [];
   const unreadable = [];
   let names;
   try {
-    names = readdirSync8(dir).filter((f) => f.endsWith(".md"));
+    names = readdirSync9(dir).filter((f) => f.endsWith(".md"));
   } catch {
     return { audits, missingTask, unreadable };
   }
@@ -17390,7 +19226,7 @@ function scanAudits(root) {
     const rel = `.zones/audit/${name}`;
     let head;
     try {
-      head = readFileSync17(join19(dir, name), "utf8").slice(0, 4e3);
+      head = readFileSync20(join22(dir, name), "utf8").slice(0, 4e3);
     } catch {
       unreadable.push(rel);
       continue;
@@ -17429,7 +19265,7 @@ function firstSentence(text) {
 }
 function playbookUpdated(root, file) {
   try {
-    const head = readFileSync17(join19(root, file), "utf8").slice(0, 2e3);
+    const head = readFileSync20(join22(root, file), "utf8").slice(0, 2e3);
     return /^updated:[ \t]*(.+)$/m.exec(head)?.[1]?.trim() ?? "\u2014";
   } catch {
     return "\u2014";
@@ -17509,14 +19345,14 @@ async function runHandoff(opts) {
   }
   live.sort((a, b) => idNum(a.id) - idNum(b.id));
   counts.live = live.length;
-  const agentsPath = join19(root, "AGENTS.md");
-  const agentsRaw = existsSync14(agentsPath) ? readFileSync17(agentsPath, "utf8") : null;
+  const agentsPath = join22(root, "AGENTS.md");
+  const agentsRaw = existsSync17(agentsPath) ? readFileSync20(agentsPath, "utf8") : null;
   const layer1 = agentsRaw ? CC_BLOCK.exec(agentsRaw)?.[0] ?? null : null;
-  const zonesPath = join19(root, ".zones", "zones.yml");
+  const zonesPath = join22(root, ".zones", "zones.yml");
   let zones = null;
   let zonesInvalid = null;
-  if (existsSync14(zonesPath)) {
-    const parsed = parseZonesFile(readFileSync17(zonesPath, "utf8"));
+  if (existsSync17(zonesPath)) {
+    const parsed = parseZonesFile(readFileSync20(zonesPath, "utf8"));
     if (parsed.ok) {
       zones = parsed.value.zones.map((z) => ({
         id: z.id,
@@ -17529,8 +19365,8 @@ async function runHandoff(opts) {
       cannot.push(`.zones/zones.yml is invalid (${zonesInvalid}) \u2014 the zone map could not be read; \`cycle doctor\` says more`);
     }
   }
-  const decisionLogPath = join19(root, "docs", "01-decisiones.md");
-  const decisionLog = existsSync14(decisionLogPath) ? readFileSync17(decisionLogPath, "utf8") : null;
+  const decisionLogPath = join22(root, "docs", "01-decisiones.md");
+  const decisionLog = existsSync17(decisionLogPath) ? readFileSync20(decisionLogPath, "utf8") : null;
   const proposedRows = [];
   const decisionIds = /* @__PURE__ */ new Set();
   if (decisionLog) {
@@ -17541,14 +19377,14 @@ async function runHandoff(opts) {
       if (m[3].trim().startsWith("PROPOSED")) proposedRows.push({ id: m[1], text: m[2].trim() });
     }
   }
-  const decisionsDir = join19(root, ".zones", "decisions");
+  const decisionsDir = join22(root, ".zones", "decisions");
   const decisionFiles = [];
   const decisionsUnreadable = [];
-  if (existsSync14(decisionsDir)) {
-    for (const name of readdirSync8(decisionsDir).filter((f) => f.endsWith(".md")).sort()) {
+  if (existsSync17(decisionsDir)) {
+    for (const name of readdirSync9(decisionsDir).filter((f) => f.endsWith(".md")).sort()) {
       const rel = `.zones/decisions/${name}`;
       try {
-        const raw = readFileSync17(join19(decisionsDir, name), "utf8");
+        const raw = readFileSync20(join22(decisionsDir, name), "utf8");
         const status = /^- Status:[ \t]*(.+)$/m.exec(raw)?.[1]?.trim();
         if (!status) {
           decisionsUnreadable.push(rel);
@@ -17568,16 +19404,16 @@ async function runHandoff(opts) {
   counts.recentlyClosed = recent.length;
   const closedLines = recent.map((a) => {
     const id = a.task;
-    const recordPath = join19(root, ".zones", "tasks", `${id}.md`);
-    if (existsSync14(recordPath)) {
+    const recordPath = join22(root, ".zones", "tasks", `${id}.md`);
+    if (existsSync17(recordPath)) {
       try {
-        const para = sectionFirstParagraph(readFileSync17(recordPath, "utf8"), "## Result");
+        const para = sectionFirstParagraph(readFileSync20(recordPath, "utf8"), "## Result");
         if (para) return { id, closed: a.closed ?? "\u2014", label: "result", line: clip(para) };
       } catch {
       }
     }
     try {
-      const asked = sectionFirstParagraph(readFileSync17(join19(root, a.file), "utf8"), "## What was asked");
+      const asked = sectionFirstParagraph(readFileSync20(join22(root, a.file), "utf8"), "## What was asked");
       if (asked) return { id, closed: a.closed ?? "\u2014", label: "asked", line: clip(firstSentence(asked)) };
     } catch {
     }
@@ -17589,9 +19425,9 @@ async function runHandoff(opts) {
   if (!alwaysOn.length) {
     cannot.push("no always-on playbook \u2014 no scanned playbook has a topic outside the board taxonomy (D-60), so nothing loads for every task");
   }
-  const doneWithoutAudit = recordRows.filter((r) => r.state === "Done" && !existsSync14(join19(root, ".zones", "audit", `${r.id}.md`))).map((r) => r.id).sort((a, b) => idNum(a) - idNum(b));
+  const doneWithoutAudit = recordRows.filter((r) => r.state === "Done" && !existsSync17(join22(root, ".zones", "audit", `${r.id}.md`))).map((r) => r.id).sort((a, b) => idNum(a) - idNum(b));
   counts.doneWithoutAudit = doneWithoutAudit.length;
-  const noDecisionLog = !decisionLog && !existsSync14(decisionsDir);
+  const noDecisionLog = !decisionLog && !existsSync17(decisionsDir);
   if (noDecisionLog) cannot.push("no decision log in this repository \u2014 neither docs/01-decisiones.md nor .zones/decisions/ exists");
   const label2 = opts.board ? `${opts.board.tenant}/${opts.board.repo}` : basename2(root);
   const out = [];
@@ -17654,7 +19490,7 @@ async function runHandoff(opts) {
         out.push("docs/01-decisiones.md \u2014 no PROPOSED rows; every decision there is decided or revised.");
       }
     }
-    if (existsSync14(decisionsDir)) {
+    if (existsSync17(decisionsDir)) {
       if (decisionLog) out.push("");
       if (openFiles.length) {
         out.push(`.zones/decisions/ \u2014 ${openFiles.length} still open:`, "");
@@ -17690,7 +19526,7 @@ async function runHandoff(opts) {
   const liveIds = new Set(boardRows.map((t) => t.id));
   const dangling = [];
   for (const id of new Set(emitted.match(/\b(?:CC|D)-\d+\b/g) ?? [])) {
-    const found = id.startsWith("D-") ? decisionIds.has(id) : existsSync14(join19(root, ".zones", "tasks", `${id}.md`)) || existsSync14(join19(root, ".zones", "audit", `${id}.md`)) || liveIds.has(id);
+    const found = id.startsWith("D-") ? decisionIds.has(id) : existsSync17(join22(root, ".zones", "tasks", `${id}.md`)) || existsSync17(join22(root, ".zones", "audit", `${id}.md`)) || liveIds.has(id);
     if (!found) dangling.push(id);
   }
   dangling.sort((a, b) => a.localeCompare(b, void 0, { numeric: true }));
@@ -17726,7 +19562,7 @@ async function runHandoff(opts) {
   }
   let text = out.join("\n");
   if (target) {
-    mkdirSync8(dirname11(target), { recursive: true });
+    mkdirSync9(dirname12(target), { recursive: true });
     writeFileSync11(target, `${text}
 `);
     const rel = relative5(resolve4(root), target).split("\\").join("/");
@@ -17739,13 +19575,13 @@ async function runHandoff(opts) {
 
 // src/protect.ts
 var import_yaml3 = __toESM(require_dist(), 1);
-import { readFileSync as readFileSync18, writeFileSync as writeFileSync12 } from "node:fs";
-import { join as join20 } from "node:path";
+import { readFileSync as readFileSync21, writeFileSync as writeFileSync12 } from "node:fs";
+import { join as join23 } from "node:path";
 function loadDoc(root) {
-  const path = join20(root, ".zones", "zones.yml");
+  const path = join23(root, ".zones", "zones.yml");
   let raw;
   try {
-    raw = readFileSync18(path, "utf8");
+    raw = readFileSync21(path, "utf8");
   } catch {
     return { error: "No .zones/zones.yml here. Run `cycle init` first." };
   }
@@ -17774,10 +19610,10 @@ function runProtect(root, glob, zoneId) {
   }
   paths.add(doc.createNode(glob));
   writeFileSync12(path, doc.toString());
-  recordOwnWrites(root, taskOnBranch(root), [join20(".zones", "zones.yml")]);
+  recordOwnWrites(root, taskOnBranch(root), [join23(".zones", "zones.yml")]);
   return {
     ok: true,
-    message: `"${glob}" is now in "${zoneId}". The change is in zones.yml, in your diff \u2014 commit it with the work, and run \`cycle sync\` so the board learns the new boundary.`
+    message: `"${glob}" is now in "${zoneId}". The change is in zones.yml, in your diff \u2014 commit it with the work, and run \`cycle sync\` so the board learns the new boundary. The close will ask why the boundary moved: \`cycle verify --close --guard-change "..."\` (CC-640).`
   };
 }
 function runDismiss(root, glob) {
@@ -17796,14 +19632,295 @@ function runDismiss(root, glob) {
   }
   list.add(doc.createNode(glob));
   writeFileSync12(path, doc.toString());
-  recordOwnWrites(root, taskOnBranch(root), [join20(".zones", "zones.yml")]);
+  recordOwnWrites(root, taskOnBranch(root), [join23(".zones", "zones.yml")]);
   return {
     ok: true,
-    message: `"${glob}" is recorded as reviewed-and-open. The closing gate stops asking about it. If that turns out to be wrong, \`cycle protect\` it later \u2014 the record of both decisions is the point.`
+    message: `"${glob}" is recorded as reviewed-and-open. The closing gate stops asking about it. If that turns out to be wrong, \`cycle protect\` it later \u2014 the record of both decisions is the point. This edited zones.yml, so the close will ask why: \`cycle verify --close --guard-change "..."\` (CC-640).`
   };
 }
 
+// src/feedback.ts
+import { appendFileSync as appendFileSync3, existsSync as existsSync18, mkdirSync as mkdirSync10, readFileSync as readFileSync22, readdirSync as readdirSync10 } from "node:fs";
+import { dirname as dirname13, join as join24 } from "node:path";
+var feedbackLogPath = (root) => join24(root, ".zones", "state", "feedback.jsonl");
+var eventsDir = (root) => join24(root, ".zones", "state", "events");
+var ECHO_WINDOW_MS = 2e3;
+var NEIGHBOUR_WINDOW_MS = 6e4;
+var str2 = (v) => typeof v === "string" && v ? v : void 0;
+var ms = (iso) => {
+  const n = Date.parse(iso);
+  return Number.isNaN(n) ? 0 : n;
+};
+function readBlockEvents(root) {
+  const dir = eventsDir(root);
+  if (!existsSync18(dir)) return [];
+  let files;
+  try {
+    files = readdirSync10(dir).filter((f) => f.endsWith(".jsonl"));
+  } catch {
+    return [];
+  }
+  const raw = [];
+  for (const file of files.sort()) {
+    let text;
+    try {
+      text = readFileSync22(join24(dir, file), "utf8");
+    } catch {
+      continue;
+    }
+    for (const line of text.split("\n")) {
+      if (!line.trim()) continue;
+      let e;
+      try {
+        e = JSON.parse(line);
+      } catch {
+        continue;
+      }
+      if (e.type !== "block") continue;
+      const t = str2(e.t);
+      const taskId = str2(e.task_id);
+      if (!t || !taskId) continue;
+      raw.push({
+        t,
+        task_id: taskId,
+        tool: str2(e.tool),
+        path: str2(e.path),
+        zone: str2(e.zone),
+        reason: str2(e.reason),
+        echoes: 0
+      });
+    }
+  }
+  raw.sort((a, b) => ms(a.t) - ms(b.t));
+  const out = [];
+  for (const b of raw) {
+    const prev = out[out.length - 1];
+    if (prev && prev.task_id === b.task_id && prev.tool === b.tool && prev.reason === b.reason && prev.path === b.path && ms(b.t) - ms(prev.t) <= ECHO_WINDOW_MS) {
+      prev.echoes += 1;
+      continue;
+    }
+    out.push(b);
+  }
+  return out;
+}
+function readMarks(root) {
+  const path = feedbackLogPath(root);
+  if (!existsSync18(path)) return [];
+  let text;
+  try {
+    text = readFileSync22(path, "utf8");
+  } catch {
+    return [];
+  }
+  const marks = [];
+  for (const line of text.split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const m = JSON.parse(line);
+      if (m.type === "false_positive_claim") marks.push(m);
+    } catch {
+    }
+  }
+  return marks;
+}
+var sameBlock = (a, b) => a.task_id === b.task_id && a.t === b.t;
+var LEDGER_HEADER = {
+  type: "ledger_header",
+  v: 1,
+  counts: "blocks a person marked wrong \u2014 D-24's shape, not D-24's judgment",
+  diverges_from_D24: [
+    "the claimant is the person who hit the block, NOT the zone owner reviewing it \u2014 this is the input to D-24, not its verdict",
+    "gate failures are not here: this reads the hook's block events only, and a refused transition never reaches this log",
+    'the denominator is inflated \u2014 the hook writes most refusals twice (513 of 1298 here), so "blocks seen" is reported raw and collapsed'
+  ],
+  travels: "nowhere. .zones/state/ is gitignored and cycle sync pushes only events/<task>.jsonl"
+};
+function describe2(b) {
+  const lines = [
+    `  when    ${b.t}`,
+    `  task    ${b.task_id}`,
+    `  tool    ${b.tool ?? "(not recorded)"}`
+  ];
+  if (b.path) lines.push(`  path    ${b.path}`);
+  if (b.zone) lines.push(`  zone    ${b.zone}`);
+  lines.push(`  reason  ${b.reason ?? "(not recorded)"}`);
+  return lines;
+}
+function markMostRecentBlock(opts) {
+  const { root, taskId, all = false, now = /* @__PURE__ */ new Date() } = opts;
+  const note = opts.note?.trim() || null;
+  const command = opts.command?.trim() || void 0;
+  const blocks = readBlockEvents(root);
+  const scope = !taskId || all ? "repository" : "task";
+  const inScope = scope === "task" ? blocks.filter((b) => b.task_id === taskId) : blocks;
+  if (!inScope.length) {
+    const elsewhere = scope === "task" && blocks.length;
+    return {
+      ok: false,
+      message: (scope === "task" ? `No block recorded for ${taskId}. Nothing has been refused on this task.` : "No block recorded in this checkout. Nothing has been refused here.") + (elsewhere ? `
+
+${blocks.length} block(s) are recorded against other tasks. \`cycle wrong --all\` marks the most recent of those instead \u2014 but read it first: it belongs to work you are not standing in.` : "")
+    };
+  }
+  const chosen = inScope[inScope.length - 1];
+  const { echoes, ...block } = chosen;
+  const existing = readMarks(root).find((m) => sameBlock(m.block, block));
+  if (existing) {
+    return {
+      ok: true,
+      duplicate: true,
+      mark: existing,
+      message: "That block is already marked wrong \u2014 nothing was written, so the count stays true.\n\n" + describe2(block).join("\n") + `
+
+  marked  ${existing.t}` + (existing.note ? `
+  note    ${existing.note}` : "") + (existing.subject.value ? `
+  subject ${existing.subject.value} (${existing.subject.source})` : "")
+    };
+  }
+  const subject = block.path ? { kind: "path", value: block.path, source: "event" } : command ? { kind: "command", value: command, source: "person" } : { kind: "none", value: null, source: "unavailable" };
+  const prevDifferent = [...inScope.slice(0, -1)].reverse().find((b) => !sameBlock(b, block));
+  const mark = {
+    t: now.toISOString(),
+    type: "false_positive_claim",
+    definition: "D-24/claimed",
+    task_id: taskId ?? block.task_id,
+    block,
+    subject,
+    note,
+    resolution: {
+      by: "most-recent",
+      scope,
+      session_attributable: false,
+      echoes_collapsed: echoes,
+      nearest_other_block_ms: prevDifferent ? ms(block.t) - ms(prevDifferent.t) : null
+    }
+  };
+  const path = feedbackLogPath(root);
+  try {
+    if (!existsSync18(dirname13(path))) mkdirSync10(dirname13(path), { recursive: true });
+    const header = existsSync18(path) ? "" : JSON.stringify({ ...LEDGER_HEADER, t: now.toISOString() }) + "\n";
+    appendFileSync3(path, header + JSON.stringify(mark) + "\n");
+  } catch (e) {
+    return {
+      ok: false,
+      message: `Could not write ${path}: ${e.message}
+Nothing was recorded.`
+    };
+  }
+  const lines = [
+    "Marked the most recent block as wrong. Recorded here, sent nowhere.",
+    "",
+    ...describe2(block)
+  ];
+  if (subject.kind === "command") lines.push(`  command ${subject.value}   (yours, not the log's)`);
+  if (note) lines.push(`  note    ${note}`);
+  lines.push("", `  ${path}`);
+  if (subject.kind === "none") {
+    lines.push(
+      "",
+      "The log does not carry what was refused. No block event in this repository ever has:",
+      "a Bash block records the tool, the time and the reason, and nothing about the command.",
+      "If you want this mark to be actionable later, say what you ran:",
+      '  cycle wrong --command "the command that was refused"',
+      "Nothing reads your history to fill that in, which is the point."
+    );
+  }
+  if (scope === "repository" && taskId) {
+    lines.push("", `--all: searched every task's log, not just ${taskId}'s.`);
+  } else if (scope === "repository") {
+    lines.push("", "No task on this branch, so this searched every task's log.");
+  }
+  if (mark.resolution.nearest_other_block_ms !== null && mark.resolution.nearest_other_block_ms < NEIGHBOUR_WINDOW_MS) {
+    lines.push(
+      "",
+      `Another, different block landed ${Math.round(mark.resolution.nearest_other_block_ms / 1e3)}s before this one.`,
+      "Block events carry no session id, so if a second session shares this working tree (D-43)",
+      "the newest block may be theirs. Check the block above is the one you meant."
+    );
+  }
+  return { ok: true, mark, message: lines.join("\n") };
+}
+function formatLedger(root, taskId) {
+  const marks = readMarks(root);
+  const blocks = readBlockEvents(root);
+  const rawEvents = blocks.reduce((n, b) => n + 1 + b.echoes, 0);
+  const out = [];
+  out.push("Blocks marked wrong");
+  out.push("");
+  out.push(`  marked        ${marks.length}`);
+  out.push(`  blocks seen   ${blocks.length} refusals (${rawEvents} events \u2014 the hook writes most of them twice)`);
+  if (blocks.length) {
+    const rate = (marks.length / blocks.length * 100).toFixed(1);
+    out.push(`  claimed rate  ${rate}% of refusals, by the people who hit them`);
+  }
+  if (taskId) {
+    const here = marks.filter((m) => m.task_id === taskId).length;
+    const hereBlocks = blocks.filter((b) => b.task_id === taskId).length;
+    out.push(`  this task     ${here} marked of ${hereBlocks} refusals (${taskId})`);
+  }
+  if (!marks.length) {
+    out.push("");
+    out.push("Nothing is marked. `cycle wrong` marks the most recent block, in one step.");
+    out.push("");
+  } else {
+    out.push("");
+    for (const m of [...marks].reverse()) {
+      out.push(`  ${m.t}  ${m.block.task_id}  ${m.block.tool ?? "?"}`);
+      out.push(`    refused  ${m.subject.value ?? "(the log does not carry it \u2014 see below)"}`);
+      out.push(`    reason   ${m.block.reason ?? "(not recorded)"}`);
+      if (m.note) out.push(`    note     ${m.note}`);
+      out.push(
+        `    source   ${m.subject.source}` + (m.resolution.scope === "repository" ? ", matched repository-wide" : "") + (m.resolution.echoes_collapsed ? `, ${m.resolution.echoes_collapsed} duplicate event(s) folded` : "")
+      );
+      out.push("");
+    }
+    if (marks.some((m) => m.subject.kind === "none")) {
+      out.push(
+        "Marks with no subject are blocks whose command the log never held. That is every",
+        "Bash block: 950 of the 1,298 events measured here, none carrying a path or a command.",
+        '`cycle wrong --command "\u2026"` is the only way to fill it in, and only you can.',
+        ""
+      );
+    }
+  }
+  out.push("What this number is, and what it is not:");
+  out.push("");
+  out.push("  D-24 defines a false positive as a block or gate failure on an action the");
+  out.push("  ZONE OWNER, reviewing it, would have permitted unchanged. This counts something");
+  out.push("  narrower, and the difference is the whole reason D-24 is still PROPOSED:");
+  out.push("");
+  out.push("    1. The claimant is whoever hit the block, not the zone owner. Every line above");
+  out.push("       is an unadjudicated claim \u2014 the input to D-24's judgment, never its verdict.");
+  out.push("    2. Gate failures are not counted. This reads the hook's block events; a refused");
+  out.push("       transition at the close never reaches that log and cannot be marked here.");
+  out.push('    3. "Blocks seen" is not a clean denominator. The hook writes most refusals twice');
+  out.push("       (513 of 1,298 events on this repository), so the collapsed figure is used and");
+  out.push("       the raw event count is printed beside it rather than hidden.");
+  out.push("");
+  out.push(`  ${feedbackLogPath(root)} \u2014 gitignored, and nothing sends it anywhere.`);
+  return out.join("\n");
+}
+
 // src/request-access.ts
+async function ownerCannotAnswer(base, zone, token, doFetch) {
+  try {
+    const res = await doFetch(`${base}/zone-owners`, { headers: boardHeaders(token) });
+    if (!res.ok) return null;
+    const report = await res.json();
+    if (!report?.determined) return null;
+    const row = report.zones?.find((z) => z.zone_id === zone);
+    if (!row) return null;
+    if (row.resolution === "stranger") {
+      return `${row.owner ?? "the owner"} owns "${zone}" in .zones/zones.yml and is not a member of this board, so nobody will see this request. It is filed and it is legitimate \u2014 but the owner has to be added to the organization, or the zone re-owned to somebody who is already in it, before anyone can answer it.`;
+    }
+    if (row.resolution === "unowned") {
+      return `"${zone}" declares no owner in .zones/zones.yml, so this request routes to nobody. It is filed and it is legitimate \u2014 but somebody has to be named as the owner before it can be answered.`;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 async function runRequestAccess(opts) {
   const { root, apiUrl, token, tenant, repo } = opts;
   const doFetch = opts.fetchImpl ?? fetch;
@@ -17868,51 +19985,19 @@ async function runRequestAccess(opts) {
   }
   const { request } = await res.json();
   log(`  ${request.id} is with the zone owner`);
+  const ownerWarning = await ownerCannotAnswer(base, opts.zone, token, doFetch);
   if (apiUrl) log(`  approve or deny: ${apiUrl.replace(/\/+$/, "")}/requests`);
-  return { ok: true, taskId, requestId: request.id, failures: [] };
+  if (ownerWarning) log(`
+  Except: ${ownerWarning}`);
+  return { ok: true, taskId, requestId: request.id, failures: [], ...ownerWarning ? { ownerWarning } : {} };
 }
 
 // src/submit.ts
-import { execFileSync as execFileSync8 } from "node:child_process";
-import { existsSync as existsSync16, readFileSync as readFileSync20, rmSync as rmSync4, writeFileSync as writeFileSync13 } from "node:fs";
-import { join as join22 } from "node:path";
-
-// src/record.ts
-import { existsSync as existsSync15, readFileSync as readFileSync19 } from "node:fs";
-import { join as join21 } from "node:path";
-function readTaskRecord(root, taskId) {
-  const path = join21(root, ".zones", "tasks", `${taskId}.md`);
-  if (!existsSync15(path)) return null;
-  const fm = parseFrontmatter(readFileSync19(path, "utf8"));
-  if (!fm) return null;
-  const topics = Array.isArray(fm.data.topics) ? fm.data.topics.filter((t) => typeof t === "string") : [];
-  return {
-    title: typeof fm.data.title === "string" ? fm.data.title : void 0,
-    topics,
-    /* Read, never trusted over the board. It is here for the hand-in hint,
-       which is advice about what the close will ask for — the check itself
-       stays the transition's, and a record that disagrees with the board is the
-       record being stale (CC-416). */
-    qualityGate: typeof fm.data.quality_gate === "string" ? fm.data.quality_gate : void 0
-  };
-}
-
-// src/submit.ts
+import { execFileSync as execFileSync10 } from "node:child_process";
+import { existsSync as existsSync19, readFileSync as readFileSync23, rmSync as rmSync5, writeFileSync as writeFileSync13 } from "node:fs";
+import { join as join25 } from "node:path";
 function nextStepAfterSubmit() {
   return "Handed in. Open the PR when you are ready.\n\nNothing closes it for you: when the work lands, run `cycle verify --close` to check the\ndiff against what the task declared and write its audit record. Until then the task sits\nin In Review and leaves no trail.";
-}
-function captureHint(taskId, gate) {
-  const g = (gate ?? "").trim();
-  if (!g || g.toLowerCase() === "none") return null;
-  return `The quality gate on ${taskId} is "${g}", so \`cycle verify --close\` will ask for evidence
-  and refuse without it. Attach it with --evidence, which takes a URL or a path and repeats:
-
-      cycle verify --close --evidence https://\u2026
-      cycle verify --close --evidence <a path you have committed>
-
-  A path has to be committed in this repository first \u2014 the repo is the source of truth, not
-  object storage, and a capture the record cannot resolve is evidence of nothing. Capture it
-  now while the work is still in front of you.`;
 }
 var runSubmit = (opts) => handOff({ ...opts, to: "In Review" });
 var runPause = (opts) => handOff({ ...opts, to: "Todo" });
@@ -18018,13 +20103,13 @@ async function handOff(opts) {
   log(`  ${taskId} is now ${to}`);
   const moved = await res.json().catch(() => ({}));
   if (to === "Todo") {
-    const recordPath = join22(root, ".zones", "tasks", `${taskId}.md`);
-    const recordRel = join22(".zones", "tasks", `${taskId}.md`);
-    if (!existsSync16(recordPath)) {
+    const recordPath = join25(root, ".zones", "tasks", `${taskId}.md`);
+    const recordRel = join25(".zones", "tasks", `${taskId}.md`);
+    if (!existsSync19(recordPath)) {
       warnings.push(`no record at ${recordRel} to write the pause into \u2014 the board moved anyway`);
     } else {
       try {
-        const prior = readFileSync20(recordPath, "utf8");
+        const prior = readFileSync23(recordPath, "utf8");
         const lines = prior.replace(/^state:.*$/m, "state: Todo").split("\n");
         const row = `| ${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)} | Todo | Paused: ${opts.reason ?? ""} |`;
         const heading = lines.findIndex((l) => l.trim() === "## History");
@@ -18048,11 +20133,11 @@ async function handOff(opts) {
       }
     }
   }
-  const grant = join22(root, ".zones", "state", "grants", `${taskId}.json`);
+  const grant = join25(root, ".zones", "state", "grants", `${taskId}.json`);
   let grantRemoved = false;
-  if (existsSync16(grant)) {
+  if (existsSync19(grant)) {
     try {
-      rmSync4(grant, { force: true });
+      rmSync5(grant, { force: true });
       grantRemoved = true;
       log("  the grant is gone \u2014 protected zones are closed again");
     } catch (err) {
@@ -18071,7 +20156,7 @@ async function handOff(opts) {
       log("  AGENTS.md \u2014 settled to the durable zone map");
       let identicalToHead = false;
       try {
-        execFileSync8("git", ["diff", "--quiet", "HEAD", "--", "AGENTS.md"], { cwd: root, stdio: "pipe" });
+        execFileSync10("git", ["diff", "--quiet", "HEAD", "--", "AGENTS.md"], { cwd: root, stdio: "pipe" });
         identicalToHead = true;
       } catch {
       }
@@ -18079,7 +20164,7 @@ async function handOff(opts) {
         log("  the block was never committed, so the clear leaves nothing to commit");
       } else {
         try {
-          execFileSync8(
+          execFileSync10(
             "git",
             ["commit", "-q", "-m", `${taskId}: clear the CC block on hand-in`, "--", "AGENTS.md"],
             { cwd: root, stdio: "pipe" }
@@ -18094,16 +20179,140 @@ async function handOff(opts) {
     }
   }
   if (to === "In Review") {
-    const hint = captureHint(taskId, moved.task?.quality_gate ?? readTaskRecord(root, taskId)?.qualityGate);
+    const hint = captureHint(
+      taskId,
+      moved.task?.quality_gate ?? readTaskRecord(root, taskId)?.qualityGate,
+      opts.captured === true
+    );
     if (hint) log(`
   ${hint}`);
   }
-  return { ok: true, taskId, branch, failures: [], grantRemoved, warnings };
+  return {
+    ok: true,
+    taskId,
+    branch,
+    failures: [],
+    grantRemoved,
+    warnings,
+    solo: typeof moved.solo === "boolean" ? moved.solo : void 0,
+    members: typeof moved.members === "number" ? moved.members : void 0
+  };
+}
+function notSoloForClose(taskId, members) {
+  return (members === void 0 ? "This board did not say how many people are on it, so --close stopped here rather than guessing.\nAn older board build, or a deployment with no accounts to count.\n\n" : `This board has ${members} members, so handing in is a hand-off and --close stopped there.
+
+`) + `${taskId} is In Review and the work is safe. When the diff has been read \u2014 by whoever reads it here \u2014
+\`cycle verify --close\` runs the closing checks and writes the audit record.`;
+}
+
+// src/renew.ts
+import { existsSync as existsSync20, mkdirSync as mkdirSync11, readFileSync as readFileSync24, renameSync, writeFileSync as writeFileSync14 } from "node:fs";
+import { dirname as dirname14, join as join26 } from "node:path";
+async function runRenew(opts) {
+  const { root, apiUrl, token, tenant, repo, actor } = opts;
+  const doFetch = opts.fetchImpl ?? fetch;
+  const log = opts.log ?? (() => {
+  });
+  const warnings = [];
+  const branch = currentBranch(root);
+  const taskId = taskIdFrom(branch);
+  if (!taskId) {
+    return {
+      ok: false,
+      taskId: null,
+      warnings,
+      failures: [{
+        field: "branch",
+        message: branch ? `"${branch}" is not a task branch, so there is no grant bound here to renew.` : "Detached HEAD \u2014 no branch, so no task and no grant. Check out the task branch first."
+      }]
+    };
+  }
+  const base = `${apiUrl.replace(/\/+$/, "")}/v1/${tenant}/${repo}`;
+  const headers = boardHeaders(token);
+  const res = await doFetch(`${base}/tasks/${taskId}/grant/renew`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ actor })
+  });
+  const drift = replyDrift(res);
+  if (drift) warnings.push(`protocol: ${drift}`);
+  const upgrade = await upgradeRequired(res);
+  if (upgrade) {
+    return { ok: false, taskId, warnings, failures: [{ field: "protocol", message: upgrade }] };
+  }
+  if (res.status === 422) {
+    const body2 = await res.json().catch(() => ({}));
+    return { ok: false, taskId, warnings, failures: body2.failures ?? [] };
+  }
+  if (res.status === 404) {
+    return {
+      ok: false,
+      taskId,
+      warnings,
+      failures: [{
+        field: "board",
+        message: `This board answered 404 for ${taskId}. Either the task is not on it, or the identity this machine holds is not a member of this organization \u2014 \`cycle doctor\` tells the two apart. Nothing local was touched.`
+      }]
+    };
+  }
+  if (!res.ok) {
+    return {
+      ok: false,
+      taskId,
+      warnings,
+      failures: [{ field: "network", message: `The board answered ${res.status}. Nothing was renewed.` }]
+    };
+  }
+  const body = await res.json().catch(() => ({}));
+  const grant = body.grant;
+  if (!grant || typeof grant.expires !== "string") {
+    return {
+      ok: false,
+      taskId,
+      warnings,
+      failures: [{
+        field: "board",
+        message: "The board answered without a grant, so there is nothing to write. This is a board older than `cycle renew` \u2014 its own /health says which build is running. Nothing local was touched."
+      }]
+    };
+  }
+  const target = join26(root, ".zones", "state", "grants", `${taskId}.json`);
+  const next = JSON.stringify(grant, null, 2) + "\n";
+  try {
+    if (!existsSync20(target) || readFileSync24(target, "utf8") !== next) {
+      mkdirSync11(dirname14(target), { recursive: true });
+      const tmp = `${target}.tmp`;
+      writeFileSync14(tmp, next);
+      renameSync(tmp, target);
+    }
+  } catch (err) {
+    return {
+      ok: false,
+      taskId,
+      warnings,
+      failures: [{
+        field: "grant",
+        message: `The board renewed ${taskId} until ${grant.expires}, but ${target} could not be written (${err.message}). Run \`cycle sync\` to bring it down \u2014 until it lands, the hook still sees the expired one and writes stay denied.`
+      }]
+    };
+  }
+  log(`  ${taskId} \u2014 access re-issued until ${String(grant.expires)}`);
+  return {
+    ok: true,
+    taskId,
+    expires: String(grant.expires),
+    previous: typeof body.previous === "string" ? body.previous : void 0,
+    warnings,
+    failures: []
+  };
+}
+function renewalSummary(taskId, expires, previous) {
+  return `${taskId} holds the same zones it already held, now until ${expires}.` + (previous ? ` The grant it replaces ran out at ${previous}.` : "") + "\n\nNothing widened: the board re-issued what the grant carried, re-checked every high-risk\nzone against its owner's approval, and recorded the renewal with your name on it.";
 }
 
 // src/feed.ts
-import { readFileSync as readFileSync21, writeFileSync as writeFileSync14 } from "node:fs";
-import { join as join23 } from "node:path";
+import { readFileSync as readFileSync25, writeFileSync as writeFileSync15 } from "node:fs";
+import { join as join27 } from "node:path";
 var FEED_RULE = "## Feed rule";
 function runFeed(root, topic, text, taskId) {
   const scan = scanPlaybooks(root);
@@ -18114,16 +20323,21 @@ function runFeed(root, topic, text, taskId) {
   if (book.status === "archived") {
     return { ok: false, warning: `topic "${topic}" is archived \u2014 its playbook keeps its history and takes no new bullets` };
   }
-  const path = join23(root, book.file);
-  const raw = readFileSync21(path, "utf8");
+  const path = join27(root, book.file);
+  const raw = readFileSync25(path, "utf8");
   const lines = raw.split("\n");
+  const notes = [];
+  const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+  const close = lines[0] === "---" ? lines.indexOf("---", 1) : -1;
+  const updatedAt = lines.findIndex((l, i) => i > 0 && i < close && /^updated: /.test(l));
+  if (updatedAt >= 0) lines[updatedAt] = `updated: ${today}`;
+  else notes.push(`${book.file} has no updated: key in its frontmatter \u2014 none bumped, none minted`);
   const start = lines.findIndex((l) => l.startsWith(FEED_RULE));
   let insert;
-  let warning;
   if (start < 0) {
     insert = lines.length;
     while (insert > 0 && lines[insert - 1].trim() === "") insert--;
-    warning = `${book.file} has no "${FEED_RULE}" section \u2014 the bullet landed at the end of the file`;
+    notes.push(`${book.file} has no "${FEED_RULE}" section \u2014 the bullet landed at the end of the file`);
   } else {
     let end = lines.length;
     for (let i = start + 1; i < lines.length; i++) {
@@ -18138,10 +20352,9 @@ function runFeed(root, topic, text, taskId) {
   const bullet = `- ${withProvenance(text.trim(), taskId)}`;
   const opensList = insert > 0 && !/^- /.test(lines[insert - 1]);
   lines.splice(insert, 0, ...opensList ? ["", bullet] : [bullet]);
-  const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-  const bumped = lines.map((l, i) => i < 20 && /^updated: /.test(l) ? `updated: ${today}` : l);
-  writeFileSync14(path, bumped.join("\n"));
+  writeFileSync15(path, lines.join("\n"));
   recordOwnWrites(root, taskId ?? null, [book.file]);
+  const warning = notes.length ? notes.join("; ") : void 0;
   return warning ? { ok: true, path: book.file, bullet, warning } : { ok: true, path: book.file, bullet };
 }
 function withProvenance(text, taskId) {
@@ -18162,7 +20375,7 @@ function feedOffers(root, taskId, touched) {
     const book = scan.books.find((b) => b.topic === topic);
     if (!book || book.status === "archived") continue;
     if (touched?.has(book.file)) continue;
-    const rule = feedRuleLine(join23(root, book.file));
+    const rule = feedRuleLine(join27(root, book.file));
     offers.push(
       `${topic} \u2014 ${rule ?? "one bullet, one citation"}
     cycle feed ${topic} "what this close taught (${taskId})"   # skipping is legal by rule`
@@ -18172,7 +20385,7 @@ function feedOffers(root, taskId, touched) {
 }
 function feedRuleLine(path) {
   try {
-    const lines = readFileSync21(path, "utf8").split("\n");
+    const lines = readFileSync25(path, "utf8").split("\n");
     const start = lines.findIndex((l) => l.startsWith("## Feed rule"));
     if (start < 0) return null;
     const body = lines.slice(start + 1).join(" ").trim();
@@ -18184,9 +20397,9 @@ function feedRuleLine(path) {
 }
 
 // src/seed.ts
-import { execFileSync as execFileSync9 } from "node:child_process";
-import { existsSync as existsSync17, mkdirSync as mkdirSync9, readFileSync as readFileSync22, writeFileSync as writeFileSync15 } from "node:fs";
-import { join as join24 } from "node:path";
+import { execFileSync as execFileSync11 } from "node:child_process";
+import { existsSync as existsSync21, mkdirSync as mkdirSync12, readFileSync as readFileSync26, writeFileSync as writeFileSync16 } from "node:fs";
+import { join as join28 } from "node:path";
 async function runSeed(input) {
   const { root, apiUrl, tenant, repo, token } = input;
   const log = input.log ?? (() => {
@@ -18229,8 +20442,8 @@ async function runSeed(input) {
   const written = [];
   const skipped = [];
   for (const draft of body.drafts) {
-    const rel = join24(".zones", "playbooks", `${draft.topic}.md`);
-    if (existsSync17(join24(root, rel))) {
+    const rel = join28(".zones", "playbooks", `${draft.topic}.md`);
+    if (existsSync21(join28(root, rel))) {
       skipped.push(draft.topic);
       log(`  ${draft.topic}: a playbook already exists \u2014 the seed never overwrites; feed it instead (cycle feed)`);
       continue;
@@ -18241,8 +20454,8 @@ async function runSeed(input) {
       log(`  ${draft.topic}: skipped \u2014 your call, recorded as nothing (a skipped seed is not a decision)`);
       continue;
     }
-    mkdirSync9(join24(root, ".zones", "playbooks"), { recursive: true });
-    writeFileSync15(join24(root, rel), renderPlaybook(draft, repo));
+    mkdirSync12(join28(root, ".zones", "playbooks"), { recursive: true });
+    writeFileSync16(join28(root, rel), renderPlaybook(draft, repo));
     written.push(draft.topic);
     log(`  ${draft.topic}: written \u2014 ${rel}`);
   }
@@ -18257,8 +20470,8 @@ async function runSeed(input) {
       for (const w of scan.warnings) log(`  note: ${w}`);
     }
     recordOwnWrites(root, taskOnBranch(root), [
-      ...written.map((topic) => join24(".zones", "playbooks", `${topic}.md`)),
-      ...readmeChanged ? [join24(".zones", "playbooks", "README.md")] : []
+      ...written.map((topic) => join28(".zones", "playbooks", `${topic}.md`)),
+      ...readmeChanged ? [join28(".zones", "playbooks", "README.md")] : []
     ]);
   }
   return { status: written.length ? "seeded" : "nothing", written, skipped, notBorn: body.notBorn };
@@ -18302,24 +20515,24 @@ function renderPlaybook(draft, repo) {
   ].join("\n");
 }
 function buildBrief(root) {
-  const git3 = (args) => {
+  const git4 = (args) => {
     try {
-      return execFileSync9("git", args, { cwd: root, stdio: "pipe" }).toString();
+      return execFileSync11("git", args, { cwd: root, stdio: "pipe" }).toString();
     } catch {
       return "";
     }
   };
-  const all = git3(["ls-files"]).split("\n").filter(Boolean);
+  const all = git4(["ls-files"]).split("\n").filter(Boolean);
   const files = all.slice(0, 2e3);
   const parts = [];
-  const readme = join24(root, "README.md");
-  if (existsSync17(readme)) {
-    parts.push("README.md, first lines:", "", readFileSync22(readme, "utf8").split("\n").slice(0, 50).join("\n"));
+  const readme = join28(root, "README.md");
+  if (existsSync21(readme)) {
+    parts.push("README.md, first lines:", "", readFileSync26(readme, "utf8").split("\n").slice(0, 50).join("\n"));
   }
-  const pkg = join24(root, "package.json");
-  if (existsSync17(pkg)) {
+  const pkg = join28(root, "package.json");
+  if (existsSync21(pkg)) {
     try {
-      const p = JSON.parse(readFileSync22(pkg, "utf8"));
+      const p = JSON.parse(readFileSync26(pkg, "utf8"));
       parts.push(
         "",
         "package.json (name, scripts, workspaces):",
@@ -18343,7 +20556,7 @@ function buildBrief(root) {
       ...top.map(([d, n]) => `  ${d}/ \u2014 ${n} file(s)`)
     );
   }
-  const log = git3(["log", "--format=%s", "-n", "20"]).trim();
+  const log = git4(["log", "--format=%s", "-n", "20"]).trim();
   if (log) parts.push("", "Recent commit subjects:", "", log);
   if (all.length > files.length) {
     parts.push("", `(inventory capped at ${files.length} of ${all.length} files)`);
@@ -18352,8 +20565,8 @@ function buildBrief(root) {
 }
 
 // src/challenge.ts
-import { existsSync as existsSync18, mkdirSync as mkdirSync10, readdirSync as readdirSync9, writeFileSync as writeFileSync16 } from "node:fs";
-import { join as join25 } from "node:path";
+import { existsSync as existsSync22, mkdirSync as mkdirSync13, readdirSync as readdirSync11, writeFileSync as writeFileSync17 } from "node:fs";
+import { join as join29 } from "node:path";
 async function runChallenge(input) {
   const { root, apiUrl, tenant, repo, token } = input;
   const log = input.log ?? (() => {
@@ -18431,15 +20644,15 @@ async function runChallenge(input) {
   return { status: "done", accepted, rejected, skipped, proposals: body.proposals };
 }
 function nextDecisionNumber(root) {
-  const dir = join25(root, ".zones", "decisions");
-  if (!existsSync18(dir)) return 1;
-  const max = readdirSync9(dir).map((f) => /^(\d{4})-/.exec(f)?.[1]).filter((n) => !!n).reduce((a, n) => Math.max(a, Number(n)), 0);
+  const dir = join29(root, ".zones", "decisions");
+  if (!existsSync22(dir)) return 1;
+  const max = readdirSync11(dir).map((f) => /^(\d{4})-/.exec(f)?.[1]).filter((n) => !!n).reduce((a, n) => Math.max(a, Number(n)), 0);
   return max + 1;
 }
 var slug = (title) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 function writeDecision(root, n, p, verdict, grounds) {
   const num2 = String(n).padStart(4, "0");
-  const rel = join25(".zones", "decisions", `${num2}-${slug(p.title)}.md`);
+  const rel = join29(".zones", "decisions", `${num2}-${slug(p.title)}.md`);
   const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const lines = [
     `# ${num2} \u2014 ${p.title}`,
@@ -18461,364 +20674,24 @@ function writeDecision(root, n, p, verdict, grounds) {
   if (verdict === "reject") {
     lines.push("## Grounds", "", grounds ?? "not stated", "");
   }
-  mkdirSync10(join25(root, ".zones", "decisions"), { recursive: true });
-  writeFileSync16(join25(root, rel), lines.join("\n"));
+  mkdirSync13(join29(root, ".zones", "decisions"), { recursive: true });
+  writeFileSync17(join29(root, rel), lines.join("\n"));
   recordOwnWrites(root, taskOnBranch(root), [rel]);
   return rel;
 }
 
 // src/close.ts
-import { existsSync as existsSync21, mkdirSync as mkdirSync12, readFileSync as readFileSync25, writeFileSync as writeFileSync18 } from "node:fs";
-import { dirname as dirname13, join as join28 } from "node:path";
-
-// src/verify.ts
-import { execFileSync as execFileSync10 } from "node:child_process";
-import { existsSync as existsSync19, readdirSync as readdirSync10, readFileSync as readFileSync23 } from "node:fs";
-import { join as join26 } from "node:path";
-var git2 = (root, cmd) => (
-  // stderr is piped, not inherited: forkPoint probes refs that may not exist,
-  // and a repo with no remote would otherwise print two `fatal:` lines on
-  // every verify. Failures still throw, with stderr on the error object.
-  execFileSync10("/bin/sh", ["-c", `git ${cmd}`], {
-    cwd: root,
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"]
-  }).replace(/\n+$/, "")
-);
-function forkPoint(root, explicit) {
-  if (explicit) return { sha: git2(root, `rev-parse ${explicit}`), how: `the --base you passed (${explicit})` };
-  for (const candidate of ["origin/main", "origin/master", "main", "master"]) {
-    try {
-      return { sha: git2(root, `merge-base HEAD ${candidate}`), how: `the merge base with ${candidate}` };
-    } catch {
-    }
-  }
-  return { sha: git2(root, "rev-list --max-parents=0 HEAD | tail -1"), how: "the root commit \u2014 no main or master ref exists" };
-}
-function buildManifest(root, base) {
-  const files = /* @__PURE__ */ new Map();
-  const record = (status, path) => {
-    if (path.startsWith(".zones/state/")) return;
-    if (path.startsWith(".claude/worktrees/")) return;
-    const s = status.startsWith("A") || status === "??" ? "A" : status.startsWith("D") ? "D" : "M";
-    if (!files.has(path) || files.get(path) === "M") files.set(path, s);
-  };
-  for (const line of git2(root, `diff --name-status ${base}...HEAD`).split("\n")) {
-    const [status, ...rest] = line.split("	");
-    if (status && rest.length) record(status, rest[rest.length - 1]);
-  }
-  for (const line of git2(root, "status --porcelain --untracked-files=all").split("\n")) {
-    if (!line.trim()) continue;
-    record(line.slice(0, 2).trim(), line.slice(3).trim());
-  }
-  return {
-    branch: git2(root, "rev-parse --abbrev-ref HEAD"),
-    base,
-    head: git2(root, "rev-parse HEAD"),
-    files: [...files].map(([path, status]) => ({ path, status }))
-  };
-}
-function trunk(root) {
-  for (const ref of ["origin/main", "origin/master", "main", "master"]) {
-    try {
-      git2(root, `rev-parse --verify ${ref}`);
-      return ref;
-    } catch {
-    }
-  }
-  return null;
-}
-function branchOf(root, taskId) {
-  let name;
-  try {
-    const fm = readFileSync23(join26(root, ".zones", "tasks", `${taskId}.md`), "utf8").slice(0, 2e3);
-    name = /^branch:[ \t]*(.+)$/m.exec(fm)?.[1]?.trim();
-  } catch {
-    return null;
-  }
-  if (!name || name === "null") return null;
-  for (const ref of [name, `origin/${name}`]) {
-    try {
-      execFileSync10("git", ["-C", root, "rev-parse", "--verify", "-q", ref], { stdio: "ignore" });
-      return ref;
-    } catch {
-    }
-  }
-  return null;
-}
-function subjectOf(root, sha) {
-  try {
-    return git2(root, `log -1 --format=%s ${sha}`);
-  } catch {
-    return "(unreadable)";
-  }
-}
-function reachableFrom(root, sha, ref) {
-  try {
-    execFileSync10("git", ["-C", root, "merge-base", "--is-ancestor", sha, ref], { stdio: "ignore" });
-    return true;
-  } catch {
-    return false;
-  }
-}
-function alreadyMerged(root, ref) {
-  try {
-    execFileSync10("git", ["-C", root, "merge-base", "--is-ancestor", "HEAD", ref], { stdio: "ignore" });
-    return true;
-  } catch {
-    return false;
-  }
-}
-function historyCommits(root, taskId, ref) {
-  try {
-    const out = git2(root, `log --no-merges --format=%H%x09%s ${ref}`);
-    const anchor = new RegExp(`^${taskId}(?![0-9])`);
-    const found = [];
-    for (const line of out.split("\n")) {
-      const tab = line.indexOf("	");
-      if (tab < 0) continue;
-      const sha = line.slice(0, tab).trim();
-      if (sha && anchor.test(line.slice(tab + 1).trim())) found.push(sha);
-    }
-    return found;
-  } catch {
-    return [];
-  }
-}
-function buildHistoryManifest(root, taskId, shas) {
-  const files = /* @__PURE__ */ new Map();
-  for (const sha of [...shas].reverse()) {
-    for (const line of git2(root, `show --pretty= --name-status ${sha}`).split("\n")) {
-      const [status, ...rest] = line.split("	");
-      if (!status || !rest.length) continue;
-      const path = rest[rest.length - 1];
-      if (path.startsWith(".zones/state/")) continue;
-      const s = status.startsWith("A") ? "A" : status.startsWith("D") ? "D" : "M";
-      if (!files.has(path) || files.get(path) === "M") files.set(path, s);
-    }
-  }
-  const oldest = shas[shas.length - 1];
-  const newest = shas[0];
-  let base = oldest;
-  try {
-    base = git2(root, `rev-parse ${oldest}^`);
-  } catch {
-  }
-  return {
-    // Named, not disguised. Anything reading the audit record later should see
-    // at a glance that this manifest came from the log and not from a branch.
-    branch: `history:${taskId} (${shas.length} commit(s) in the trunk)`,
-    base,
-    head: newest,
-    files: [...files].map(([path, status]) => ({ path, status }))
-  };
-}
-function grantOnDisk(root, taskId) {
-  const path = join26(root, ".zones", "state", "grants", `${taskId}.json`);
-  if (!existsSync19(path)) return { kind: "none" };
-  try {
-    const g = JSON.parse(readFileSync23(path, "utf8"));
-    return { kind: "grant", zones: g.zones ?? [] };
-  } catch {
-    return { kind: "unreadable" };
-  }
-}
-function mutatedPaths(root) {
-  const dir = join26(root, ".zones", "state", "events");
-  if (!existsSync19(dir)) return [];
-  const logs = readdirSync10(dir).filter((f) => f.endsWith(".jsonl"));
-  const observed = [];
-  const selfRecorded = [];
-  for (const file of logs) {
-    for (const line of readFileSync23(join26(dir, file), "utf8").split("\n").filter(Boolean)) {
-      try {
-        const e = JSON.parse(line);
-        if (e.type !== "mutation" || !e.path) continue;
-        (e.tool ? observed : selfRecorded).push(e.path);
-      } catch {
-      }
-    }
-  }
-  if (!observed.length) return [];
-  return [...observed, ...selfRecorded];
-}
-function runVerify(opts) {
-  const { root } = opts;
-  const log = opts.log ?? (() => {
-  });
-  const onBranch = taskOnBranch(root);
-  if (!opts.fromHistory && opts.taskId && opts.taskId !== onBranch) {
-    return {
-      ok: false,
-      taskId: onBranch,
-      manifest: null,
-      generated: [],
-      unprotected: [],
-      warnings: [],
-      failures: [{
-        field: "task",
-        message: onBranch ? `You asked for ${opts.taskId} but this branch is bound to ${onBranch}. Check out ${opts.taskId}'s branch first, or drop the id to act on ${onBranch}. (--from-history reads a task out of history on purpose; without it the branch is the source of truth.)` : `You asked for ${opts.taskId} but this checkout is on no task branch, so there is nothing to bind it to. Check out ${opts.taskId}'s branch first.`
-      }]
-    };
-  }
-  const taskId = (opts.fromHistory ? opts.taskId : void 0) ?? onBranch;
-  if (!taskId) {
-    return {
-      ok: false,
-      taskId: null,
-      manifest: null,
-      generated: [],
-      unprotected: [],
-      warnings: [],
-      failures: [{
-        field: "branch",
-        message: opts.fromHistory ? "Not on a task branch, and no task named. With --from-history, pass the id: `cycle verify --from-history CC-40`." : "Not on a task branch. There is nothing to verify against."
-      }]
-    };
-  }
-  const zonesPath = join26(root, ".zones", "zones.yml");
-  if (!existsSync19(zonesPath)) {
-    return {
-      ok: false,
-      taskId,
-      manifest: null,
-      generated: [],
-      unprotected: [],
-      warnings: [],
-      failures: [{ field: "zones", message: "No .zones/zones.yml. Run `cycle init` first." }]
-    };
-  }
-  const parsed = parseZonesFile(readFileSync23(zonesPath, "utf8"));
-  if (!parsed.ok) {
-    return {
-      ok: false,
-      taskId,
-      manifest: null,
-      generated: [],
-      unprotected: [],
-      warnings: [],
-      failures: [{ field: "zones", message: `zones.yml is invalid: ${parsed.issues[0]?.message}` }]
-    };
-  }
-  const ref = trunk(root);
-  const early = [];
-  const notes = [];
-  let manifest;
-  if (opts.fromHistory) {
-    if (!ref) {
-      return {
-        ok: false,
-        taskId,
-        manifest: null,
-        generated: [],
-        unprotected: [],
-        warnings: [],
-        failures: [{ field: "manifest", message: "No trunk ref (origin/main, main, \u2026), so there is no history to read the task out of." }]
-      };
-    }
-    const shas = historyCommits(root, taskId, ref);
-    if (!shas.length) {
-      return {
-        ok: false,
-        taskId,
-        manifest: null,
-        generated: [],
-        unprotected: [],
-        warnings: [],
-        failures: [{
-          field: "manifest",
-          message: `No commit in ${ref} has a subject beginning "${taskId}", so there is no history to build a manifest from. Either the work never landed, or it landed under commit messages that do not name the task \u2014 and in the second case nothing here can tell which files were its. Close it from its branch, or say why it cannot be.`
-        }]
-      };
-    }
-    const branch = branchOf(root, taskId);
-    const strays = branch ? shas.filter((sha) => !reachableFrom(root, sha, branch)) : shas;
-    manifest = buildHistoryManifest(root, taskId, shas);
-    log(`  ${manifest.files.length} file(s) across ${shas.length} commit(s) in ${ref} whose subject names ${taskId}`);
-    if (strays.length) {
-      notes.push({
-        field: "manifest",
-        message: `${strays.length} of ${shas.length} attributed commit(s) are not on ` + (branch ? `"${branch}", the branch this task's record names` : "any branch \u2014 the record names none") + `:
-${strays.map((s) => `      ${s.slice(0, 8)} ${subjectOf(root, s).slice(0, 88)}`).join("\n")}
-    Read them. A second branch for the same task is fine; a commit describing different work means two tasks share this id, and closing would put the wrong diff in the audit record (D-49).`
-      });
-    }
-    log("  attributed by commit subject, not by branch topology \u2014 a commit that omitted its task id is invisible here");
-  } else {
-    const fork = forkPoint(root, opts.base);
-    manifest = buildManifest(root, fork.sha);
-    log(`  ${manifest.files.length} file(s) changed since ${fork.sha.slice(0, 8)} \u2014 ${fork.how}`);
-    if (!manifest.files.length && ref && alreadyMerged(root, ref)) {
-      const shas = historyCommits(root, taskId, ref);
-      early.push({
-        field: "manifest",
-        message: `Nothing has changed since the fork point, and this branch is already in ${ref} \u2014 so the diff is empty because the work is behind you, not because there was none. Closing on this manifest would check nothing. ` + (shas.length ? `${shas.length} commit(s) in ${ref} name ${taskId}: re-run with \`--from-history\` to verify against those.` : `No commit in ${ref} names ${taskId} in its subject either, so there is nothing to verify against here.`)
-      });
-    }
-  }
-  const grant = grantOnDisk(root, taskId);
-  const declared = grant.kind === "grant" ? grant.zones : null;
-  const extra = [];
-  if (grant.kind === "none") {
-    extra.push({
-      field: "manifest",
-      message: "No local grant, so the declared-zones check did not run here \u2014 it runs at the transition, against the board's copy of the spec. Everything else below was checked."
-    });
-  } else if (grant.kind === "unreadable") {
-    extra.push({
-      field: "grant",
-      message: `The grant at .zones/state/grants/${taskId}.json exists but is not readable JSON, so the declared-zones check did not run here \u2014 it runs at the transition. \`cycle sync\` rewrites the grant.`
-    });
-  } else if (declared.length === 0) {
-    log("  the grant on disk opens no protected zones");
-    extra.push({
-      field: "grant",
-      message: "The grant on disk opens zero protected zones, so any change inside one will refuse as undeclared. That is correct if this task declared none \u2014 if the board says otherwise, the grant is stale: run `cycle sync` and verify again."
-    });
-  } else {
-    log(`  declared, from the grant: ${declared.map((z) => `${z.id}:${z.mode}`).join(", ")}`);
-  }
-  const { failures, warnings } = checkClosing({
-    task: {
-      id: taskId,
-      affected_zones: declared ?? parsed.value.zones.map((z) => ({ id: z.id, mode: "write" })),
-      quality_gate: "none"
-    },
-    zones: parsed.value.zones.map((z) => ({
-      zone_id: z.id,
-      name: z.name,
-      risk: z.risk,
-      owner: z.owner,
-      paths: z.paths,
-      default_policy: z.default_policy,
-      secrets: z.secrets ?? false
-    })),
-    generated: parsed.value.generated,
-    unprotected: parsed.value.unprotected,
-    manifest,
-    mutated: mutatedPaths(root),
-    evidence: opts.evidence ?? []
-  });
-  return {
-    ok: failures.length === 0 && early.length === 0,
-    taskId,
-    manifest,
-    generated: parsed.value.generated,
-    unprotected: parsed.value.unprotected,
-    // First, because it is the reason the rest of the answer is not worth much.
-    failures: [...early, ...failures],
-    warnings: [...notes, ...extra, ...warnings]
-  };
-}
+import { existsSync as existsSync24, mkdirSync as mkdirSync15, readFileSync as readFileSync28, writeFileSync as writeFileSync19 } from "node:fs";
+import { dirname as dirname16, join as join31 } from "node:path";
 
 // src/sync.ts
-import { existsSync as existsSync20, mkdirSync as mkdirSync11, readFileSync as readFileSync24, renameSync, rmSync as rmSync5, writeFileSync as writeFileSync17 } from "node:fs";
-import { dirname as dirname12, join as join27 } from "node:path";
+import { existsSync as existsSync23, mkdirSync as mkdirSync14, readFileSync as readFileSync27, renameSync as renameSync2, rmSync as rmSync6, writeFileSync as writeFileSync18 } from "node:fs";
+import { dirname as dirname15, join as join30 } from "node:path";
 async function mirrorTaskEvents(input) {
   const doFetch = input.fetchImpl ?? fetch;
-  const logPath = join27(input.root, ".zones", "state", "events", `${input.taskId}.jsonl`);
-  if (!existsSync20(logPath)) return { pushed: 0 };
-  const lines = readFileSync24(logPath, "utf8").split("\n").filter((l) => l.trim());
+  const logPath = join30(input.root, ".zones", "state", "events", `${input.taskId}.jsonl`);
+  if (!existsSync23(logPath)) return { pushed: 0 };
+  const lines = readFileSync27(logPath, "utf8").split("\n").filter((l) => l.trim());
   const events = lines.flatMap((l) => {
     try {
       return [JSON.parse(l)];
@@ -18840,6 +20713,14 @@ async function mirrorTaskEvents(input) {
   if (!res.ok) return { pushed: 0, warning: `could not mirror events (${res.status})` };
   return { pushed: events.length };
 }
+async function refusalOf(res) {
+  try {
+    const body = await res.json();
+    if (typeof body.error === "string" && body.error.trim()) return body.error.trim();
+  } catch {
+  }
+  return `the board answered ${res.status}`;
+}
 async function runSync(opts) {
   const { root, apiUrl, token, tenant, repo } = opts;
   const rawFetch = opts.fetchImpl ?? fetch;
@@ -18860,9 +20741,9 @@ async function runSync(opts) {
   let boardSaw = false;
   let zonesPushed = 0;
   let zoneLines = null;
-  const zonesPath = join27(root, ".zones", "zones.yml");
-  if (existsSync20(zonesPath)) {
-    const parsed = parseZonesFile(readFileSync24(zonesPath, "utf8"));
+  const zonesPath = join30(root, ".zones", "zones.yml");
+  if (existsSync23(zonesPath)) {
+    const parsed = parseZonesFile(readFileSync27(zonesPath, "utf8"));
     if (!parsed.ok) {
       warnings.push(`zones.yml is invalid, so it was not synced: ${parsed.issues[0]?.message}`);
     } else {
@@ -18886,7 +20767,7 @@ async function runSync(opts) {
         boardSaw = true;
         zonesPushed = zones.length;
         log(`  pushed ${zones.length} zone(s)`);
-      } else warnings.push(`could not push the zone map (${res.status})`);
+      } else warnings.push(`could not push the zone map \u2014 ${await refusalOf(res)}`);
     }
   }
   {
@@ -18895,14 +20776,14 @@ async function runSync(opts) {
       try {
         const { policy } = await res.json();
         const value = policy === "reads" || policy === "journal" ? policy : "closed";
-        const target = join27(root, ".zones", "state", "failure-policy");
-        const current = existsSync20(target) ? readFileSync24(target, "utf8").trim() : null;
+        const target = join30(root, ".zones", "state", "failure-policy");
+        const current = existsSync23(target) ? readFileSync27(target, "utf8").trim() : null;
         if (current !== value) {
-          mkdirSync11(dirname12(target), { recursive: true });
+          mkdirSync14(dirname15(target), { recursive: true });
           const tmp = `${target}.tmp`;
-          writeFileSync17(tmp, `${value}
+          writeFileSync18(tmp, `${value}
 `);
-          renameSync(tmp, target);
+          renameSync2(tmp, target);
           log(`  failure policy: ${value} \u2014 what the hook's wrapper honors when the core is down`);
         }
       } catch {
@@ -18916,14 +20797,14 @@ async function runSync(opts) {
       try {
         const { pr_open } = await res.json();
         const value = pr_open === true ? "on" : "off";
-        const target = join27(root, ".zones", "state", "pr-policy");
-        const current = existsSync20(target) ? readFileSync24(target, "utf8").trim() : null;
+        const target = join30(root, ".zones", "state", "pr-policy");
+        const current = existsSync23(target) ? readFileSync27(target, "utf8").trim() : null;
         if (current !== value) {
-          mkdirSync11(dirname12(target), { recursive: true });
+          mkdirSync14(dirname15(target), { recursive: true });
           const tmp = `${target}.tmp`;
-          writeFileSync17(tmp, `${value}
+          writeFileSync18(tmp, `${value}
 `);
-          renameSync(tmp, target);
+          renameSync2(tmp, target);
           log(`  pr.open: ${value} \u2014 whether cc_submit opens this repo's task PRs (the hook honors it for the branch push)`);
         }
       } catch {
@@ -18961,9 +20842,9 @@ async function runSync(opts) {
         `this board answered 404 to everything \u2014 signed in as ${who ?? "nobody (`cycle login` has not run here)"}, so either ${tenant}/${repo} does not exist or that identity is not a member of it. Nothing local was touched.`
       );
     } else if (res.status === 404) {
-      const stale = join27(root, ".zones", "state", "grants", `${taskId}.json`);
-      if (existsSync20(stale)) {
-        rmSync5(stale, { force: true });
+      const stale = join30(root, ".zones", "state", "grants", `${taskId}.json`);
+      if (existsSync23(stale)) {
+        rmSync6(stale, { force: true });
         grantState = "revoked";
         log(`  removed the grant for ${taskId} \u2014 the board has revoked it`);
       } else {
@@ -18973,16 +20854,16 @@ async function runSync(opts) {
       warnings.push(`could not fetch the grant (${res.status}) \u2014 the local grant was left alone`);
     } else {
       const { grant } = await res.json();
-      const target = join27(root, ".zones", "state", "grants", `${taskId}.json`);
+      const target = join30(root, ".zones", "state", "grants", `${taskId}.json`);
       const next = JSON.stringify(grant, null, 2) + "\n";
-      const current = existsSync20(target) ? readFileSync24(target, "utf8") : null;
+      const current = existsSync23(target) ? readFileSync27(target, "utf8") : null;
       if (current === next) {
         grantState = "unchanged";
       } else {
-        mkdirSync11(dirname12(target), { recursive: true });
+        mkdirSync14(dirname15(target), { recursive: true });
         const tmp = `${target}.tmp`;
-        writeFileSync17(tmp, next);
-        renameSync(tmp, target);
+        writeFileSync18(tmp, next);
+        renameSync2(tmp, target);
         grantState = "written";
         const ranOut = Number.isFinite(Date.parse(grant.expires)) && Date.parse(grant.expires) <= Date.now();
         log(ranOut ? `  the grant for ${taskId} is already expired (${grant.expires}) \u2014 written, but nothing is open until it is renewed at the gate` : `  wrote the grant for ${taskId}`);
@@ -18991,7 +20872,7 @@ async function runSync(opts) {
   }
   if (taskId) {
     try {
-      live = JSON.parse(readFileSync24(join27(root, ".zones", "state", "grants", `${taskId}.json`), "utf8"));
+      live = JSON.parse(readFileSync27(join30(root, ".zones", "state", "grants", `${taskId}.json`), "utf8"));
     } catch {
       live = null;
     }
@@ -19012,7 +20893,7 @@ async function runSync(opts) {
   if (scan) {
     warnings.push(...scan.warnings);
     if (writePlaybooksReadme(root, scan) === "updated") {
-      recordOwnWrites(root, taskId, [join27(".zones", "playbooks", "README.md")]);
+      recordOwnWrites(root, taskId, [join30(".zones", "playbooks", "README.md")]);
       log("  .zones/playbooks/README.md regenerated from the playbook files");
     }
   }
@@ -19066,7 +20947,8 @@ async function runSync(opts) {
         if (rec) {
           spec.title ??= rec.title;
           spec.topics ??= rec.topics;
-          warnings.push(`title and topics recovered from the record file (.zones/tasks/${taskId}.md)`);
+          spec.quality_gate ??= rec.qualityGate;
+          warnings.push(`title, topics and the quality gate recovered from the record file (.zones/tasks/${taskId}.md)`);
         }
       }
       task = {
@@ -19079,7 +20961,8 @@ async function runSync(opts) {
         expires: live.expires,
         // Archived playbooks stay for history and are never pointed at
         // (docs/07 Rule 3) — the loader's half of the death state.
-        topics: (spec.topics ?? []).filter((t) => !archivedTopics.has(t))
+        topics: (spec.topics ?? []).filter((t) => !archivedTopics.has(t)),
+        quality_gate: spec.quality_gate ?? null
       };
     }
     const enforcement = detectEnforcement(root);
@@ -19089,11 +20972,13 @@ async function runSync(opts) {
       recordOwnWrites(root, taskId, ["AGENTS.md"]);
       log("  AGENTS.md \u2014 the durable zone map was refreshed");
     }
-    const local = task ? writeLocalBlock(root, renderEphemeralBlock({
+    const machine = task ? detectMachineEnforcement(root) : null;
+    const local = task && machine ? writeLocalBlock(root, renderEphemeralBlock({
       zones: zoneLines,
       task,
       playbookExists: playbookReader(root),
-      enforcement
+      enforcement: machine.enforcement,
+      enforcedBy: machine.by === "none" ? void 0 : machine.by
     })) : clearLocalBlock(root);
     agents = durable.changed || local.changed ? "updated" : "unchanged";
     if (local.changed) {
@@ -19123,12 +21008,28 @@ async function runSync(opts) {
 }
 
 // src/close.ts
+function guardSection(guard, reason, by) {
+  return `
+## Files that define the guard
+
+These decide what every other check in this repository is checking, and this task changed them. Acknowledged by ${by}: ${reason}
+
+` + guard.map((g) => `- \`${g.path}\` (${g.status}) \u2014 ${g.why}`).join("\n") + "\n";
+}
 async function runClose(opts) {
   const { root, apiUrl, token, tenant, repo, actor } = opts;
   const doFetch = opts.fetchImpl ?? fetch;
   const log = opts.log ?? (() => {
   });
-  const local = runVerify({ root, base: opts.base, evidence: opts.evidence, fromHistory: opts.fromHistory, taskId: opts.taskId, log });
+  const local = runVerify({
+    root,
+    base: opts.base,
+    evidence: opts.evidence,
+    fromHistory: opts.fromHistory,
+    taskId: opts.taskId,
+    guardChange: opts.guardChange,
+    log
+  });
   if (!local.ok || !local.taskId || !local.manifest) {
     const failures = [...local.failures];
     if (opts.override) {
@@ -19183,13 +21084,14 @@ async function runClose(opts) {
   const body = await res.json();
   let auditPath;
   if (body.audit) {
-    auditPath = join28(".zones", "audit", `${local.taskId}.md`);
-    const full = join28(root, auditPath);
-    mkdirSync12(dirname13(full), { recursive: true });
+    const record = local.guard.length ? body.audit + guardSection(local.guard, opts.guardChange.trim(), actor) : body.audit;
+    auditPath = join31(".zones", "audit", `${local.taskId}.md`);
+    const full = join31(root, auditPath);
+    mkdirSync15(dirname16(full), { recursive: true });
     const written = [auditPath];
-    if (existsSync21(full) && readFileSync25(full, "utf8") !== body.audit) {
+    if (existsSync24(full) && readFileSync28(full, "utf8") !== record) {
       const kept = `${auditPath}.superseded`;
-      writeFileSync18(join28(root, kept), readFileSync25(full, "utf8"));
+      writeFileSync19(join31(root, kept), readFileSync28(full, "utf8"));
       written.push(kept);
       log(`  an audit record was already here \u2014 kept as ${kept}`);
       local.warnings.push({
@@ -19197,11 +21099,12 @@ async function runClose(opts) {
         message: `${local.taskId} already had an audit record and it differed. The previous one is at ${kept}; read both before deleting either \u2014 a task that closes twice usually means its id or its board changed.`
       });
     }
-    writeFileSync18(full, body.audit);
+    writeFileSync19(full, record);
     recordOwnWrites(root, local.taskId, written);
     log(`  wrote ${auditPath}`);
+    if (local.guard.length) log(`  the boundary move is in it, under "Files that define the guard"`);
     if (opts.override) {
-      if (/\noverride:\n/.test(body.audit)) {
+      if (/\noverride:\n/.test(record)) {
         log(`  the override is in it \u2014 signed by ${opts.override.by}, recorded as an exception and not as a pass`);
       } else {
         local.warnings.push({
@@ -19221,16 +21124,16 @@ function parseEvidence(values, by, at2 = (/* @__PURE__ */ new Date()).toISOStrin
     at: at2
   }));
 }
-var missingCapture = (root, e) => e.kind === "capture" && !existsSync21(join28(root, e.value));
+var missingCapture = (root, e) => e.kind === "capture" && !existsSync24(join31(root, e.value));
 
 // src/start.ts
-import { execFileSync as execFileSync11 } from "node:child_process";
-import { existsSync as existsSync22, mkdirSync as mkdirSync13, readFileSync as readFileSync26, writeFileSync as writeFileSync19 } from "node:fs";
-import { dirname as dirname14, join as join29 } from "node:path";
+import { execFileSync as execFileSync12 } from "node:child_process";
+import { existsSync as existsSync25, mkdirSync as mkdirSync16, readFileSync as readFileSync29, writeFileSync as writeFileSync20 } from "node:fs";
+import { dirname as dirname17, join as join32 } from "node:path";
 var slug2 = (title) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 function uncommittedTracked(root) {
   try {
-    return execFileSync11("git", ["status", "--porcelain"], { cwd: root, stdio: "pipe" }).toString().split("\n").filter((l) => l.trim() && !l.startsWith("??")).map((l) => l.trim());
+    return execFileSync12("git", ["status", "--porcelain"], { cwd: root, stdio: "pipe" }).toString().split("\n").filter((l) => l.trim() && !l.startsWith("??")).map((l) => l.trim());
   } catch {
     return [];
   }
@@ -19293,6 +21196,21 @@ async function runStart(input) {
     title = input.title;
     state = "Triage";
   }
+  if (state === "In Review" && !input.reason?.trim()) {
+    return {
+      started: false,
+      taskId,
+      branch: null,
+      failures: [{
+        field: "reason",
+        message: `${taskId} is In Review, and bringing work back from review is the one way into In Progress that has to say why \u2014 the gate refuses it without a reason, and an audit line that reads "In Review \u2192 In Progress" with nothing beside it is a timestamp, not a record (D-14).
+
+  cycle start ${taskId} --reason "<what has to change, or what is still missing>"
+
+The branch keeps the work and the grant is re-issued on the way in. Nothing was changed here.`
+      }]
+    };
+  }
   const patch = input.taskId ? {
     ...input.goal !== void 0 ? { goal: input.goal } : {},
     ...input.nonGoals !== void 0 ? { non_goals: input.nonGoals } : {},
@@ -19317,7 +21235,7 @@ async function runStart(input) {
   const branch = boundBranch ?? `task/${taskId}-${slug2(title)}`;
   const exists = () => {
     try {
-      execFileSync11("git", ["rev-parse", "--verify", `refs/heads/${branch}`], { cwd: root, stdio: "pipe" });
+      execFileSync12("git", ["rev-parse", "--verify", `refs/heads/${branch}`], { cwd: root, stdio: "pipe" });
       return true;
     } catch {
       return false;
@@ -19326,17 +21244,17 @@ async function runStart(input) {
   const repointed = (() => {
     if (!exists()) return false;
     try {
-      execFileSync11("git", ["merge-base", "--is-ancestor", branch, "HEAD"], { cwd: root, stdio: "pipe" });
-      const tip = execFileSync11("git", ["rev-parse", branch], { cwd: root, stdio: "pipe" }).toString().trim();
-      const head = execFileSync11("git", ["rev-parse", "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
+      execFileSync12("git", ["merge-base", "--is-ancestor", branch, "HEAD"], { cwd: root, stdio: "pipe" });
+      const tip = execFileSync12("git", ["rev-parse", branch], { cwd: root, stdio: "pipe" }).toString().trim();
+      const head = execFileSync12("git", ["rev-parse", "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
       if (tip === head) return false;
-      execFileSync11("git", ["branch", "-f", branch, "HEAD"], { cwd: root, stdio: "pipe" });
+      execFileSync12("git", ["branch", "-f", branch, "HEAD"], { cwd: root, stdio: "pipe" });
       return true;
     } catch {
       return false;
     }
   })();
-  execFileSync11("git", exists() ? ["checkout", branch] : ["checkout", "-b", branch], { cwd: root, stdio: "pipe" });
+  execFileSync12("git", exists() ? ["checkout", branch] : ["checkout", "-b", branch], { cwd: root, stdio: "pipe" });
   if (repointed) {
     console.error(`  note: ${branch} pointed at history HEAD already contains \u2014 re-pointed to HEAD instead of rewinding the checkout`);
   }
@@ -19346,6 +21264,11 @@ async function runStart(input) {
     to: "In Progress",
     actor,
     branch,
+    /* Only this edge reads it (CC-732). `JSON.stringify` drops an undefined
+       value, so an ordinary start sends exactly the body it always sent — the
+       gate asks for a reason on In Review → In Progress and on nothing else
+       that arrives here. */
+    reason: input.reason,
     // The checkout this task is being started from (CC-50). `root` is the git
     // top-level (`git rev-parse --show-toplevel`, resolved once in index.ts),
     // so the grant records the directory that holds it — right for a linked
@@ -19356,6 +21279,7 @@ async function runStart(input) {
   const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const refused = gate.status !== 200 || gate.body.ok === false;
   const declaredTopics = input.topics.length ? input.topics : onBoard?.topics ?? [];
+  const declaredGate = input.gate ?? onBoard?.quality_gate ?? "none";
   writeRecord(root, {
     taskId,
     // The board's title when adopting: a record named differently from the
@@ -19368,10 +21292,18 @@ async function runStart(input) {
        Result section and the ticked criteria with it (CC-462). */
     state: refused ? boardState : "In Progress",
     branch,
+    /* The mode and the clock, from the board rather than from a constant
+       (CC-668). The transition is what mints a spike's time box (gate.ts,
+       D-04), so its own answer is the only place this machine can learn the
+       deadline — the grant carries the mode and not the box. A refused start
+       falls back to what the board already held, and a task nobody marked is
+       `standard` with no box, which is every task but a handful. */
+    mode: gate.body.task?.mode ?? onBoard?.mode ?? "standard",
+    timeBox: gate.body.task?.time_box ?? onBoard?.time_box ?? void 0,
     /* A field nobody typed is not a field somebody cleared — the same rule the
        patch above already follows, applied to the file it forgot. */
     topics: declaredTopics,
-    gate: input.gate ?? onBoard?.quality_gate ?? "none",
+    gate: declaredGate,
     priority: input.priority ?? onBoard?.priority ?? "none",
     goal: input.goal ?? onBoard?.goal ?? void 0,
     nonGoals: input.nonGoals ?? onBoard?.non_goals ?? void 0,
@@ -19381,16 +21313,17 @@ async function runStart(input) {
     today,
     refused
   });
-  recordOwnWrites(root, taskId, [join29(".zones", "tasks", `${taskId}.md`)]);
+  recordOwnWrites(root, taskId, [join32(".zones", "tasks", `${taskId}.md`)]);
   if (refused) {
     const gateFailures = gate.body.failures ?? [];
     if (gateFailures.length) {
-      return { started: false, taskId, branch, failures: gateFailures };
+      return { started: false, taskId, branch, state: boardState, failures: gateFailures };
     }
     return {
       started: false,
       taskId,
       branch,
+      state: boardState,
       failures: [{ field: "board", message: boardRefusal(gate.status, gate.body) }],
       boardError: true
     };
@@ -19405,7 +21338,7 @@ async function runStart(input) {
   for (const t of declaredTopics) {
     if (byTopic.get(t)?.status === "archived") {
       topicWarnings.push(`topic "${t}" is archived \u2014 its playbook stays for history and no longer loads`);
-    } else if (existsSync22(join29(root, ".zones", "playbooks", `${t}.md`))) {
+    } else if (existsSync25(join32(root, ".zones", "playbooks", `${t}.md`))) {
       playbooks.push(`.zones/playbooks/${t}.md`);
     } else {
       topicWarnings.push(`topic "${t}" has no playbook \u2014 nothing to load (the birth rule: no cited content, no topic)`);
@@ -19419,15 +21352,20 @@ async function runStart(input) {
     open: grant.zones ?? [],
     expires: grant.expires ?? null,
     playbooks,
-    topicWarnings
+    topicWarnings,
+    /* The board's own answer first, and the resolved declaration behind it: the
+       transition replies with the task it just moved, which is the freshest copy
+       there is, and the fallback is the same value the record just took. */
+    qualityGate: gate.body.task?.quality_gate ?? declaredGate,
+    sentBack: state === "In Review"
   };
 }
 function priorRecord(root, taskId) {
-  const path = join29(root, ".zones", "tasks", `${taskId}.md`);
-  if (!existsSync22(path)) return { history: [] };
+  const path = join32(root, ".zones", "tasks", `${taskId}.md`);
+  if (!existsSync25(path)) return { history: [] };
   let text;
   try {
-    text = readFileSync26(path, "utf8");
+    text = readFileSync29(path, "utf8");
   } catch {
     return { history: [] };
   }
@@ -19499,13 +21437,15 @@ function writeRecord(root, r) {
     topics: r.topics,
     priority: r.priority,
     quality_gate: r.gate,
+    mode: r.mode,
+    time_box: r.timeBox,
     created: prior.created ?? r.today,
     writtenBy: "Record written at birth by `cycle start` (CC-111) \u2014 the D-43 orphan pattern\nends where this command begins.",
     history
   });
-  const recordPath = join29(root, ".zones", "tasks", `${r.taskId}.md`);
-  mkdirSync13(dirname14(recordPath), { recursive: true });
-  writeFileSync19(recordPath, amendRendered(body, prior.text));
+  const recordPath = join32(root, ".zones", "tasks", `${r.taskId}.md`);
+  mkdirSync16(dirname17(recordPath), { recursive: true });
+  writeFileSync20(recordPath, amendRendered(body, prior.text));
 }
 
 // src/scope.ts
@@ -19563,8 +21503,8 @@ async function runScope(opts) {
 }
 
 // src/decide.ts
-import { existsSync as existsSync23, readFileSync as readFileSync27 } from "node:fs";
-import { join as join30 } from "node:path";
+import { existsSync as existsSync26, readFileSync as readFileSync30 } from "node:fs";
+import { join as join33 } from "node:path";
 var pendingRequests = (opts) => boardCall(opts, "/access-requests?state=pending");
 var decideRequest = (opts, id, state, decidedBy, ttlHours) => boardCall(opts, `/access-requests/${id}/resolve`, {
   method: "POST",
@@ -19579,9 +21519,9 @@ function formatRequest(r, zoneName, owner) {
   ].join("\n");
 }
 function zoneOwners(root) {
-  const path = join30(root, ".zones", "zones.yml");
-  if (!existsSync23(path)) return /* @__PURE__ */ new Map();
-  const parsed = parseZonesFile(readFileSync27(path, "utf8"));
+  const path = join33(root, ".zones", "zones.yml");
+  if (!existsSync26(path)) return /* @__PURE__ */ new Map();
+  const parsed = parseZonesFile(readFileSync30(path, "utf8"));
   if (!parsed.ok) return /* @__PURE__ */ new Map();
   return new Map(parsed.value.zones.map((z) => [z.id, { name: z.name, owner: z.owner }]));
 }
@@ -19662,21 +21602,21 @@ function formatList(tasks) {
 }
 
 // src/deploy-guard.ts
-import { execFileSync as execFileSync12 } from "node:child_process";
+import { execFileSync as execFileSync13 } from "node:child_process";
 function currentBranch2(env = process.env, fromGit = gitBranch) {
   return env.CC_DEPLOY_BRANCH || env.WORKERS_CI_BRANCH || env.GITHUB_REF_NAME || env.VERCEL_GIT_COMMIT_REF || env.BRANCH || env.CI_COMMIT_REF_NAME || env.BUILDKITE_BRANCH || fromGit() || null;
 }
 var headIsTrunkTip = (trunk2) => {
   try {
-    execFileSync12("git", ["fetch", "--quiet", "origin", trunk2], {
+    execFileSync13("git", ["fetch", "--quiet", "origin", trunk2], {
       stdio: ["ignore", "ignore", "ignore"],
       timeout: 2e4
     });
-    const head = execFileSync12("git", ["rev-parse", "HEAD"], {
+    const head = execFileSync13("git", ["rev-parse", "HEAD"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
-    const tip = execFileSync12("git", ["rev-parse", `origin/${trunk2}`], {
+    const tip = execFileSync13("git", ["rev-parse", `origin/${trunk2}`], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
@@ -19687,7 +21627,7 @@ var headIsTrunkTip = (trunk2) => {
 };
 var gitBranch = () => {
   try {
-    const name = execFileSync12("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+    const name = execFileSync13("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
@@ -19752,27 +21692,48 @@ function runGuard(env = process.env, log = console.log, err = console.error, fro
 // src/help.ts
 var VALUE_FLAGS = {
   login: ["--email"],
+  init: ["--harness"],
   pair: ["--board"],
   connect: ["--board"],
   approve: ["--hours"],
-  start: ["--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate"],
+  start: ["--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--reason"],
   scope: ["--title", "--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--mode", "--state"],
   pause: ["--reason"],
+  submit: ["--evidence"],
   "request-access": ["--zone", "--mode", "--reason", "--alternative"],
-  verify: ["--base", "--evidence", "--override"],
+  verify: ["--base", "--evidence", "--override", "--guard-change"],
   seed: ["--topics"],
   protect: ["--zone"],
-  handoff: ["--closed", "--out"]
+  handoff: ["--closed", "--out"],
+  discard: ["--manual"],
+  wrong: ["--command"]
 };
 var KNOWN_FLAGS = {
-  start: ["--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--help", "-h"],
-  submit: ["--help", "-h"],
+  /* `--reason` is only read on one edge — In Review back to In Progress, where
+     the gate refuses without it (CC-732) — but it is accepted on every start,
+     the way `cycle pause` accepts it: a flag the whitelist rejects is a flag
+     nobody can discover. */
+  start: ["--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--reason", "--help", "-h"],
+  /* `--close` carries the hand-in straight on into the close where the board
+     reports one member (CC-667, D-33), and `--evidence` is passed to it —
+     otherwise a task with a quality gate would be refused by the close with no
+     way to answer it in the same command. */
+  submit: ["--close", "--evidence", "--help", "-h"],
+  /* `renew` re-issues a live grant. It takes no flags: what is renewed is
+     decided by the board from the grant it already holds, and a flag here would
+     be a client asking for something other than what it has. */
+  renew: ["--help", "-h"],
   // sync graduated here with its reconcile stage (CC-570): it deletes grant
   // files and writes record files now, so a mistyped flag must be refused, not
   // silently dropped in front of a command that repairs the vault.
   sync: ["--no-reconcile", "--help", "-h"],
   pause: ["--reason", "--help", "-h"],
-  verify: ["--base", "--evidence", "--from-history", "--close", "--override", "--help", "-h"],
+  /* `unpair` revokes a credential that has no expiry and rewrites the machine
+     file (CC-654). A stray flag silently dropped in front of that is a
+     revocation somebody believed was something else — the shape CC-451 was
+     written for. It takes no flags of its own. */
+  unpair: ["--help", "-h"],
+  verify: ["--base", "--evidence", "--from-history", "--close", "--override", "--guard-change", "--help", "-h"],
   // `--state` stays in the allowed set so it reaches runScope, whose refusal
   // names the gate and its edges (E15) — the dispatch's "not a flag this
   // command takes" would bury the better sentence. Recognised, then refused
@@ -19781,7 +21742,24 @@ var KNOWN_FLAGS = {
   // `handoff` is read-only until --out, and --out writes a file into the
   // working tree — a stray flag silently dropped there is a file written by a
   // command somebody believed meant something else (CC-580).
-  handoff: ["--closed", "--out", "--offline", "--help", "-h"]
+  handoff: ["--closed", "--out", "--offline", "--help", "-h"],
+  /* `discard` resets a branch to its base and deletes untracked files (CC-668).
+     It is the most destructive command in this CLI by some distance, and it is
+     also the one whose whole design is that it costs a single command with no
+     confirmation — so the flag check is the only thing standing between a typo
+     and an irreversible reversion. It takes exactly one flag. */
+  discard: ["--manual", "--help", "-h"],
+  /* `promote` writes an event and clears the provisional marks, which is mild.
+     It is here for the flag that must never quietly exist: anything spelled like
+     `--yes` has to be REFUSED by name rather than dropped, because a dropped
+     `--yes` is a person believing they skipped the confirmation. */
+  promote: ["--help", "-h"],
+  /* `wrong` is in here for one spelling: `--lst` for `--list`. Dropped
+     silently, that is a person who asked to READ the count and instead wrote a
+     mark into it — a command that acted when it was asked to explain, which is
+     the exact shape CC-451 was written for, pointed at the one file whose whole
+     value is that its number was not inflated by the tool (CC-685). */
+  wrong: ["--list", "--all", "--command", "--help", "-h"]
 };
 function wantsHelp(command, args) {
   const takesValue = new Set(VALUE_FLAGS[command] ?? []);
@@ -19828,8 +21806,35 @@ var COMMAND_HELP = {
   same breath the board revokes them; rewrites the CC block in AGENTS.md to say no
   task is active; and commits that change.
 
-  It takes no flags and no task id \u2014 the branch names the task (D-11).
-  It does not close anything: In Review -> Done is \`cycle verify --close\`.`,
+  It takes no task id \u2014 the branch names the task (D-11). On its own it does not
+  close anything: In Review -> Done is \`cycle verify --close\`.
+
+  --close carries straight on into that close, and only where the board reports
+  exactly one member (D-33). At one human there is no second reader to hand to,
+  and the In Review step becomes a wait for somebody who does not exist. Nothing
+  about the close itself changes: the same checks run, the same audit record is
+  written, and the task still passes through In Review \u2014 what goes is the wait.
+  On a board with more people it stops after the hand-in and says so.
+
+  --evidence <path|url> is passed to that close, repeatable. Only useful with
+  --close, and only when the task's quality gate asks for a capture.`,
+  renew: `cycle renew \u2014 re-issue the grant this task already holds
+
+  cycle renew
+
+  The grant runs out eight hours in. This asks the board for the same one again:
+  the same zones, the same modes, the same branch, a new expiry. It cannot widen
+  anything \u2014 the board re-issues what the grant carried, not what the task now
+  declares \u2014 and a high-risk zone whose approval was withdrawn or timed out is
+  refused, exactly as it would be at the gate.
+
+  Available where the board has one member (D-33). With more people on the board
+  there is somebody to ask, and the path is \`cycle pause\` then \`cycle start\`,
+  which re-runs the whole gate.
+
+  It takes no flags and no task id \u2014 the branch names the task, and renewing
+  another checkout's grant from here is not something this command does.
+  Every renewal is recorded with your name on it and appears in the audit record.`,
   pause: `cycle pause \u2014 stop without giving up
 
   cycle pause [task] --reason "..."
@@ -19849,6 +21854,7 @@ var COMMAND_HELP = {
 
   cycle start "what this task does" --goal ... --non-goals ... --criteria ...
   cycle start CC-55 [--goal ...]      adopts a task the board already holds
+  cycle start CC-55 --reason "..."    brings it back from In Review
 
   Files the task, scopes it, creates the branch, asks the gate to move it to In
   Progress, writes the grant this machine reads, and writes .zones/tasks/<id>.md.
@@ -19859,8 +21865,14 @@ var COMMAND_HELP = {
   detach onto the trunk first, or the task inherits another task's commits.
   A refusal at the gate leaves the task in Todo and this shell on the new branch.
 
+  A task in In Review comes back through here too \u2014 the same gate, the same
+  re-run of the approvals, a new grant. That edge is the one move into In
+  Progress the gate makes you explain, so --reason is required for it and
+  ignored everywhere else. The branch keeps the work; only the access comes back.
+
   --zone id:write  ask for a protected zone     --topics a,b     load the playbooks
-  --priority high  how it is ranked             --gate none      the quality gate`,
+  --priority high  how it is ranked             --gate none      the quality gate
+  --reason "..."   why review is sending it back`,
   scope: `cycle scope \u2014 correct what a task says without moving it
 
   cycle scope CC-12 [--title "..."] [--goal "..."] [--non-goals "..."] [--gate g]
@@ -19878,6 +21890,7 @@ var COMMAND_HELP = {
 
   cycle verify [--base <ref>] [--from-history] [task]
   cycle verify --close [--evidence <url|path>]... [--override "reason"] [task]
+                       [--guard-change "why"]
 
   Without --close it changes NOTHING, locally or at the board: it runs the same
   checks the close runs, in the same words, so a refusal costs no round trip.
@@ -19891,7 +21904,63 @@ var COMMAND_HELP = {
                   before it closed, instead of this branch
   --evidence      a URL, or a path that must already be committed here
   --override      recorded by the board with the transition. It cannot answer a
-                  local refusal: the local checks run before the board is asked.`,
+                  local refusal: the local checks run before the board is asked.
+  --guard-change  why the boundary moved. Asked for only when the diff touches a
+                  file that defines the guard \u2014 .zones/zones.yml, the hook
+                  registration, .mcp.json, a workflow, the plugin bundle \u2014 and
+                  written into its own section of the audit record.`,
+  discard: `cycle discard \u2014 take a spike back out, and prove nothing was left behind
+
+  cycle discard [task] [--manual "what you will clean up by hand"]
+
+  Only for a spike: if nothing says \`mode: spike\` \u2014 not the grant, not the task
+  record, not the branch \u2014 this refuses and does nothing. Ordinary work is undone
+  with git and abandoned with \`cycle pause\`.
+
+  What it changes, in this order. First it runs the project's own spike_cleanup
+  from .zones/zones.yml, handed the \`spike_<task>_\` prefix \u2014 the project's
+  command, never one CC composed, and nothing at all if none is configured. Then
+  it resets this branch to its base (\`git reset --hard\`) and removes untracked
+  files (\`git clean -fd\`, keeping .zones/state). Uncommitted work is gone;
+  committed work is recoverable from the sha this prints.
+
+  Then it proves it, and reports the three checks rather than asserting them:
+  the diff against the base, a search for the spike's identifiers, and the
+  project's own spike_verify \u2014 whose empty output is the pass. A check that could
+  not run says "not declared", never "clean". Exit is non-zero if any check found
+  residue or could not look.
+
+  It does not move the task. The gate is the only thing that moves a state \u2014
+  \`cycle pause <task> --reason "..."\` hands the grant back afterwards.
+
+  --manual  for a repository with no spike_cleanup: the environment becomes a
+            recorded manual step in the trail, which is what D-17 already does
+            with feature flags held in third-party services. Without it, a spike
+            that named spike_ identifiers with nowhere configured to clean them
+            is REFUSED before anything is undone \u2014 CC does not guess at a
+            database.
+
+  There is no confirmation, on purpose. Discarding costs one command and
+  promoting costs one more thing than that; the gap is the product's opinion
+  about what the usual end of an experiment should be.`,
+  promote: `cycle promote \u2014 keep what a spike found
+
+  cycle promote [task]
+
+  Lists what the spike changed against its base, asks once, and on yes writes the
+  promote event to this task's log, clears the provisional marks if any exist,
+  and prints the \`cycle request-access ... --zone schema\` line ready to send \u2014
+  the schema zone is the one thing a spike is never allowed to touch, so
+  promoting is where it gets asked about. Ready to send, not sent.
+
+  It changes no files, moves no state and opens no zone. The work is already on
+  the branch; this records the decision to keep it and hands the one question
+  promotion owes to the zone's owner.
+
+  There is no --yes and there will not be one. Promoting costs exactly one
+  confirmation more than discarding does, and a flag that removed it would make
+  keeping an experiment as cheap as throwing it away. Off a terminal, where there
+  is nothing to ask with, this refuses rather than assuming yes.`,
   login: `cycle login \u2014 sign in to the board
 
   cycle login [--email you@example.com]
@@ -19899,13 +21968,21 @@ var COMMAND_HELP = {
   An address, a six-digit code, done. Writes a session to ~/.commitcycle; nothing
   is written into the repository. More than one address is fine \u2014 each repository
   uses the identity its organization knows.`,
-  logout: `cycle logout \u2014 forget an identity on this machine
+  logout: `cycle logout \u2014 end a session, at the board and here
 
   cycle logout [email]
 
-  Removes one session for this board, or all of them, from ~/.commitcycle. It
-  changes nothing at the board and nothing in the repository. Pairings are
-  separate and are left alone \u2014 \`cycle pair\` is what undoes those.`,
+  Ends one session for this board \u2014 or all of them \u2014 at the board first, and
+  then removes it from ~/.commitcycle. Nothing in the repository changes.
+
+  The order matters: the local token is the credential the board is told with,
+  so deleting it first would leave the session live for the rest of its 30 days
+  with nothing able to end it. If the board cannot be reached, this says so and
+  exits non-zero \u2014 the session is still valid there, and the console's Settings
+  \u2192 Your sessions is where to revoke it.
+
+  Pairings are separate and are left alone \u2014 \`cycle unpair\` is what undoes
+  those.`,
   accounts: `cycle accounts \u2014 who this machine is
 
   cycle accounts
@@ -19920,6 +21997,26 @@ var COMMAND_HELP = {
   A code here, confirmed in your browser. Writes .zones/board.json into this
   repository, naming the board, the organization and the repo; the key itself
   goes to ~/.commitcycle and stays out of the repository.`,
+  unpair: `cycle unpair \u2014 revoke this machine's key for this board
+
+  cycle unpair
+
+  Revokes the key at the board, then deletes it from ~/.commitcycle. The row
+  stays in the console's machines table, marked revoked, so the history of what
+  held a key survives the key.
+
+  If the board cannot be reached it keeps the key and exits non-zero \u2014 unlike
+  \`cycle logout\`, because a machine key has no expiry and the key on this disk
+  is the only credential that can revoke it. Run it again when the board answers.
+
+  This is the command \`cycle logout\` and the docs used to name \`cycle pair\`
+  for, which never revoked anything: pairing again mints a SECOND key and leaves
+  the first one open. A machine key has no expiry by design \u2014 revoking it is the
+  only way it ever stops working.
+
+  It leaves .zones/board.json alone. That file is committed and names which
+  board this repository reports to; it is not a credential, and deleting it
+  would take the board away from everyone who clones this.`,
   connect: `cycle connect \u2014 the same pairing, started from the board
 
   cycle connect <ticket> [--board <url>]
@@ -19928,14 +22025,32 @@ var COMMAND_HELP = {
   repository; the key goes to ~/.commitcycle and stays out of the repository.`,
   init: `cycle init \u2014 set this repository up
 
-  cycle init [--yes]
+  cycle init [--yes] [--harness claude-code,codex,cursor,windsurf|all]
 
-  Proposes zones from what is actually in this repository, installs the hook, and
-  writes .zones/zones.yml, the hook settings and the CC block in AGENTS.md. It
-  asks before protecting anything; --yes accepts every proposal without asking,
-  and is required when there is no terminal to ask in.
+  Proposes zones from what is actually in this repository, and writes
+  .zones/zones.yml, the CC block in AGENTS.md and the CLAUDE.md that imports it.
+  It asks before protecting anything; --yes accepts every proposal without
+  asking, and is required when there is no terminal to ask in.
 
-  It does not invent an organization, and it never moves a task.`,
+  --harness picks which editors get a hook file. Repeatable and comma-separated,
+  both; \`all\` means the four. Left out, it writes Claude Code and Codex, which
+  is what it has always written. Each harness reads its own path in its own
+  shape \u2014 .claude/settings.json, .codex/hooks.json, .cursor/hooks.json,
+  .windsurf/hooks.json \u2014 and init prints, beside each file it writes, what that
+  editor does not guarantee: Codex and Cursor ignore project hooks until the
+  project is trusted, Cursor is fail-open unless failClosed is set, and Windsurf
+  has no channel for a denial's reason at all. Only Claude Code has ever been
+  seen to block here; the rest is read from the vendors' documentation and
+  recorded in docs/13-harness-hooks.md.
+
+  It does not install the hook. Hook configuration is written only where a
+  wrapper is already on disk, because a harness told to run a script that is not
+  there lets the write through \u2014 a repository that looks guarded and is not is
+  worse than one that admits it. The wall ships in the plugin:
+  /plugin install commitcycle@commitcycle.
+
+  It does not name a board either \u2014 that is \`cycle pair\` \u2014 and it never moves
+  a task.`,
   status: `cycle status \u2014 what is active here
 
   cycle status
@@ -19986,6 +22101,10 @@ var COMMAND_HELP = {
   turns a demand into a decision, and about half the time writing it down shows
   the access was not needed. Use --mode read if reading is enough.
 
+  If that owner is not a member of this board, the ask still lands and the reply
+  says so \u2014 a request routed to nobody is worth knowing about before you wait on
+  it. \`cycle doctor\` lists every zone in that state.
+
   Then carry on with the rest of the task. Working around the block is worse than
   the block, and it is the exact failure this product exists to catch (D-14, D-21).`,
   requests: `cycle requests \u2014 what is waiting on you
@@ -20034,6 +22153,29 @@ var COMMAND_HELP = {
   Records the path as reviewed-and-left-open so the closing gate stops asking
   about it. A local file edit, in your diff. It protects nothing and grants
   nothing.`,
+  wrong: `cycle wrong \u2014 say the block was wrong
+
+  cycle wrong ["why it was wrong"] [--command "what was refused"] [--all]
+  cycle wrong --list
+
+  Marks the most recent refusal as a false positive, in one step, and writes it
+  to .zones/state/feedback.jsonl. That file is gitignored and \`cycle sync\`
+  pushes one path out of .zones/state \u2014 this is not it. Nothing is sent
+  anywhere, by this command or any other.
+
+  The most recent block is the newest one in this branch's task log, or across
+  every task's log when no task is bound here (and with --all). Block events
+  carry no session id, so when two sessions share a working tree the newest
+  block can be the other one's \u2014 the command prints the whole block before it
+  counts it, and the record says the attribution was by time alone.
+
+  --command is the only way the command text ever gets recorded. No block event
+  in this repository has ever carried one: a Bash block records the tool, the
+  time and the reason and nothing else. Nothing reads your shell history.
+
+  --list prints the count, every mark behind it, and the three ways this
+  differs from D-24's definition \u2014 chiefly that it is a claim by whoever hit
+  the block, not the zone owner's verdict.`,
   feed: `cycle feed \u2014 append what a close taught to a playbook
 
   cycle feed <topic> "one bullet (CC-xxx)"
@@ -20068,8 +22210,10 @@ var COMMAND_HELP = {
   cycle doctor
 
   Read-only diagnosis: the zone map, the hook installation, the branch and its
-  task, whether the board answers, and whether the record files on disk still
-  agree with the board. It changes nothing. Exit 1 if any check failed.`,
+  task, whether the board answers, whether the record files on disk still agree
+  with the board, and whether each zone's owner is somebody the board actually
+  has as a member \u2014 an approval routed to a stranger is one nobody can answer.
+  It changes nothing. Exit 1 if any check failed.`,
   "guard-deploy": `cycle guard-deploy \u2014 refuse a deploy that is not from the trunk
 
   cycle guard-deploy && <your deploy command>
@@ -20118,12 +22262,106 @@ var COMMAND_HELP = {
   --offline    do not ask the board; the briefing says what that cost`
 };
 
+// src/exit.ts
+function flush(stream, timeoutMs = 2e3) {
+  return new Promise((resolve7) => {
+    if (stream.writableEnded) {
+      resolve7();
+      return;
+    }
+    let settled = false;
+    const done = () => {
+      if (!settled) {
+        settled = true;
+        resolve7();
+      }
+    };
+    try {
+      stream.write("", () => done());
+    } catch {
+      done();
+      return;
+    }
+    setTimeout(done, timeoutMs).unref();
+  });
+}
+async function leave(code) {
+  await Promise.all([flush(process.stdout), flush(process.stderr)]);
+  process.exit(code);
+}
+
+// src/unexpected.ts
+function textOf(err) {
+  const e = err;
+  const cause = e?.cause;
+  const parts = [
+    typeof e?.message === "string" ? e.message : "",
+    typeof e?.code === "string" ? e.code : "",
+    /* `fetch` wraps the real network error: the useful token (ECONNREFUSED,
+       ENOTFOUND) is on `cause`, while `message` is the famously empty
+       "fetch failed". Reading only `message` is how a board that is simply not
+       running reads as an unrecognised defect. */
+    typeof cause?.code === "string" ? cause.code : "",
+    typeof cause?.message === "string" ? cause.message : ""
+  ];
+  return parts.filter(Boolean).join(" ");
+}
+function recognise(text) {
+  const has = (...needles) => needles.some((n) => text.includes(n));
+  if (has("fetch failed", "ECONNREFUSED", "ENOTFOUND", "EAI_AGAIN", "ETIMEDOUT", "UND_ERR_CONNECT_TIMEOUT")) {
+    return {
+      because: "This machine could not reach the board over the network.",
+      next: "Check that you are online, then run `cycle doctor` \u2014 it prints the board address this repository is pointed at and whether it answers."
+    };
+  }
+  if (has("ENOENT")) {
+    return {
+      because: "A file the command expected to find on this machine was not there.",
+      next: "Run `cycle doctor` \u2014 it checks the files CC relies on and names the one that is missing."
+    };
+  }
+  if (has("EACCES", "EPERM")) {
+    return {
+      because: "The operating system refused this command permission to read or write a file it needed.",
+      next: "Check who owns the files in this repository, then run `cycle doctor`."
+    };
+  }
+  if (has("ERR_INVALID_URL")) {
+    return {
+      because: "The board address this repository is configured with is not a usable URL.",
+      next: "Run `cycle doctor` \u2014 it prints the address it resolved and where it read it from (CC_API_URL, or `.zones/board.json`)."
+    };
+  }
+  return null;
+}
+function unexpectedFailure(command, err) {
+  const known = recognise(textOf(err));
+  const ran = command && !command.startsWith("-") ? `\`cycle ${command}\`` : "That `cycle` command";
+  const lines = [
+    "",
+    `${ran} stopped on a failure it had no message for, so it may not have finished what it started.`,
+    ""
+  ];
+  if (known) {
+    lines.push(known.because, "", `Next: ${known.next}`);
+  } else {
+    lines.push(
+      "What went wrong is not something this command recognises, and it is not going to guess.",
+      "",
+      "Next: run `cycle doctor`. If it reports everything healthy, this is a defect in CC rather than in your setup \u2014 the line below is what to report."
+    );
+  }
+  const raw = err?.message;
+  lines.push("", `  internal detail: ${typeof raw === "string" && raw ? raw : String(err)}`, "");
+  return lines.join("\n");
+}
+
 // src/index.ts
 function branchTouched(root) {
   for (const base of ["origin/main", "main"]) {
     try {
-      const mb = execFileSync13("git", ["merge-base", base, "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
-      const out = execFileSync13("git", ["diff", "--name-only", `${mb}..HEAD`], { cwd: root, stdio: "pipe" }).toString();
+      const mb = execFileSync14("git", ["merge-base", base, "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
+      const out = execFileSync14("git", ["diff", "--name-only", `${mb}..HEAD`], { cwd: root, stdio: "pipe" }).toString();
       return new Set(out.split("\n").filter(Boolean));
     } catch {
     }
@@ -20132,7 +22370,7 @@ function branchTouched(root) {
 }
 function repoRoot(from = process.cwd()) {
   try {
-    const out = execFileSync13("git", ["rev-parse", "--show-toplevel"], {
+    const out = execFileSync14("git", ["rev-parse", "--show-toplevel"], {
       cwd: from,
       stdio: ["ignore", "pipe", "ignore"]
     }).toString().trim();
@@ -20141,8 +22379,8 @@ function repoRoot(from = process.cwd()) {
   }
   let cur = resolve6(from);
   for (; ; ) {
-    if (existsSync25(join32(cur, ".git"))) return cur;
-    const parent = dirname16(cur);
+    if (existsSync28(join35(cur, ".git"))) return cur;
+    const parent = dirname19(cur);
     if (parent === cur) return null;
     cur = parent;
   }
@@ -20153,9 +22391,12 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
                   one address is fine \u2014 each repository uses the one its organization knows
   cycle accounts     Who this machine is signed in as, and which identity this repo uses
   cycle logout [email]
-                  Forget one identity for this board, or all of them
+                  End one identity for this board at the board, then forget it
+                  here \u2014 or all of them
   cycle pair         Join this machine to a board: a code here, confirmed in your
                   browser. Sets up .zones/board.json \u2014 no name to type
+  cycle unpair       Revoke this machine's key for this board and forget it. A
+                  machine key never expires, so this is the only way back
   cycle connect <ticket>
                   The same, started from the board: paste the line it gave you
   cycle guard-deploy Refuse a deploy that is not from the trunk. Put it in front
@@ -20178,7 +22419,12 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
   cycle sync         Push the zone map and events, pull the grant for this branch
   cycle pull [--adopt] [--write-missing]
                   Reconcile the record files against the board's task states
-  cycle submit       Hand the work in: In Progress -> In Review, and close the zones
+  cycle renew        The grant ran out and the work has not: re-issue exactly the
+                  zones it already holds, for another TTL. Never widens; a board
+                  with one member needs nobody else for it (D-33)
+  cycle submit [--close]
+                  Hand the work in: In Progress -> In Review, and close the zones.
+                  --close carries on into the close where the board has one member
   cycle pause [task] --reason "..."
                   Stop without giving up: In Progress -> Todo, and hand the grant back
   cycle request-access [task] --zone <id> --mode read|write --reason "..." --alternative "..."
@@ -20197,8 +22443,18 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
                   Answer "should this be protected?" with yes \u2014 add the path to a zone
   cycle dismiss <glob>
                   Answer it with no \u2014 reviewed, left open, stop asking
+  cycle wrong ["why"] [--command "what was refused"] \xB7 cycle wrong --list
+                  Say the last block was wrong, in one step. Lands on disk,
+                  goes nowhere. --list is the count and what it does not prove
   cycle verify --close [--evidence <url|path>]... [--override "reason"]
                   Close it: submit the manifest and write the audit record
+  cycle discard [task] [--manual "..."]
+                  Take a spike back out, and prove it: the diff against the base,
+                  the spike_ identifiers, and the project's own spike_verify.
+                  Reverts the branch to its base \u2014 one command, no confirmation
+  cycle promote [task]
+                  Keep what a spike found. One command and one confirmation, which
+                  is exactly one more than discarding costs \u2014 on purpose
   cycle feed <topic> "one bullet (CC-xxx)"
                   Append what a close taught to the topic's playbook \u2014 always optional
   cycle seed [--topics a,b] [--yes]
@@ -20215,23 +22471,20 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
 
   --help          This
   cycle <command> --help
-                  What that one command changes, before it changes it
-
-Not built yet: discard and promote (Phase 2).
-They will tell you so rather than fail oddly.`;
+                  What that one command changes, before it changes it`;
 function boardEnv(root) {
   const resolved2 = resolveBoard(root);
   const apiUrl = resolved2.apiUrl;
   if (!apiUrl) {
     console.error(
-      'No board address. Set CC_API_URL, or commit .zones/board.json with\n{"api_url": ..., "tenant": ...} so nobody has to export anything.\nUntil a board is reachable a grant cannot be issued \u2014 the CLI cannot mint one.'
+      "This repository does not name a board yet, so no board command can run here.\nRun `cycle pair`: it shows a code, you confirm it in the browser, and it writes\n.zones/board.json \u2014 the board, the organization and the repo id \u2014 for everyone who clones this.\n(`cycle pair --board <url>` for a board of your own; CC_API_URL still overrides the file.)"
     );
     return null;
   }
   const tenant = resolved2.tenant;
   if (!tenant) {
     console.error(
-      'Set CC_TENANT \u2014 or add "tenant" to .zones/board.json \u2014 for the organization\nthis repository belongs to.\nThere is no default worth having: a guess writes into a tenant nobody\ncreated, and the board you are looking at never sees any of it.\nIt is the first half of the address in the console \u2014 `pow/commitcycle`\nmeans CC_TENANT=pow.'
+      ".zones/board.json names a board but no organization, so this repository has no scope.\nRun `cycle pair` to get one from the board itself \u2014 it rewrites the file with all three fields.\nThere is no default worth having: a guess writes into a tenant nobody created, and the\nboard you are looking at never sees any of it. If you already know the name, it is the\nfirst half of the address in the console \u2014 `pow/commitcycle` means CC_TENANT=pow."
     );
     return null;
   }
@@ -20258,10 +22511,7 @@ first half of the address in the console.
   console.log(`  board  ${apiUrl} \xB7 ${tenant}/${resolved2.repo}`);
   return { apiUrl, token: resolved2.token, tenant, repo: resolved2.repo };
 }
-var NOT_YET = {
-  discard: "Phase 2.",
-  promote: "Phase 2."
-};
+var NOT_YET = {};
 var boardTaskFailed = (status) => status === "unavailable" || status === "not_configured" || status === "invalid";
 async function main2() {
   const [command, ...args] = process.argv.slice(2);
@@ -20360,17 +22610,79 @@ Stored in ${sessionPath()}.
         return 1;
       }
       const who = args.find((a) => a.includes("@"));
-      const gone = forgetSessions(resolved2.apiUrl, who);
-      if (!gone) {
+      const out = await runLogout({ apiUrl: resolved2.apiUrl, email: who });
+      if (!out.forgotten) {
         console.log(`
 Nothing to forget: no session for ${who ?? resolved2.apiUrl} on this machine.
 `);
         return 0;
       }
+      const many = out.forgotten === 1 ? "y" : "ies";
+      if (!out.stranded.length) {
+        console.log(
+          `
+Signed out ${out.forgotten} identit${many} for ${resolved2.apiUrl}: ended at the board, then forgotten here.
+Pairings are separate and were left alone \u2014 \`cycle unpair\` is what undoes those.
+`
+        );
+        return 0;
+      }
+      console.error(
+        `
+Forgot ${out.forgotten} identit${many} for ${resolved2.apiUrl} on this machine.
+The board was NOT told, so ${out.stranded.length === 1 ? "that session is" : "those sessions are"} still valid there:
+`
+      );
+      for (const s of out.stranded) console.error(`  ${s.email} \u2014 ${s.why}`);
+      console.error(
+        `
+End ${out.stranded.length === 1 ? "it" : "them"} from the console: Settings \u2192 Your sessions, and revoke the row for this machine.
+A session lasts 30 days, and nothing on this laptop can stop it now.
+`
+      );
+      return 1;
+    }
+    /* Undoing a pairing, which nothing did until CC-654. `cycle logout` and the
+       docs both named `cycle pair` for this, and `cycle pair` mints a second
+       machine while the first key stays live and unexpiring. */
+    case "unpair": {
+      const resolved2 = resolveBoard(root);
+      if (!resolved2.apiUrl || !resolved2.tenant) {
+        console.error(
+          "\nThis repository does not name a board, so there is no pairing here to undo.\nSessions are separate \u2014 `cycle logout` is what ends those.\n"
+        );
+        return 1;
+      }
+      const out = await runUnpair({
+        root,
+        apiUrl: resolved2.apiUrl,
+        tenant: resolved2.tenant,
+        repo: resolved2.repo
+      });
+      if (out.none) {
+        console.log(
+          `
+No key for ${resolved2.tenant}/${resolved2.repo} on this machine \u2014 nothing to revoke.
+Sessions are separate: \`cycle accounts\` lists those, \`cycle logout\` ends one.
+`
+        );
+        return 0;
+      }
+      if (out.stranded) {
+        console.error(
+          `
+The key for ${resolved2.tenant}/${resolved2.repo} could NOT be revoked: ${out.stranded}.
+It is still on this machine and still opens that board \u2014 a machine key has no expiry, so nothing ends it but a revocation.
+Run \`cycle unpair\` again when the board answers, or revoke it in the console: Settings \u2192 Connect a machine.
+`
+        );
+        return 1;
+      }
       console.log(
         `
-Forgot ${gone} identit${gone === 1 ? "y" : "ies"} for ${resolved2.apiUrl}.
-Pairings are separate and were left alone \u2014 \`cycle pair\` is what undoes those.
+Revoked ${out.label ? `${out.label}'s key` : "this machine's key"} for ${resolved2.tenant}/${resolved2.repo}. It opens nothing now, and the console shows the row as revoked.
+.zones/board.json is committed and was left alone \u2014 it names the board, it is not a credential.
+Sessions are separate: \`cycle logout\` is what ends those.
 `
       );
       return 0;
@@ -20382,6 +22694,20 @@ Pairings are separate and were left alone \u2014 \`cycle pair\` is what undoes t
       return runGuard();
     case "init": {
       const acceptAll = args.includes("--yes") || args.includes("-y");
+      const harnessValues = args.flatMap((a, i) => {
+        if (a === "--harness" && args[i + 1]) return [args[i + 1]];
+        if (a.startsWith("--harness=")) return [a.slice("--harness=".length)];
+        return [];
+      });
+      const selection = harnessValues.length ? parseHarnesses(harnessValues) : void 0;
+      if (selection?.unknown.length) {
+        console.error(
+          `cycle init does not know the harness ${selection.unknown.map((u) => `"${u}"`).join(", ")}.
+  --harness takes any of: ${HARNESSES.join(", ")} (or "all"), comma-separated or repeated.
+Nothing was written.`
+        );
+        return 1;
+      }
       if (!acceptAll && !process.stdin.isTTY) {
         console.error(
           "cycle init asks about this repository, and there is no terminal to ask in.\nRun it in one, or pass --yes to accept every proposal without being asked.\nNothing was written."
@@ -20397,8 +22723,9 @@ Looking at ${root}
       const result = await runInit({
         root,
         acceptAll,
+        harnesses: selection?.harnesses,
         log: (l) => console.log(l),
-        hookPath: existsSync25(join32(root, "packages/hook/bin/cc-hook.sh")) ? "$CLAUDE_PROJECT_DIR/packages/hook/bin/cc-hook.sh" : void 0,
+        hookPath: existsSync28(join35(root, "packages/hook/bin/cc-hook.sh")) ? "$CLAUDE_PROJECT_DIR/packages/hook/bin/cc-hook.sh" : void 0,
         /* An abandoned question is a no, not a crash (CC-181).
          *
          * `rl.question` rejects when stdin ends — a pipe running dry, a closed
@@ -20418,17 +22745,13 @@ Looking at ${root}
           } catch {
             return false;
           }
-        } : void 0,
-        // Typed answers, and only with a terminal: `--yes` accepts proposals,
-        // it does not invent an organization (CC-87's rule, CC-172's flow).
-        askText: rl ? async (q, fallback) => {
-          try {
-            const a = await rl.question(fallback ? `${q} [${fallback}] ` : `${q} `, { signal: closed.signal });
-            return a.trim() || fallback || "";
-          } catch {
-            return "";
-          }
         } : void 0
+        /* No typed answers any more (CC-641). The board interview asked a
+           newcomer for an organization that only exists after signing up, and
+           `cycle pair` is the command that collects all three fields from the
+           board itself — so init names it instead of asking. Every question
+           left in this flow is a yes/no about this person's own codebase, which
+           is the one kind of question setup has ever been able to ask. */
       });
       rl?.close();
       console.log(`
@@ -20448,7 +22771,7 @@ Next: set a real owner for each zone in .zones/zones.yml \u2014 that is who gets
 asked when someone needs access. Then run \`cycle doctor\` to confirm it is live.
 `
       );
-      if (!existsSync25(join32(root, ".zones", "playbooks"))) {
+      if (!existsSync28(join35(root, ".zones", "playbooks"))) {
         console.log(
           `No playbooks yet. Once the board is connected, \`cycle seed\` drafts them from
 this codebase \u2014 offered as choices, claims citing real files, topics with
@@ -20490,8 +22813,8 @@ nothing to cite not born (docs/07). Or write them by hand; the contract holds.
       const topics = (take("topics") ?? "").split(",").map((t) => t.trim()).filter(Boolean);
       let actor = "solo";
       try {
-        const { execFileSync: execFileSync14 } = await import("node:child_process");
-        actor = execFileSync14("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || actor;
+        const { execFileSync: execFileSync15 } = await import("node:child_process");
+        actor = execFileSync15("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || actor;
       } catch {
       }
       actor = savedIdentity(board2.apiUrl) ?? actor;
@@ -20509,6 +22832,11 @@ nothing to cite not born (docs/07). Or write them by hand; the contract holds.
         // a new one still defaults to none, inside runStart.
         gate: take("gate"),
         priority: take("priority"),
+        /* The reason the gate wants when work comes back from review (CC-732).
+           Read the same way every other value flag is, and passed straight
+           through: what it is for, and why it belongs on this command rather
+           than on a new one, is argued on `StartInput.reason`. */
+        reason: take("reason"),
         actor
       });
       if (!result.started) {
@@ -20518,7 +22846,7 @@ ${result.taskId} ${adopting ? "was not started" : "filed and scoped, but the gat
         for (const f of result.failures) console.log(`  ${f.field ?? "\u2014"} \u2014 ${f.message}`);
         if (result.branch) {
           console.log(`
-The task is in Todo, and this shell is now on \`${result.branch}\` \u2014 the branch its grant binds when it starts.`);
+The task is in ${result.state ?? "Todo"}, and this shell is now on \`${result.branch}\` \u2014 the branch its grant binds when it starts.`);
           console.log(result.boardError ? `This is the board or the connection, not your task \u2014 wait a moment and run \`cycle start ${result.taskId}\` again; if it keeps failing, \`cycle doctor\` says why.
 ` : "Fix what the gate named (approvals go through the board), then re-run the transition.\n");
         } else {
@@ -20528,6 +22856,9 @@ The task is in Todo, and this shell is now on \`${result.branch}\` \u2014 the br
       }
       console.log(`
 ${result.taskId} is In Progress on \`${result.branch}\``);
+      if (result.sentBack) {
+        console.log("  back from In Review \u2014 the branch still holds the work, and the grant is re-issued");
+      }
       console.log(result.open.length ? `  open   ${result.open.map((z) => `${z.id}:${z.mode}`).join(", ")}${result.expires ? ` \xB7 until ${result.expires}` : ""}` : "  open   no protected zones \u2014 everything unprotected is yours already");
       console.log(`  record .zones/tasks/${result.taskId}.md`);
       if (result.playbooks.length) {
@@ -20535,6 +22866,9 @@ ${result.taskId} is In Progress on \`${result.branch}\``);
         for (const p of result.playbooks) console.log(`    ${p}`);
       }
       for (const w of result.topicWarnings) console.log(`  note: ${w}`);
+      const demand = captureAtStart(result.taskId, result.qualityGate);
+      if (demand) console.log(`
+  ${demand}`);
       console.log("");
       return 0;
     }
@@ -20575,10 +22909,10 @@ ${result.taskId} is In Progress on \`${result.branch}\``);
       serve(() => {
         const board2 = resolveBoard(root);
         if (!board2.apiUrl) {
-          return { error: "No board address. Run `cycle init` in this repository, or set CC_API_URL \u2014 the MCP tools all talk to a board." };
+          return { error: "This repository does not name a board. Run `cycle pair` in it, or set CC_API_URL \u2014 the MCP tools all talk to a board." };
         }
         if (!board2.tenant) {
-          return { error: "No organization. Name one in .zones/board.json or set CC_TENANT \u2014 there is no default worth having, and a guess writes into a tenant nobody created." };
+          return { error: "No organization. Run `cycle pair` to get one from the board, or set CC_TENANT \u2014 there is no default worth having, and a guess writes into a tenant nobody created." };
         }
         return { apiUrl: board2.apiUrl, tenant: board2.tenant, repo: board2.repo, token: board2.token };
       });
@@ -20849,6 +23183,7 @@ ${taskId} updated: ${Object.keys(patch).join(", ")}.`);
       }
       if (resolved2.apiUrl && resolved2.tenant) {
         checks.push(...await recordDriftCheck(root, { ...resolved2, apiUrl: resolved2.apiUrl }));
+        checks.push(...await zoneOwnerCheck(root, { ...resolved2, apiUrl: resolved2.apiUrl }));
       }
       console.log("\n" + formatDoctor(checks) + "\n");
       return checks.some((c) => c.status === "fail") ? 1 : 0;
@@ -20945,13 +23280,53 @@ Paused. The branch keeps the work; the grant is handed back and re-earned at the
 `);
       return 0;
     }
-    case "submit": {
+    case "renew": {
       const board2 = boardEnv(root);
       if (!board2) return 1;
-      const result = await runSubmit({
+      const r = await runRenew({
         ...board2,
         root,
         actor: process.env.CC_ACTOR ?? process.env.USER ?? "unknown",
+        log: (l) => console.log(l)
+      });
+      for (const w of r.warnings) console.log(`  note: ${w}`);
+      if (!r.ok) {
+        console.error("\nNot renewed.\n");
+        for (const f of r.failures) console.error(`  ${f.field} \u2014 ${f.message}`);
+        console.error("");
+        return 1;
+      }
+      console.log(`
+${renewalSummary(r.taskId, r.expires, r.previous)}
+`);
+      return 0;
+    }
+    case "submit": {
+      const board2 = boardEnv(root);
+      if (!board2) return 1;
+      const actor = process.env.CC_ACTOR ?? process.env.USER ?? "unknown";
+      const evidence = parseEvidence(
+        args.flatMap((a, n) => a === "--evidence" && args[n + 1] ? [args[n + 1]] : []),
+        actor
+      );
+      const absent = evidence.filter((e) => missingCapture(root, e));
+      if (absent.length) {
+        console.error(`
+That capture is not in the repository: ${absent.map((e) => e.value).join(", ")}`);
+        console.error("Commit it first \u2014 the repo is the source of truth, not object storage.");
+        console.error("Nothing was handed in.\n");
+        return 1;
+      }
+      const result = await runSubmit({
+        ...board2,
+        root,
+        actor,
+        /* The check above just proved every named capture is in the repository,
+           so this is a fact by the time the hint reads it (CC-732). Somebody who
+           has the capture is not in the trap the other sentence describes, and
+           printing the way out of a trap they are not in is the noise that
+           teaches people to stop reading the paragraph. */
+        captured: evidence.length > 0,
         log: (l) => console.log(l)
       });
       for (const w of result.warnings) console.log(`  note: ${w}`);
@@ -20963,9 +23338,49 @@ Not submitted.
         console.error("");
         return 1;
       }
-      console.log(`
+      if (!args.includes("--close")) {
+        console.log(`
 ${nextStepAfterSubmit()}
 `);
+        return 0;
+      }
+      if (result.solo !== true) {
+        console.log(`
+${notSoloForClose(result.taskId ?? "The task", result.members)}
+`);
+        return 0;
+      }
+      console.log("\nOne member on this board, so there is nobody to hand to \u2014 closing it here.");
+      console.log("The checks are the same ones `cycle verify --close` runs; only the wait is gone.\n");
+      const closed = await runClose({
+        ...board2,
+        root,
+        actor,
+        evidence,
+        log: (l) => console.log(l)
+      });
+      for (const w of closed.warnings) console.log(`  note: ${w.message}`);
+      if (!closed.ok) {
+        console.error(`
+${result.taskId} was handed in, and the close was refused.
+`);
+        for (const f of closed.failures) console.error(`  ${f.field} \u2014 ${f.message}`);
+        console.error("\nFix what they name and run `cycle verify --close`. The task stays in In Review.\n");
+        return 1;
+      }
+      console.log(
+        `
+${closed.taskId} is Done.` + (closed.auditPath ? ` The record is at ${closed.auditPath} \u2014 commit it with the work.
+` : "\n")
+      );
+      if (closed.taskId) {
+        const offers = feedOffers(root, closed.taskId, branchTouched(root));
+        if (offers.length) {
+          console.log("  If this close taught something, feed it \u2014 skipping is legal by rule:\n");
+          for (const o of offers) console.log(`  ${o}
+`);
+        }
+      }
       return 0;
     }
     case "request-access": {
@@ -21004,7 +23419,11 @@ ${nextStepAfterSubmit()}
         return 1;
       }
       console.log(
-        `
+        result.ownerWarning ? `
+Asked, and it stands. Carry on with the rest of the task \u2014 do not work around the block.
+Nothing here is blocked by the owner problem, but somebody has to fix it before this can be answered;
+\`cycle doctor\` lists every zone in the same state.
+` : `
 Asked. Carry on with the rest of the task \u2014 do not work around the block.
 When it is answered, \`cycle sync\` brings the decision down.
 `
@@ -21024,6 +23443,8 @@ That capture is not in the repository: ${bad.map((e) => e.value).join(", ")}`);
         console.error("Commit it first \u2014 the repo is the source of truth, not object storage.\n");
         return 1;
       }
+      const guardAt = args.indexOf("--guard-change");
+      const guardChange = guardAt === -1 ? void 0 : (args[guardAt + 1] ?? "").startsWith("--") ? "" : args[guardAt + 1] ?? "";
       if (args.includes("--close")) {
         const board2 = boardEnv(root);
         if (!board2) return 1;
@@ -21034,6 +23455,7 @@ That capture is not in the repository: ${bad.map((e) => e.value).join(", ")}`);
           base,
           actor,
           evidence,
+          guardChange,
           fromHistory: args.includes("--from-history"),
           taskId: positionalTaskId("verify", args),
           override: overrideAt === -1 ? void 0 : { by: actor, reason: args[overrideAt + 1] ?? "" },
@@ -21067,6 +23489,7 @@ ${closed.taskId} is Done.` + (closed.auditPath ? ` The record is at ${closed.aud
         root,
         base,
         evidence,
+        guardChange,
         fromHistory: args.includes("--from-history"),
         taskId: positionalTaskId("verify", args),
         log: (l) => console.log(l)
@@ -21195,9 +23618,101 @@ ${r.message}
 `);
       return r.ok ? 0 : 1;
     }
+    /* T6.1 — the counter for risk number one (CC-685).
+     *
+     * Beside `protect` and `dismiss` on purpose: those two answer "should this
+     * be protected?", and this one answers "was that block right?". All three
+     * are the product asking to be corrected, and all three are local.
+     *
+     * Deliberately before `boardEnv`, like `status`, `doctor` and `feed`: a
+     * person marking a block wrong has just been refused something, and a
+     * feedback command that needs a network is a feedback command that is
+     * unavailable exactly when it is wanted. Nothing here reaches the board,
+     * now or later — the file it writes is gitignored and `cycle sync` pushes
+     * one path out of `.zones/state`, which is not this one. */
+    case "wrong": {
+      const positional = args.filter((a) => !a.startsWith("--"));
+      const commandAt = args.indexOf("--command");
+      const supplied = commandAt === -1 ? void 0 : args[commandAt + 1];
+      if (commandAt !== -1 && (!supplied || supplied.startsWith("--"))) {
+        console.error("\ncycle wrong: --command needs the command that was refused, in quotes. Nothing was recorded.\n");
+        return 1;
+      }
+      const taskHere = taskIdFrom(currentBranch(root));
+      if (args.includes("--list")) {
+        console.log("\n" + formatLedger(root, taskHere) + "\n");
+        return 0;
+      }
+      const note = positional.filter((a) => a !== supplied).join(" ");
+      const marked = markMostRecentBlock({
+        root,
+        taskId: taskHere,
+        note,
+        command: supplied,
+        all: args.includes("--all")
+      });
+      if (!marked.ok) {
+        console.error("\n" + marked.message + "\n");
+        return 1;
+      }
+      console.log("\n" + marked.message + "\n");
+      console.log("`cycle wrong --list` reads the count, and what it does and does not prove.\n");
+      return 0;
+    }
     case "status": {
       console.log("\n" + runStatus(root) + "\n");
       return 0;
+    }
+    /* Spike mode's two exits (CC-668 — CC-44, CC-45).
+     *
+     * Beside `status` and above `boardEnv`, deliberately. Both are local by
+     * construction: the reversion is git and the project's own configured
+     * command, the proof is a diff, a grep and that command's own output, and
+     * the trail is a line in the task's event log that `cycle sync` mirrors
+     * later. Neither moves a state — the gate is the only thing that does (E15)
+     * — so neither has any business refusing to run because a board address is
+     * missing. A discard that needs the network is a discard that is missing on
+     * the day it matters (D-10). */
+    case "discard": {
+      const manualAt = args.indexOf("--manual");
+      const manual = manualAt === -1 ? void 0 : args[manualAt + 1];
+      if (manualAt !== -1 && (!manual || manual.startsWith("--"))) {
+        console.error('\ncycle discard: --manual takes one line saying what you will clean up by hand, e.g.\n  cycle discard CC-1 --manual "dropped the spike_ tables in the preview db". Nothing was done.\n');
+        return 1;
+      }
+      const result = runDiscard({
+        root,
+        taskId: positionalTaskId("discard", args),
+        actor: process.env["CC_ACTOR"] ?? process.env["USER"] ?? "unknown",
+        manual,
+        log: (l) => console.log(l)
+      });
+      return result.ok ? 0 : 1;
+    }
+    case "promote": {
+      const rl = createInterface3({ input: process.stdin, output: process.stdout });
+      const closed = new AbortController();
+      rl.once("close", () => closed.abort());
+      const result = await runPromote({
+        root,
+        taskId: positionalTaskId("promote", args),
+        actor: process.env["CC_ACTOR"] ?? process.env["USER"] ?? "unknown",
+        /* The one confirmation, and there is no flag that skips it. `cycle seed`
+           has `--yes` because seeding is additive; promoting is the expensive
+           half of an asymmetry that only exists while it costs more than
+           discarding (CC-45). `[y/N]`, not `[Y/n]`: silence declines, and the
+           default of the more expensive branch is the cheaper outcome. */
+        confirm: async (q) => {
+          try {
+            return /^y(es)?$/i.test((await rl.question(`${q} [y/N] `, { signal: closed.signal })).trim());
+          } catch {
+            return false;
+          }
+        },
+        log: (l) => console.log(l)
+      });
+      rl.close();
+      return result.ok ? 0 : 1;
     }
     /* The day-1 briefing (CC-580, CC-571 phase 0). Beside `status` and before
        any boardEnv, on purpose: like status, doctor and feed it must answer
@@ -21254,11 +23769,11 @@ ${HELP}`);
 main2().then(
   async (code) => {
     await updateNotice(code);
-    process.exit(code);
+    await leave(code);
   },
-  (err) => {
-    console.error(`cycle failed: ${err.message}`);
-    process.exit(1);
+  async (err) => {
+    console.error(unexpectedFailure(process.argv[2], err));
+    await leave(1);
   }
 );
 async function updateNotice(code) {
@@ -21267,8 +23782,7 @@ async function updateNotice(code) {
     const root = repoRoot();
     if (!root) return;
     const board2 = resolveBoard(root);
-    if (!board2.apiUrl) return;
-    await notifyIfBehind({ apiUrl: board2.apiUrl });
+    await notifyIfBehind({ apiUrl: board2.apiUrl, root });
   } catch {
   }
 }
