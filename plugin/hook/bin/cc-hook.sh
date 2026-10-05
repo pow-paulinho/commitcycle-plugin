@@ -133,7 +133,7 @@ esac
 # is what every path here used to do — told Windsurf to allow. The sentence was
 # written, correctly, to a stream that harness does not read for a decision.
 deny_text() {
-  printf 'CC hook unavailable — denying by default (%s). Repair it, from OUTSIDE this session: in a checkout, run `sh packages/hook/bin/cc-provision.sh` from the repository root — it seeds the core from the committed plugin bundle, no install and no network — or `pnpm --filter @commitcycle/hook build`; for a marketplace plugin install, reinstall or update the plugin. Local and cloud are different repairs: `cycle doctor` on your machine does not fix a cloud container — the container itself must provision, which is what the SessionStart hook in .claude/settings.json does at boot. If sessions should stay usable through an outage like this, that is the failure policy: a person sets it on the board Settings and `cycle sync` carries it down.' "$1"
+  printf 'CC hook unavailable — denying, as this repository'"'"'s failure policy says (%s). Repair it, from OUTSIDE this session: in a checkout, run `sh packages/hook/bin/cc-provision.sh` from the repository root — it seeds the core from the committed plugin bundle, no install and no network — or `pnpm --filter @commitcycle/hook build`; for a marketplace plugin install, reinstall or update the plugin. Local and cloud are different repairs: `cycle doctor` on your machine does not fix a cloud container — the container itself must provision, which is what the SessionStart hook in .claude/settings.json does at boot. To let sessions continue through an outage like this, a person sets the failure policy to Open on the board Settings and `cycle sync` carries it down.' "$1"
 }
 
 deny() {
@@ -184,6 +184,24 @@ allow_degraded() {
   esac
 }
 
+# The open policy's sentence (CC-1143): the call proceeds, nothing is granted,
+# and the repair leads exactly as it does in the denial. No quotes or
+# backslashes, because it is interpolated into JSON by allow_degraded.
+open_text() {
+  printf 'CC hook down (%s) — CommitCycle is not checking tool calls right now, so this one proceeds under your own permission settings. Repair it from OUTSIDE this session: in a checkout, run `sh packages/hook/bin/cc-provision.sh` from the repository root; for a marketplace plugin install, reinstall or update the plugin. To deny instead while the core is down, a person sets the failure policy to Closed on the board Settings and `cycle sync` carries it down.' "$1"
+}
+
+# A pass with nothing to say: no decision on any dialect that has a way to say
+# nothing (CC-1142). Cursor has no such answer, so it gets the same allow every
+# degraded mode has always given it.
+pass_quiet() {
+  case "$DIALECT" in
+    windsurf) : ;;
+    cursor)   printf '{"permission":"allow"}' ;;
+    *)        printf '{}' ;;
+  esac
+}
+
 # Read stdin once; it is not replayable. `cat` is external too: if the PATH is
 # so broken it is gone, carry on with empty input — the node search below will
 # name the real cause instead of this line crashing the wrapper.
@@ -192,14 +210,21 @@ INPUT=$(cat 2>/dev/null || :)
 # The failure policy (CC-239, D-58): what this wrapper does when the core
 # cannot answer is the REPOSITORY'S decision, made by a person on the board,
 # synced down by `cycle sync` as one line in .zones/state/failure-policy.
-# Absent file — or any parse failure below — means closed, today's behavior:
-# a guard's only shippable default. The file is part of the trust root the
+# Absent file means OPEN (CC-1143): CommitCycle documents work and narrows
+# permissions, it is not the boundary a session stands on, and failing closed
+# by default turned every broken install into a machine-wide stop, in
+# repositories that never used CommitCycle too. A file that exists but cannot
+# be read, or says something unknown, still means closed: somebody chose
+# something there, and a guess must not loosen it. The file is part of the trust root the
 # hook seals against agent writes (CC-237/D-57), and everything here uses
 # shell builtins only, because the premise of this code path is that nothing
 # else can be assumed to work.
 #
 # no_answer replaces every direct deny for the cannot-answer causes:
-#   closed  → deny, exactly as before.
+#   open    → the default. The call passes with no decision, and the first
+#             call of each session carries one visible sentence naming the
+#             repair; later calls in that session pass quietly.
+#   closed  → deny, exactly as before. Only when a person chose it.
 #   reads   → a fixed name-list of read-only tools passes, announced as
 #             degraded; everything else denies. The wrapper cannot see zones,
 #             so a repository declaring secrets accepted that risk when a
@@ -211,17 +236,35 @@ INPUT=$(cat 2>/dev/null || :)
 no_answer() {
   _cwd="${INPUT#*\"cwd\":\"}"
   if [ "$_cwd" = "$INPUT" ]; then _cwd=""; else _cwd="${_cwd%%\"*}"; fi
-  _root=""; _policy="closed"
+  _root=""; _policy="open"
   d="$_cwd"
   while [ -n "$d" ] && [ "$d" != "/" ]; do
     if [ -f "$d/.zones/state/failure-policy" ]; then
-      _root="$d"
+      _root="$d"; _policy="closed"
       IFS= read -r _p < "$d/.zones/state/failure-policy" 2>/dev/null || _p="closed"
-      case "$_p" in reads|journal) _policy="$_p" ;; esac
+      case "$_p" in open|reads|journal) _policy="$_p" ;; esac
       break
     fi
     d="${d%/*}"
   done
+
+  if [ "$_policy" = "open" ]; then
+    # Once per session, not once per call: a sentence on every tool call is
+    # noise people learn to skip, and the point of saying it is that it is read.
+    # The marker lives in the temp dir, keyed by the harness's session id, and
+    # an id with anything but [A-Za-z0-9_-] is not used as a file name at all.
+    _sid="${INPUT#*\"session_id\":\"}"
+    if [ "$_sid" = "$INPUT" ]; then _sid=""; else _sid="${_sid%%\"*}"; fi
+    case "$_sid" in *[!A-Za-z0-9_-]*) _sid="" ;; esac
+    _mark="${TMPDIR:-/tmp}/cc-hook-open-$_sid"
+    if [ -n "$_sid" ] && [ -f "$_mark" ]; then
+      pass_quiet
+      exit 0
+    fi
+    [ -n "$_sid" ] && : > "$_mark" 2>/dev/null
+    allow_degraded "$(open_text "$1")"
+    exit 0
+  fi
 
   if [ "$_policy" = "reads" ]; then
     _tool="${INPUT#*\"tool_name\":\"}"

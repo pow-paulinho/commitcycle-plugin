@@ -9609,7 +9609,7 @@ var init_server = __esm({
 
 // src/index.ts
 import { createInterface as createInterface3 } from "node:readline/promises";
-import { execFileSync as execFileSync14 } from "node:child_process";
+import { execFileSync as execFileSync15 } from "node:child_process";
 import { existsSync as existsSync29 } from "node:fs";
 import { dirname as dirname19, join as join36, resolve as resolve6 } from "node:path";
 
@@ -16994,7 +16994,7 @@ async function runReconcile(input) {
 import { existsSync as existsSync10, mkdirSync as mkdirSync7, readFileSync as readFileSync13, writeFileSync as writeFileSync9 } from "node:fs";
 import { homedir as homedir5 } from "node:os";
 import { dirname as dirname9, join as join15 } from "node:path";
-var CLI_VERSION = "0.1.15";
+var CLI_VERSION = "0.1.16";
 var CHECK_TTL_MS = 24 * 60 * 60 * 1e3;
 var updateCachePath = () => join15(homedir5(), ".commitcycle", "update-check.json");
 function isBehind(current, latest) {
@@ -20884,7 +20884,7 @@ async function runSync(opts) {
     if (res.ok) {
       try {
         const { policy } = await res.json();
-        const value = policy === "reads" || policy === "journal" ? policy : "closed";
+        const value = policy === "open" || policy === "reads" || policy === "journal" ? policy : "closed";
         const target = join30(root, ".zones", "state", "failure-policy");
         const current = existsSync23(target) ? readFileSync27(target, "utf8").trim() : null;
         if (current !== value) {
@@ -21831,6 +21831,20 @@ function formatList(tasks) {
   return tasks.slice().sort((a, b) => num(a.id) - num(b.id)).map((t) => `${String(t.id).padEnd(8)} ${String(t.state ?? "").padEnd(width)}  ${t.title ?? ""}`).join("\n");
 }
 
+// src/actor.ts
+import { execFileSync as execFileSync13 } from "node:child_process";
+function cliActor(root, apiUrl, fallback = "unknown", useUser = true) {
+  if (process.env.CC_ACTOR) return process.env.CC_ACTOR;
+  const saved = apiUrl ? savedIdentity(apiUrl) : void 0;
+  if (saved) return saved;
+  try {
+    const email = execFileSync13("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim();
+    if (email) return email;
+  } catch {
+  }
+  return useUser && process.env.USER || fallback;
+}
+
 // src/export.ts
 import { existsSync as existsSync27, readFileSync as readFileSync31, readdirSync as readdirSync12, writeFileSync as writeFileSync21 } from "node:fs";
 import { join as join34 } from "node:path";
@@ -21872,21 +21886,21 @@ function writeExport(path, markdown) {
 }
 
 // src/deploy-guard.ts
-import { execFileSync as execFileSync13 } from "node:child_process";
+import { execFileSync as execFileSync14 } from "node:child_process";
 function currentBranch2(env = process.env, fromGit = gitBranch) {
   return env.CC_DEPLOY_BRANCH || env.WORKERS_CI_BRANCH || env.GITHUB_REF_NAME || env.VERCEL_GIT_COMMIT_REF || env.BRANCH || env.CI_COMMIT_REF_NAME || env.BUILDKITE_BRANCH || fromGit() || null;
 }
 var headIsTrunkTip = (trunk2) => {
   try {
-    execFileSync13("git", ["fetch", "--quiet", "origin", trunk2], {
+    execFileSync14("git", ["fetch", "--quiet", "origin", trunk2], {
       stdio: ["ignore", "ignore", "ignore"],
       timeout: 2e4
     });
-    const head = execFileSync13("git", ["rev-parse", "HEAD"], {
+    const head = execFileSync14("git", ["rev-parse", "HEAD"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
-    const tip = execFileSync13("git", ["rev-parse", `origin/${trunk2}`], {
+    const tip = execFileSync14("git", ["rev-parse", `origin/${trunk2}`], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
@@ -21897,7 +21911,7 @@ var headIsTrunkTip = (trunk2) => {
 };
 var gitBranch = () => {
   try {
-    const name = execFileSync13("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+    const name = execFileSync14("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]
     }).trim();
@@ -22660,8 +22674,8 @@ function unexpectedFailure(command, err) {
 function branchTouched(root) {
   for (const base of ["origin/main", "main"]) {
     try {
-      const mb = execFileSync14("git", ["merge-base", base, "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
-      const out = execFileSync14("git", ["diff", "--name-only", `${mb}..HEAD`], { cwd: root, stdio: "pipe" }).toString();
+      const mb = execFileSync15("git", ["merge-base", base, "HEAD"], { cwd: root, stdio: "pipe" }).toString().trim();
+      const out = execFileSync15("git", ["diff", "--name-only", `${mb}..HEAD`], { cwd: root, stdio: "pipe" }).toString();
       return new Set(out.split("\n").filter(Boolean));
     } catch {
     }
@@ -22670,7 +22684,7 @@ function branchTouched(root) {
 }
 function repoRoot(from = process.cwd()) {
   try {
-    const out = execFileSync14("git", ["rev-parse", "--show-toplevel"], {
+    const out = execFileSync15("git", ["rev-parse", "--show-toplevel"], {
       cwd: from,
       stdio: ["ignore", "pipe", "ignore"]
     }).toString().trim();
@@ -23120,13 +23134,7 @@ nothing to cite not born (docs/07). Or write them by hand; the contract holds.
         return { id, mode: mode === "read" ? "read" : "write" };
       });
       const topics = (take("topics") ?? "").split(",").map((t) => t.trim()).filter(Boolean);
-      let actor = "solo";
-      try {
-        const { execFileSync: execFileSync15 } = await import("node:child_process");
-        actor = execFileSync15("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim() || actor;
-      } catch {
-      }
-      actor = savedIdentity(board2.apiUrl) ?? actor;
+      const actor = cliActor(root, board2.apiUrl, "solo", false);
       const result = await runStart({
         ...board2,
         root,
@@ -23614,7 +23622,7 @@ ${did}.` + (r.ahead.length ? ` ${r.ahead.length} left alone \u2014 a file ahead 
         root,
         reason,
         taskId: named,
-        actor: process.env.CC_ACTOR ?? process.env.USER ?? "unknown",
+        actor: cliActor(root, resolveBoard(root).apiUrl),
         log: (l) => console.log(l)
       });
       for (const w of r.warnings) console.log(`  note: ${w}`);
@@ -23633,7 +23641,7 @@ Paused. The branch keeps the work; the grant is handed back and re-earned at the
       const r = await runRenew({
         ...board2,
         root,
-        actor: process.env.CC_ACTOR ?? process.env.USER ?? "unknown",
+        actor: cliActor(root, resolveBoard(root).apiUrl),
         log: (l) => console.log(l)
       });
       for (const w of r.warnings) console.log(`  note: ${w}`);
@@ -23651,7 +23659,7 @@ ${renewalSummary(r.taskId, r.expires, r.previous)}
     case "submit": {
       const board2 = boardEnv(root);
       if (!board2) return 1;
-      const actor = process.env.CC_ACTOR ?? process.env.USER ?? "unknown";
+      const actor = cliActor(root, resolveBoard(root).apiUrl);
       const evidence = parseEvidence(
         args.flatMap((a, n) => a === "--evidence" && args[n + 1] ? [args[n + 1]] : []),
         actor
@@ -23756,7 +23764,7 @@ ${closed.taskId} is Done.` + (closed.auditPath ? ` The record is at ${closed.aud
         alternative,
         mode,
         taskId: positional,
-        requestedBy: process.env.CC_ACTOR ?? process.env.USER ?? "unknown",
+        requestedBy: cliActor(root, resolveBoard(root).apiUrl),
         log: (l) => console.log(l)
       });
       if (!result.ok) {
@@ -23780,7 +23788,7 @@ When it is answered, \`cycle sync\` brings the decision down.
     case "verify": {
       const baseFlag = args.indexOf("--base");
       const base = baseFlag === -1 ? void 0 : args[baseFlag + 1];
-      const actor = process.env.CC_ACTOR ?? process.env.USER ?? "unknown";
+      const actor = cliActor(root, resolveBoard(root).apiUrl);
       const evidenceValues = args.flatMap((a, n) => a === "--evidence" && args[n + 1] ? [args[n + 1]] : []);
       const evidence = parseEvidence(evidenceValues, actor);
       const bad = evidence.filter((e) => missingCapture(root, e));
@@ -24030,7 +24038,7 @@ ${r.message}
       const result = runDiscard({
         root,
         taskId: positionalTaskId("discard", args),
-        actor: process.env["CC_ACTOR"] ?? process.env["USER"] ?? "unknown",
+        actor: cliActor(root, resolveBoard(root).apiUrl),
         manual,
         log: (l) => console.log(l)
       });
@@ -24043,7 +24051,7 @@ ${r.message}
       const result = await runPromote({
         root,
         taskId: positionalTaskId("promote", args),
-        actor: process.env["CC_ACTOR"] ?? process.env["USER"] ?? "unknown",
+        actor: cliActor(root, resolveBoard(root).apiUrl),
         /* The one confirmation, and there is no flag that skips it. `cycle seed`
            has `--yes` because seeding is additive; promoting is the expensive
            half of an asymmetry that only exists while it costs more than
