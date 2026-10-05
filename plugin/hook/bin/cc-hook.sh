@@ -178,7 +178,9 @@ allow_degraded() {
     # nobody should have to infer from the absence of a refusal.
     windsurf) printf '%s\n' "$1" >&2 ;;
     cursor)   printf '{"permission":"allow"}' ;;
-    *)        printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow","permissionDecisionReason":"%s"}}' "$1" ;;
+    # Never "allow" (CC-1142): it would skip the harness's permission prompt.
+    # A visible notice, and the normal permission flow decides.
+    *)        printf '{"systemMessage":"%s"}' "$1" ;;
   esac
 }
 

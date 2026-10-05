@@ -14248,6 +14248,19 @@ var TOPICS = [
   "enforcement"
 ];
 
+// ../../apps/api/src/audit.ts
+var STAMP = /^(\d{4}-\d{2}-\d{2})(?:[T ](\d{2}:\d{2})(?::(\d{2})(?:\.(\d+))?)?(Z|[+-]\d{2}:\d{2})?)?$/;
+function utcDate(stamp2) {
+  if (typeof stamp2 !== "string") return "";
+  const raw = stamp2.trim();
+  const m = STAMP.exec(raw);
+  if (!m) return raw;
+  const [, day, hhmm, ss, fraction, zone] = m;
+  const spec = hhmm === void 0 ? day : `${day}T${hhmm}:${ss ?? "00"}.${(fraction ?? "").padEnd(3, "0").slice(0, 3)}${zone ?? "Z"}`;
+  const ms2 = Date.parse(spec);
+  return Number.isNaN(ms2) ? raw : `${new Date(ms2).toISOString().slice(0, 10)} UTC`;
+}
+
 // ../../apps/api/src/escalation.ts
 var MAX_TTL_HOURS = 24 * 7;
 
@@ -14385,6 +14398,7 @@ var DraftSchema = external_exports.object({
   priority: external_exports.string().nullable().default(null),
   unknowns: external_exports.array(external_exports.string()).default([])
 });
+var VALID_TOPICS = new Set(TOPICS);
 
 // ../../apps/api/src/seed/validate.ts
 var ClaimSchema = external_exports.object({
@@ -16242,8 +16256,8 @@ function proposedOwner(root) {
   const signedIn = board2.apiUrl ? savedIdentity(board2.apiUrl) : void 0;
   if (signedIn) return { owner: signedIn, from: "the account you are signed in as" };
   try {
-    const git4 = execFileSync4("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim();
-    if (git4) return { owner: git4, from: "your git identity" };
+    const git5 = execFileSync4("git", ["config", "user.email"], { cwd: root, stdio: "pipe" }).toString().trim();
+    if (git5) return { owner: git5, from: "your git identity" };
   } catch {
   }
   return { owner: NO_OWNER, from: "nothing on this machine names you" };
@@ -16963,7 +16977,7 @@ async function runReconcile(input) {
 import { existsSync as existsSync10, mkdirSync as mkdirSync7, readFileSync as readFileSync13, writeFileSync as writeFileSync9 } from "node:fs";
 import { homedir as homedir5 } from "node:os";
 import { dirname as dirname9, join as join15 } from "node:path";
-var CLI_VERSION = "0.1.13";
+var CLI_VERSION = "0.1.14";
 var CHECK_TTL_MS = 24 * 60 * 60 * 1e3;
 var updateCachePath = () => join15(homedir5(), ".commitcycle", "update-check.json");
 function isBehind(current, latest) {
@@ -17300,7 +17314,12 @@ async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PUR
       name: "work with no record",
       status: "warn",
       detail: `${states.unrecorded.length} task(s) are past Triage on the board with no record file: ${states.unrecorded.slice(0, 6).map((t) => `${t.id} (${t.state})`).join(", ")}${states.unrecorded.length > 6 ? ", \u2026" : ""}`,
-      fix: "Board-born and never materialised \u2014 there is nothing on disk to audit them by. Write a record, or cancel the row."
+      /* "Write a record, or cancel the row" named no command for either half
+         (CC-579). The first has one: `cycle pull --write-missing` materialises
+         exactly these rows from the board's own fields, and sync's reconcile
+         pass does the same. The second has none — nothing in the CLI moves a
+         task to Canceled — so it is said as a step taken on the board. */
+      fix: "Board-born and never materialised \u2014 there is nothing on disk to audit them by. `cycle pull --write-missing` writes each one's record from the board's own fields (`cycle sync` does the same on its reconcile pass); a row that should not exist is canceled on the board, since no CLI command moves a task to Canceled."
     });
   }
   const running = tasks.filter((t) => t.state === "In Progress");
@@ -17319,7 +17338,11 @@ async function recordDriftCheck(root, board2, fetchImpl = fetch, now = /* @__PUR
       name: "stranded grants",
       status: "warn",
       detail: `${stranded.length} grant file(s) for tasks the board does not have In Progress: ${stranded.slice(0, 8).join(", ")}${stranded.length > 8 ? ", \u2026" : ""}`,
-      fix: "Delete them: .zones/state/grants/<task>.json. The hook reads these files and never the board (D-10), so a leftover one is local access to a protected zone that nothing upstream believes in."
+      /* CC-579: this said "Delete them" with the path, and since CC-570 a command
+         does it — `cycle sync` removes each grant file the board holds outside In
+         Progress (its reconcile pass; the grant stage for this branch's own). It
+         leaves one alone on purpose: an id the board has never held. */
+      fix: "Run `cycle sync`: it removes each one the board holds outside In Progress. One for an id the board has never held is left alone on purpose, so delete that one by hand: .zones/state/grants/<task>.json. The hook reads these files and never the board (D-10), so a leftover one is local access to a protected zone that nothing upstream believes in."
     });
   }
   if (unreadable.length) {
@@ -17539,7 +17562,11 @@ function agentsMergeDriverChecks(root) {
       name: "AGENTS.md merge driver",
       status: "warn",
       detail: ".gitattributes does not map AGENTS.md to the cc-agents merge driver",
-      fix: "A branch still carrying a cc:begin/cc:end block will conflict with main on merge (CC-543). `cycle init` writes the mapping and registers the driver; or add the line `AGENTS.md merge=cc-agents` to .gitattributes and run `cycle sync`, which registers the config whenever the mapping is present (CC-590)."
+      /* It led with `cycle init` (CC-579). This row only fires where .zones/zones.yml
+         exists — the guard above — and init writes that file again from a fresh
+         proposal, with no check for a map already there. The repair is one line
+         and a sync, so that leads; init is named only beside what it would cost. */
+      fix: "A branch still carrying a cc:begin/cc:end block will conflict with main on merge (CC-543). Add the line `AGENTS.md merge=cc-agents` to .gitattributes and run `cycle sync`, which registers the driver whenever the mapping is present (CC-590). Not `cycle init` here: it writes the mapping too, but it also rewrites .zones/zones.yml from a fresh proposal, and this repository already has a zone map."
     }];
   }
   let driver = "";
@@ -17761,8 +17788,11 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
            (CC-641). This used to offer `cycle init` first, and after CC-641 init
            writes no hook configuration unless a wrapper is already on disk — so
            on the machine reading this line, running it would change nothing and
-           the advice would have been a second lap of the same absence. */
-        fix: "Install the plugin: `/plugin install commitcycle@commitcycle` \u2014 it brings its own hook and enforces every repository you open. `cycle init` configures a hook only where a wrapper is already on disk. Note: until one is, CC only catches things at merge time." + (wrapper.platform === "win32" ? ` One caveat for this platform (${wrapper.platform}): the hook the plugin brings is a POSIX \`sh\` wrapper, so installing it here would not enforce anything. ${ENFORCING_PLATFORMS}.` : "")
+           the advice would have been a second lap of the same absence. And the
+           install is two lines, not one (CC-579): this row fires on a machine
+           with no CommitCycle plugin, where the marketplace may never have been
+           added, and the install page puts that step first — as init's log does. */
+        fix: "Install the plugin: `/plugin marketplace add pow-paulinho/commitcycle-plugin`, then `/plugin install commitcycle@commitcycle` \u2014 it brings its own hook and enforces every repository you open. `cycle init` configures a hook only where a wrapper is already on disk. Note: until one is, CC only catches things at merge time." + (wrapper.platform === "win32" ? ` One caveat for this platform (${wrapper.platform}): the hook the plugin brings is a POSIX \`sh\` wrapper, so installing it here would not enforce anything. ${ENFORCING_PLATFORMS}.` : "")
       });
     }
   } else {
@@ -17777,7 +17807,7 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
           /* Not `cycle init`: it has never overwritten a settings.json somebody
              else wrote, and since CC-641 it writes hook configuration at all
              only where a wrapper is on disk (CC-641). */
-          fix: "Install the plugin (`/plugin install commitcycle@commitcycle`), which brings its own hook, or add a PreToolUse hook to this file by hand pointing at a wrapper you have."
+          fix: "Install the plugin (`/plugin marketplace add pow-paulinho/commitcycle-plugin`, then `/plugin install commitcycle@commitcycle`), which brings its own hook, or add a PreToolUse hook to this file by hand pointing at a wrapper you have."
         });
       } else if (unreachable && existsSync11(cmd.replace("$CLAUDE_PROJECT_DIR", root))) {
         checks.push(unenforcedHere(
@@ -17852,14 +17882,21 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
       name: "active task",
       status: "warn",
       detail: "detached HEAD \u2014 no branch, so no task",
-      fix: "Check out a task branch. Writes are denied without one."
+      /* A detached HEAD is where the loop cuts a task from (process playbook:
+         detach at the trunk, then start), so the command that cuts one is named
+         beside the checkout (CC-579). */
+      fix: 'Check out a task branch, or cut one from here with `cycle start "<title>"`. Writes are denied without one.'
     });
   } else if (!taskId) {
     checks.push({
       name: "active task",
       status: "warn",
       detail: `on "${branch}", which is not a task branch`,
-      fix: "Writes are denied here by design. Branch as task/CC-123-something to work."
+      /* "Branch as task/CC-123-something to work" read like the fix and changed
+         nothing (CC-579): no grant stands behind a branch the gate did not cut,
+         so the next run only moves to "there is no grant for it". `cycle start`
+         cuts the branch and takes it through the gate in one command. */
+      fix: 'Writes are denied here by design, and a branch named like a task by hand has no grant behind it. `cycle start "<title>"` files a task, cuts its branch and takes it through the gate; `cycle start CC-123` does the same for a task the board already holds.'
     });
   } else {
     const grantPath = join16(root, ".zones", "state", "grants", `${taskId}.json`);
@@ -17868,7 +17905,11 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
         name: "active task",
         status: "warn",
         detail: `branch names task ${taskId}, but there is no grant for it`,
-        fix: "The board issues grants when a task starts. Until then writes are denied."
+        /* Named no command (CC-579), and which one depends on a fact doctor
+           cannot see offline: whether the board has already issued the grant
+           (`cycle sync` brings it down) or the task has not started (`cycle
+           start` takes it through the gate and writes the grant on the way). */
+        fix: `The board issues grants when a task starts, and writes are denied until one is here. \`cycle sync\` brings it down if the board has already issued one; if ${taskId} has not started, \`cycle start ${taskId}\` takes it through the gate.`
       });
     } else {
       try {
@@ -17896,7 +17937,11 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
             name: "active task",
             status: "warn",
             detail: `the grant for ${taskId} could not be read`,
-            fix: "It may be corrupt. Ask for it to be re-issued."
+            /* The CC-667 sentence, still standing here after it left the expiry
+               row: "ask" names nobody on a board of one (CC-579). `cycle sync`
+               re-issues from the board's own copy — it writes that over a file
+               that differs, and removes the file on a definite 404. */
+            fix: "It may be corrupt. `cycle sync` replaces it with the board's copy, or removes it when the board holds no grant for this task."
           });
         }
         if (state.state !== "none" && state.grant.branch && state.grant.branch !== branch) {
@@ -17927,7 +17972,10 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
           name: "active task",
           status: "warn",
           detail: `the grant file for ${taskId} is not valid JSON`,
-          fix: "Delete it and ask for a new one."
+          /* Same sentence, same nobody to ask (CC-579). `cycle sync` reads the
+             file as text and never parses it, so a file nothing can parse is
+             replaced with the board's copy, or removed when the board has none. */
+          fix: "`cycle sync` replaces it with the board's copy, or removes it when the board holds no grant for this task."
         });
       }
     }
@@ -17999,7 +18047,11 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
       name: "one identity",
       status: "warn",
       detail: `records say ${signedInAs}, commits say ${gitIdentity}`,
-      fix: `Records now carry the signed-in address, so nothing is written wrong \u2014 but the audit trail names two people for one person's work. Point them at each other: \`git config user.email ${signedInAs}\`, or sign in as ${gitIdentity}.`
+      /* "Sign in as" named no command (CC-579). `cycle login --email` is one, and
+         it does join the two: login remembers the new session after those already
+         held, and both this row and `cycle start` read the last one held for the
+         board (sessionFor with no tenant, login.ts). */
+      fix: `Records now carry the signed-in address, so nothing is written wrong \u2014 but the audit trail names two people for one person's work. Point them at each other: \`git config user.email ${signedInAs}\`, or sign in as ${gitIdentity} with \`cycle login --email ${gitIdentity}\`.`
     });
   }
   if (board2.apiUrl && isLoopback(board2.apiUrl)) {
@@ -18008,7 +18060,11 @@ function runDoctor(root, now = /* @__PURE__ */ new Date(), opts = {}) {
       name: "board address",
       status: "warn",
       detail: `${board2.apiUrl} is a local board${committed ? ", and it is the committed default in .zones/board.json" : ""}`,
-      fix: committed ? "Every clone of this repository reports here, and each local board keeps its own task sequence \u2014 so two of them will issue the same id to different work. Point .zones/board.json at the real board, and set CC_API_URL when you deliberately want a dev one." : "Task ids issued here are not the shared board's. Anything filed will collide the moment it meets the real sequence."
+      /* "Point .zones/board.json at the real board" named no command (CC-579).
+         `cycle pair --board` writes that file, and the flag is the point:
+         without it pair takes the address the file already holds (index.ts),
+         which is the local board this row is warning about. */
+      fix: committed ? "Every clone of this repository reports here, and each local board keeps its own task sequence \u2014 so two of them will issue the same id to different work. Point .zones/board.json at the real board \u2014 `cycle pair --board <its address>` rewrites the file, where a bare `cycle pair` would pair with the address already in it \u2014 and set CC_API_URL when you deliberately want a dev one." : "Task ids issued here are not the shared board's. Anything filed will collide the moment it meets the real sequence."
     });
   }
   return checks;
@@ -18407,23 +18463,25 @@ function grantOnDisk(root, taskId) {
     return { kind: "unreadable" };
   }
 }
-function mutatedPaths(root) {
+function mutatedPaths(root, taskId) {
   const dir = join19(root, ".zones", "state", "events");
   if (!existsSync14(dir)) return [];
   const logs = readdirSync8(dir).filter((f) => f.endsWith(".jsonl"));
   const observed = [];
   const selfRecorded = [];
+  let watchedThisTask = false;
   for (const file of logs) {
     for (const line of readFileSync17(join19(dir, file), "utf8").split("\n").filter(Boolean)) {
       try {
         const e = JSON.parse(line);
         if (e.type !== "mutation" || !e.path) continue;
         (e.tool ? observed : selfRecorded).push(e.path);
+        if (e.tool && e.task_id === taskId) watchedThisTask = true;
       } catch {
       }
     }
   }
-  if (!observed.length) return [];
+  if (!watchedThisTask) return [];
   return [...observed, ...selfRecorded];
 }
 function runVerify(opts) {
@@ -18596,6 +18654,13 @@ ${guardLines}
     (opts.evidence ?? []).length
   );
   if (rehearsal) capture.push({ field: "evidence", message: rehearsal });
+  const mutated = mutatedPaths(root, taskId);
+  if (opts.fromHistory && !mutated.length) {
+    notes.push({
+      field: "events",
+      message: `No event in this checkout names ${taskId}, so there is nothing here to tell observed work from hand-edited work, and the events check cannot refuse (D-40), which is what a fresh clone says too. The board answers it at the close, from the events it holds for ${taskId} (CC-299), and that answer can still refuse.`
+    });
+  }
   const { failures, warnings } = checkClosing({
     task: {
       id: taskId,
@@ -18614,7 +18679,7 @@ ${guardLines}
     generated: parsed.value.generated,
     unprotected: parsed.value.unprotected,
     manifest,
-    mutated: mutatedPaths(root),
+    mutated,
     evidence: opts.evidence ?? []
   });
   return {
@@ -19274,7 +19339,7 @@ function playbookUpdated(root, file) {
 async function runHandoff(opts) {
   const root = opts.root;
   const now = opts.now ?? /* @__PURE__ */ new Date();
-  const today = now.toISOString().slice(0, 10);
+  const today = utcDate(now.toISOString());
   const closedN = opts.closed ?? 10;
   const counts = {
     live: 0,
@@ -19334,7 +19399,7 @@ async function runHandoff(opts) {
       state: t.state,
       owner: t.owner ?? "\u2014",
       branch: t.branch ?? "\u2014",
-      since: (t.created_at ?? "").slice(0, 10) || "\u2014"
+      since: utcDate(t.created_at) || "\u2014"
     }));
   } else {
     liveSource = "records";
@@ -20515,14 +20580,14 @@ function renderPlaybook(draft, repo) {
   ].join("\n");
 }
 function buildBrief(root) {
-  const git4 = (args) => {
+  const git5 = (args) => {
     try {
       return execFileSync11("git", args, { cwd: root, stdio: "pipe" }).toString();
     } catch {
       return "";
     }
   };
-  const all = git4(["ls-files"]).split("\n").filter(Boolean);
+  const all = git5(["ls-files"]).split("\n").filter(Boolean);
   const files = all.slice(0, 2e3);
   const parts = [];
   const readme = join28(root, "README.md");
@@ -20556,7 +20621,7 @@ function buildBrief(root) {
       ...top.map(([d, n]) => `  ${d}/ \u2014 ${n} file(s)`)
     );
   }
-  const log = git4(["log", "--format=%s", "-n", "20"]).trim();
+  const log = git5(["log", "--format=%s", "-n", "20"]).trim();
   if (log) parts.push("", "Recent commit subjects:", "", log);
   if (all.length > files.length) {
     parts.push("", `(inventory capped at ${files.length} of ${all.length} files)`);
@@ -20721,6 +20786,33 @@ async function refusalOf(res) {
   }
   return `the board answered ${res.status}`;
 }
+async function readTask(doFetch, url, headers) {
+  const res = await doFetch(url, { headers });
+  if (!res.ok) return { ok: false, state: null };
+  try {
+    const { task } = await res.json();
+    const state = task?.state;
+    return { ok: true, state: typeof state === "string" && state.trim() ? state.trim() : null };
+  } catch {
+    return { ok: true, state: null };
+  }
+}
+function whyNoGrant(taskId, state) {
+  switch (state) {
+    case "In Review":
+      return `${taskId} has no grant because it was handed in: it is In Review, and the hand-in revoked the grant. \`cycle verify --close\` closes it once the work lands, and \`cycle start ${taskId} --reason "..."\` brings it back to In Progress.`;
+    case "Done":
+      return `${taskId} has no grant because it was handed in and closed: it is Done, and the grant was revoked at the hand-in. Nothing here needs one any more; new work starts from the trunk with \`cycle start\`.`;
+    case "Todo":
+      return `${taskId} has no grant because it is not in progress: it is in Todo, and the grant comes from the gate when it starts \u2014 \`cycle start ${taskId}\`.`;
+    case "Triage":
+      return `${taskId} has no grant because it is not in progress: it is in Triage, and the grant comes from the gate once it is scoped \u2014 \`cycle start ${taskId} --goal "..." --non-goals "..." --criteria "..."\`.`;
+    case "In Progress":
+      return `${taskId} has no grant, yet it is In Progress: the board holds no grant for running work, so the board and this repository disagree. \`cycle doctor\` reports it, and \`cycle pause ${taskId} --reason "..."\` followed by \`cycle start ${taskId}\` settles it at the gate.`;
+    default:
+      return state ? `${taskId} has no grant, and the board has it in ${state} \u2014 \`cycle show ${taskId}\` says where it stands.` : `${taskId} has no grant, and its state could not be read to say why, so this is not going to guess \u2014 \`cycle show ${taskId}\` says where it stands.`;
+  }
+}
 async function runSync(opts) {
   const { root, apiUrl, token, tenant, repo } = opts;
   const rawFetch = opts.fetchImpl ?? fetch;
@@ -20833,8 +20925,10 @@ async function runSync(opts) {
     const drift = replyDrift(res);
     if (drift) warnings.push(`protocol: ${drift}`);
     if (res.ok) boardSaw = true;
+    let taskRead = null;
     if (res.status === 404 && !boardSaw) {
-      boardSaw = (await doFetch(`${base}/tasks/${taskId}`, { headers })).ok;
+      taskRead = await readTask(doFetch, `${base}/tasks/${taskId}`, headers);
+      boardSaw = taskRead.ok;
     }
     if (res.status === 404 && !boardSaw) {
       const who = savedIdentity(apiUrl);
@@ -20848,7 +20942,8 @@ async function runSync(opts) {
         grantState = "revoked";
         log(`  removed the grant for ${taskId} \u2014 the board has revoked it`);
       } else {
-        warnings.push(`${taskId} has no grant \u2014 it has not passed the gate yet.`);
+        taskRead ??= await readTask(doFetch, `${base}/tasks/${taskId}`, headers);
+        warnings.push(whyNoGrant(taskId, taskRead.state));
       }
     } else if (!res.ok) {
       warnings.push(`could not fetch the grant (${res.status}) \u2014 the local grant was left alone`);
@@ -21071,6 +21166,17 @@ async function runClose(opts) {
   }
   if (res.status === 422) {
     const body2 = await res.json().catch(() => ({}));
+    if (opts.override && Array.isArray(body2.failures) && body2.failures.some((f) => f?.field === "evidence")) {
+      return {
+        ok: false,
+        taskId: local.taskId,
+        warnings: local.warnings,
+        failures: [...body2.failures, {
+          field: "override",
+          message: "Your --override does not answer the evidence check, because a signature cannot stand in for the evidence itself. Run `cycle verify --close` again with --evidence and a URL, or a path committed in this repository."
+        }]
+      };
+    }
     return { ok: false, taskId: local.taskId, failures: body2.failures ?? [], warnings: local.warnings };
   }
   if (!res.ok) {
@@ -21142,6 +21248,82 @@ function boardRefusal(status, body) {
   const said = [body.error, body.message].find((v) => typeof v === "string" && v.trim().length > 0)?.trim();
   return said ? `the board could not start the task: ${said} (it answered ${status})` : `the board could not start the task \u2014 it answered ${status} and gave no reason`;
 }
+var git4 = (root, args) => execFileSync12("git", ["-c", "core.quotePath=false", ...args], { cwd: root, stdio: "pipe" }).toString().trim();
+function branchPosition(root, branch, taskId) {
+  const resolves = (ref) => {
+    try {
+      git4(root, ["rev-parse", "--verify", "-q", `${ref}^{commit}`]);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  try {
+    if (!resolves(`refs/heads/${branch}`) || !resolves("HEAD")) return null;
+    const tip = git4(root, ["rev-parse", `refs/heads/${branch}^{commit}`]);
+    const head = git4(root, ["rev-parse", "HEAD^{commit}"]);
+    if (tip === head) return null;
+    try {
+      git4(root, ["merge-base", "--is-ancestor", tip, head]);
+      return null;
+    } catch {
+    }
+    const trunk2 = ["origin/main", "origin/master", "main", "master"].find(resolves) ?? "HEAD";
+    const behind = Number(git4(root, ["rev-list", "--count", `${tip}..${trunk2}`])) || 0;
+    const foreign = [];
+    for (const line of git4(root, ["log", "--no-merges", "--format=%H%x09%s", `${trunk2}..${tip}`]).split("\n")) {
+      const tab = line.indexOf("	");
+      if (tab < 0) continue;
+      const subject = line.slice(tab + 1).trim();
+      const id = /^([A-Z]+-\d+)(?!\d)/.exec(subject)?.[1];
+      if (id && id !== taskId) foreign.push({ sha: line.slice(0, tab), subject });
+    }
+    let reverted = [];
+    try {
+      const base = git4(root, ["merge-base", head, tip]);
+      const movedHere = new Set(git4(root, ["diff", "--no-renames", "--name-only", base, head]).split("\n").filter(Boolean));
+      reverted = git4(root, ["diff", "--no-renames", "--name-only", head, tip]).split("\n").filter((f) => movedHere.has(f));
+    } catch {
+    }
+    return { branch, trunk: trunk2, behind, foreign, reverted };
+  } catch {
+    return null;
+  }
+}
+var unchosen = (p) => p !== null && (p.behind > 0 || p.foreign.length > 0 || p.reverted.length > 0);
+function positionLines(p) {
+  const listed = (items) => [
+    ...items.slice(0, 10).map((s) => `    ${s}`),
+    ...items.length > 10 ? [`    \u2026 and ${items.length - 10} more`] : []
+  ];
+  return [
+    ...p.behind ? [`${p.behind} commit(s) behind ${p.trunk} \u2014 work the trunk has and this branch does not`] : [],
+    ...p.foreign.length ? [
+      `${p.foreign.length} commit(s) from other tasks, on this branch and not in ${p.trunk}:`,
+      ...listed(p.foreign.map((c) => `${c.sha.slice(0, 8)} ${c.subject.slice(0, 88)}`))
+    ] : [],
+    ...p.reverted.length ? [
+      `${p.reverted.length} tracked file(s) this checkout has newer than the branch \u2014 checking it out takes them back:`,
+      ...listed(p.reverted)
+    ] : []
+  ];
+}
+function positionRefusal(taskId, p) {
+  return [
+    `\`${p.branch}\` is not where this checkout stands, and checking it out would leave you on a base you did not choose:`,
+    "",
+    ...positionLines(p).map((l) => `  ${l}`),
+    "",
+    `Nothing was scoped, checked out or started. The branch is ${taskId}'s binding (D-11), so it is reused as it stands and never moved or re-cut. To adopt it there, now that you know where that is:`,
+    "",
+    `  cycle start ${taskId} --accept-position`,
+    ...p.behind ? ["", "and then, on the branch, bring the trunk in \u2014 a merge adds one commit and rewrites none:", "", `  git merge ${p.trunk}`] : [],
+    ...p.foreign.length ? [
+      "",
+      "The other tasks' commits stay on the branch either way: only rewriting its history would take them off, and nothing here does that. Until they reach the trunk, a close from this branch counts their files as this task's."
+    ] : []
+  ].join("\n");
+}
 async function runStart(input) {
   const { root, apiUrl, tenant, repo, token, actor } = input;
   const dirty = uncommittedTracked(root);
@@ -21211,6 +21393,17 @@ The branch keeps the work and the grant is re-issued on the way in. Nothing was 
       }]
     };
   }
+  const branch = boundBranch ?? `task/${taskId}-${slug2(title)}`;
+  const position = branchPosition(root, branch, taskId);
+  const toAccept = unchosen(position) ? position : void 0;
+  if (toAccept && !input.acceptPosition) {
+    return {
+      started: false,
+      taskId,
+      branch: null,
+      failures: [{ field: "branch", message: positionRefusal(taskId, toAccept) }]
+    };
+  }
   const patch = input.taskId ? {
     ...input.goal !== void 0 ? { goal: input.goal } : {},
     ...input.nonGoals !== void 0 ? { non_goals: input.nonGoals } : {},
@@ -21232,7 +21425,6 @@ The branch keeps the work and the grant is re-issued on the way in. Nothing was 
     const scoped = await call2(`/tasks/${taskId}`, "PUT", patch);
     mustSucceed(`scoping ${taskId}`, scoped);
   }
-  const branch = boundBranch ?? `task/${taskId}-${slug2(title)}`;
   const exists = () => {
     try {
       execFileSync12("git", ["rev-parse", "--verify", `refs/heads/${branch}`], { cwd: root, stdio: "pipe" });
@@ -21254,6 +21446,12 @@ The branch keeps the work and the grant is re-issued on the way in. Nothing was 
       return false;
     }
   })();
+  if (toAccept) {
+    console.error([
+      `  note: adopting \`${branch}\` where it stands, as --accept-position asked:`,
+      ...positionLines(toAccept).map((l) => `    ${l}`)
+    ].join("\n"));
+  }
   execFileSync12("git", exists() ? ["checkout", branch] : ["checkout", "-b", branch], { cwd: root, stdio: "pipe" });
   if (repointed) {
     console.error(`  note: ${branch} pointed at history HEAD already contains \u2014 re-pointed to HEAD instead of rewinding the checkout`);
@@ -21357,7 +21555,8 @@ The branch keeps the work and the grant is re-issued on the way in. Nothing was 
        transition replies with the task it just moved, which is the freshest copy
        there is, and the fallback is the same value the record just took. */
     qualityGate: gate.body.task?.quality_gate ?? declaredGate,
-    sentBack: state === "In Review"
+    sentBack: state === "In Review",
+    ...toAccept ? { position: toAccept } : {}
   };
 }
 function priorRecord(root, taskId) {
@@ -21713,7 +21912,9 @@ var KNOWN_FLAGS = {
      the gate refuses without it (CC-732) — but it is accepted on every start,
      the way `cycle pause` accepts it: a flag the whitelist rejects is a flag
      nobody can discover. */
-  start: ["--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--reason", "--help", "-h"],
+  /* `--accept-position` is a switch (CC-463): it is absent from VALUE_FLAGS on
+     purpose, so the token after it is still read as the task. */
+  start: ["--goal", "--non-goals", "--criteria", "--zone", "--topics", "--priority", "--gate", "--reason", "--accept-position", "--help", "-h"],
   /* `--close` carries the hand-in straight on into the close where the board
      reports one member (CC-667, D-33), and `--evidence` is passed to it —
      otherwise a task with a quality gate would be refused by the close with no
@@ -21855,6 +22056,7 @@ var COMMAND_HELP = {
   cycle start "what this task does" --goal ... --non-goals ... --criteria ...
   cycle start CC-55 [--goal ...]      adopts a task the board already holds
   cycle start CC-55 --reason "..."    brings it back from In Review
+  cycle start CC-55 --accept-position adopts its existing branch where it stands
 
   Files the task, scopes it, creates the branch, asks the gate to move it to In
   Progress, writes the grant this machine reads, and writes .zones/tasks/<id>.md.
@@ -21865,6 +22067,15 @@ var COMMAND_HELP = {
   detach onto the trunk first, or the task inherits another task's commits.
   A refusal at the gate leaves the task in Todo and this shell on the new branch.
 
+  A task whose branch already exists keeps it, and before checking it out this
+  says where it stands against the trunk: how many commits behind origin/main it
+  is, which commits on it name another task, and which tracked files the checkout
+  would take back to an older state. If any of those is not zero it refuses \u2014
+  before anything is scoped, checked out or started \u2014 and names them.
+  --accept-position adopts the branch where it stands anyway; bring the trunk in
+  afterwards with git merge origin/main, which adds a commit and rewrites none.
+  Nothing here moves or re-cuts the branch: it is the task's binding (D-11).
+
   A task in In Review comes back through here too \u2014 the same gate, the same
   re-run of the approvals, a new grant. That edge is the one move into In
   Progress the gate makes you explain, so --reason is required for it and
@@ -21872,7 +22083,9 @@ var COMMAND_HELP = {
 
   --zone id:write  ask for a protected zone     --topics a,b     load the playbooks
   --priority high  how it is ranked             --gate none      the quality gate
-  --reason "..."   why review is sending it back`,
+  --reason "..."   why review is sending it back
+  --accept-position  adopt an existing branch that is behind the trunk or carries
+                     other tasks' commits, where it stands`,
   scope: `cycle scope \u2014 correct what a task says without moving it
 
   cycle scope CC-12 [--title "..."] [--goal "..."] [--non-goals "..."] [--gate g]
@@ -22403,7 +22616,7 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
                   of your deploy command: cycle guard-deploy && <your deploy>
   cycle init         Set this repository up: propose zones, install the hook
   cycle start "title" | <task>   --goal ... --non-goals ... --criteria ... [--zone id:write]
-                  [--topics a,b] [--priority high] [--gate none]
+                  [--topics a,b] [--priority high] [--gate none] [--accept-position]
                   One command: intake -> scope -> branch -> gate -> grant -> record
   cycle mcp          Serve the MCP tools over stdio, for a client's .mcp.json
   cycle show [task]  Read a task as the board holds it, or list the board.
@@ -22784,11 +22997,17 @@ nothing to cite not born (docs/07). Or write them by hand; the contract holds.
     case "start": {
       const board2 = boardEnv(root);
       if (!board2) return 1;
+      const takesValue = new Set(VALUE_FLAGS.start ?? []);
       const positional = [];
+      let acceptPosition = false;
       for (let i = 0; i < args.length; i++) {
         const a = args[i];
+        if (a === "--accept-position") {
+          acceptPosition = true;
+          continue;
+        }
         if (a.startsWith("--")) {
-          i++;
+          if (takesValue.has(a)) i++;
           continue;
         }
         positional.push(a);
@@ -22837,6 +23056,8 @@ nothing to cite not born (docs/07). Or write them by hand; the contract holds.
            through: what it is for, and why it belongs on this command rather
            than on a new one, is argued on `StartInput.reason`. */
         reason: take("reason"),
+        // A switch, read in the loop above so a flag's value is never taken for it (CC-463).
+        acceptPosition,
         actor
       });
       if (!result.started) {
@@ -22858,6 +23079,16 @@ The task is in ${result.state ?? "Todo"}, and this shell is now on \`${result.br
 ${result.taskId} is In Progress on \`${result.branch}\``);
       if (result.sentBack) {
         console.log("  back from In Review \u2014 the branch still holds the work, and the grant is re-issued");
+      }
+      if (result.position) {
+        const p = result.position;
+        const said = [
+          p.behind ? `${p.behind} commit(s) behind ${p.trunk}` : "",
+          p.foreign.length ? `${p.foreign.length} commit(s) from other tasks` : "",
+          p.reverted.length ? `${p.reverted.length} file(s) taken back` : ""
+        ].filter(Boolean);
+        console.log(`  base   ${said.join(" \xB7 ")} \u2014 accepted with --accept-position`);
+        if (p.behind) console.log(`  next   git merge ${p.trunk} \u2014 brings the trunk in; a merge rewrites nothing`);
       }
       console.log(result.open.length ? `  open   ${result.open.map((z) => `${z.id}:${z.mode}`).join(", ")}${result.expires ? ` \xB7 until ${result.expires}` : ""}` : "  open   no protected zones \u2014 everything unprotected is yours already");
       console.log(`  record .zones/tasks/${result.taskId}.md`);
