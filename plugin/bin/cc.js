@@ -9399,15 +9399,15 @@ var init_api = __esm({
 });
 
 // ../../apps/mcp/src/checkout.ts
-import { existsSync as existsSync27, readFileSync as readFileSync31 } from "node:fs";
-import { dirname as dirname18, join as join34, resolve as resolve5 } from "node:path";
+import { existsSync as existsSync28, readFileSync as readFileSync32 } from "node:fs";
+import { dirname as dirname18, join as join35, resolve as resolve5 } from "node:path";
 function readCheckoutBinding(from = process.cwd()) {
   let dir = resolve5(from);
   for (; ; ) {
-    const file = join34(dir, ".zones", "board.json");
-    if (existsSync27(file)) {
+    const file = join35(dir, ".zones", "board.json");
+    if (existsSync28(file)) {
       try {
-        const j = JSON.parse(readFileSync31(file, "utf8"));
+        const j = JSON.parse(readFileSync32(file, "utf8"));
         return { path: file, tenant: str3(j.tenant), repo: str3(j.repo), apiUrl: str3(j.api_url) };
       } catch {
         return { path: file };
@@ -9610,8 +9610,8 @@ var init_server = __esm({
 // src/index.ts
 import { createInterface as createInterface3 } from "node:readline/promises";
 import { execFileSync as execFileSync14 } from "node:child_process";
-import { existsSync as existsSync28 } from "node:fs";
-import { dirname as dirname19, join as join35, resolve as resolve6 } from "node:path";
+import { existsSync as existsSync29 } from "node:fs";
+import { dirname as dirname19, join as join36, resolve as resolve6 } from "node:path";
 
 // src/branch.ts
 import { readFileSync, statSync } from "node:fs";
@@ -15834,6 +15834,16 @@ function resolveBoard(root) {
     token: process.env.CC_TOKEN ?? str4(file.token) ?? (apiUrl && tenant ? machineToken(apiUrl, tenant, repoOf(root, file)) : void 0) ?? (apiUrl ? savedToken(apiUrl, tenant) : void 0)
   };
 }
+function recordsOnBoard(root) {
+  const env = process.env.CC_RECORDS;
+  if (env === "board" || env === "repo") return env === "board";
+  try {
+    const file = JSON.parse(readFileSync8(join8(root, ".zones", "board.json"), "utf8"));
+    return file.records === "board";
+  } catch {
+    return false;
+  }
+}
 
 // src/propose.ts
 import { existsSync as existsSync4, readFileSync as readFileSync9, readdirSync as readdirSync2, statSync as statSync3 } from "node:fs";
@@ -16683,6 +16693,11 @@ async function runPull(input) {
   });
   const doFetch = input.fetchImpl ?? fetch;
   const empty = { behind: [], ahead: [], rewound: [], offLadder: [], unrecorded: [], orphaned: [] };
+  if ((input.adopt || input.writeMissing) && recordsOnBoard(input.root)) {
+    log('  this repository keeps its records on the board (records: "board" in .zones/board.json) \u2014 nothing was written.');
+    log("  `cycle export` prints the board as one Markdown file, if you want a copy in git.");
+    return { ...empty, status: "ok", adopted: [], written: [], unreadable: [], contested: [] };
+  }
   let res;
   try {
     res = await doFetch(
@@ -16909,7 +16924,8 @@ async function runReconcile(input) {
   }
   const body = await res.json().catch(() => ({}));
   const tasks = body.tasks ?? [];
-  const { records: local, unreadable } = scanRecords(input.root);
+  const withRecords = input.records !== false;
+  const { records: local, unreadable } = withRecords ? scanRecords(input.root) : { records: /* @__PURE__ */ new Map(), unreadable: [] };
   if (!tasks.length && !local.size && !unreadable.length) return { status: "skipped", ...NOTHING };
   const collided = collisions(local, tasks);
   if (collided.length) {
@@ -16917,7 +16933,7 @@ async function runReconcile(input) {
     warn("a repair under a colliding id could rewrite the wrong file (D-49), so every repair was skipped. `cycle doctor` says which record is which.");
     return { status: "aborted", ...NOTHING, collided };
   }
-  const c = classifyRecords(local, tasks);
+  const c = withRecords ? classifyRecords(local, tasks) : { behind: [], ahead: [], rewound: [], offLadder: [], unrecorded: [], orphaned: [] };
   const byId = new Map(tasks.map((t) => [t.id, t]));
   const adopted = [];
   for (const row of c.behind) {
@@ -16930,7 +16946,8 @@ async function runReconcile(input) {
     }
   }
   const written = [];
-  if (unreadable.length) {
+  if (!withRecords) {
+  } else if (unreadable.length) {
     log(`  ${unreadable.length} file(s) in .zones/tasks/ carry no \`id:\` \u2014 nothing here can tell which task they belong to. Rename with a leading \`_\` if it is a note rather than a record.`);
   } else {
     const today = input.today ?? (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
@@ -16977,7 +16994,7 @@ async function runReconcile(input) {
 import { existsSync as existsSync10, mkdirSync as mkdirSync7, readFileSync as readFileSync13, writeFileSync as writeFileSync9 } from "node:fs";
 import { homedir as homedir5 } from "node:os";
 import { dirname as dirname9, join as join15 } from "node:path";
-var CLI_VERSION = "0.1.14";
+var CLI_VERSION = "0.1.15";
 var CHECK_TTL_MS = 24 * 60 * 60 * 1e3;
 var updateCachePath = () => join15(homedir5(), ".commitcycle", "update-check.json");
 function isBehind(current, latest) {
@@ -20167,7 +20184,7 @@ async function handOff(opts) {
   }
   log(`  ${taskId} is now ${to}`);
   const moved = await res.json().catch(() => ({}));
-  if (to === "Todo") {
+  if (to === "Todo" && !recordsOnBoard(root)) {
     const recordPath = join25(root, ".zones", "tasks", `${taskId}.md`);
     const recordRel = join25(".zones", "tasks", `${taskId}.md`);
     if (!existsSync19(recordPath)) {
@@ -20980,6 +20997,10 @@ async function runSync(opts) {
       headers,
       taskId,
       fetchImpl: doFetch,
+      /* Records on the board (CC-1150): no record file is caught up or written,
+         which is the rewrite-every-sync churn that setting exists to end. The
+         stranded-grant cleanup still runs: grants are this machine's state. */
+      records: !recordsOnBoard(root),
       log,
       warn: (w) => warnings.push(w)
     });
@@ -21150,7 +21171,11 @@ async function runClose(opts) {
       generated: local.generated,
       unprotected: local.unprotected,
       evidence: opts.evidence ?? [],
-      override: opts.override
+      override: opts.override,
+      /* The guard section, sent so the board renders it into the record it keeps
+         (CC-1150). A board that predates this ignores the field and says nothing
+         about it, and the section is then appended here as it always was. */
+      guard_change: local.guard.length ? { reason: opts.guardChange.trim(), by: actor, files: local.guard.map((g) => ({ path: g.path, status: g.status, why: g.why })) } : void 0
     })
   });
   const drift = replyDrift(res);
@@ -21189,8 +21214,13 @@ async function runClose(opts) {
   }
   const body = await res.json();
   let auditPath;
+  if (body.audit && body.audit_stored === true && recordsOnBoard(root)) {
+    log(`  the audit record is kept on the board \u2014 \`cycle export ${local.taskId}\` prints it`);
+    if (local.guard.length) log(`  the boundary move is in it, under "Files that define the guard"`);
+    return { ok: true, taskId: local.taskId, failures: [], warnings: local.warnings };
+  }
   if (body.audit) {
-    const record = local.guard.length ? body.audit + guardSection(local.guard, opts.guardChange.trim(), actor) : body.audit;
+    const record = local.guard.length && !body.guard_rendered ? body.audit + guardSection(local.guard, opts.guardChange.trim(), actor) : body.audit;
     auditPath = join31(".zones", "audit", `${local.taskId}.md`);
     const full = join31(root, auditPath);
     mkdirSync15(dirname16(full), { recursive: true });
@@ -21478,7 +21508,8 @@ The branch keeps the work and the grant is re-issued on the way in. Nothing was 
   const refused = gate.status !== 200 || gate.body.ok === false;
   const declaredTopics = input.topics.length ? input.topics : onBoard?.topics ?? [];
   const declaredGate = input.gate ?? onBoard?.quality_gate ?? "none";
-  writeRecord(root, {
+  const recordInRepo = !recordsOnBoard(root);
+  if (recordInRepo) writeRecord(root, {
     taskId,
     // The board's title when adopting: a record named differently from the
     // task it records is the drift `cycle doctor` already counts twelve of.
@@ -21511,7 +21542,7 @@ The branch keeps the work and the grant is re-issued on the way in. Nothing was 
     today,
     refused
   });
-  recordOwnWrites(root, taskId, [join32(".zones", "tasks", `${taskId}.md`)]);
+  if (recordInRepo) recordOwnWrites(root, taskId, [join32(".zones", "tasks", `${taskId}.md`)]);
   if (refused) {
     const gateFailures = gate.body.failures ?? [];
     if (gateFailures.length) {
@@ -21800,6 +21831,46 @@ function formatList(tasks) {
   return tasks.slice().sort((a, b) => num(a.id) - num(b.id)).map((t) => `${String(t.id).padEnd(8)} ${String(t.state ?? "").padEnd(width)}  ${t.title ?? ""}`).join("\n");
 }
 
+// src/export.ts
+import { existsSync as existsSync27, readFileSync as readFileSync31, readdirSync as readdirSync12, writeFileSync as writeFileSync21 } from "node:fs";
+import { join as join34 } from "node:path";
+function playbooksSection(root) {
+  const dir = join34(root, ".zones", "playbooks");
+  if (!existsSync27(dir)) return "";
+  const files = readdirSync12(dir).filter((f) => f.endsWith(".md") && f !== "README.md").sort();
+  if (!files.length) return "";
+  const out = ["", "---", "", "# Playbooks", "", `From \`.zones/playbooks/\` in this repository (${files.length}).`];
+  for (const file of files) {
+    const raw = readFileSync31(join34(dir, file), "utf8");
+    const fm = parseFrontmatter(raw);
+    const body = (fm ? fm.body : raw).trim().replace(/^(#{1,4}) /gm, "$1## ");
+    out.push("", `<!-- .zones/playbooks/${file} -->`, "", body);
+  }
+  return out.join("\n") + "\n";
+}
+async function runExport(opts) {
+  const doFetch = opts.fetchImpl ?? fetch;
+  const params = new URLSearchParams();
+  if (opts.taskId) params.set("task", opts.taskId);
+  if (opts.audits) params.set("audits", "1");
+  const url = `${opts.apiUrl.replace(/\/+$/, "")}/v1/${opts.tenant}/${opts.repo}/export${params.size ? `?${params}` : ""}`;
+  let res;
+  try {
+    res = await doFetch(url, { headers: boardHeaders(opts.token) });
+  } catch {
+    return { ok: false, message: "the board is unreachable \u2014 nothing was exported" };
+  }
+  if (res.status === 401 || res.status === 403) return { ok: false, message: "the board refused this session \u2014 run `cycle login`" };
+  if (res.status === 404 && opts.taskId) return { ok: false, message: `the board holds no task ${opts.taskId}` };
+  if (res.status === 404) return { ok: false, message: "this board does not export yet \u2014 it predates `cycle export` (CC-1150); update the board" };
+  if (!res.ok) return { ok: false, message: `the board answered ${res.status} \u2014 nothing was exported` };
+  const board2 = await res.text();
+  return { ok: true, markdown: board2.trimEnd() + "\n" + (opts.taskId ? "" : playbooksSection(opts.root)) };
+}
+function writeExport(path, markdown) {
+  writeFileSync21(path, markdown);
+}
+
 // src/deploy-guard.ts
 import { execFileSync as execFileSync13 } from "node:child_process";
 function currentBranch2(env = process.env, fromGit = gitBranch) {
@@ -21904,6 +21975,7 @@ var VALUE_FLAGS = {
   seed: ["--topics"],
   protect: ["--zone"],
   handoff: ["--closed", "--out"],
+  export: ["--out"],
   discard: ["--manual"],
   wrong: ["--command"]
 };
@@ -21944,6 +22016,9 @@ var KNOWN_FLAGS = {
   // working tree — a stray flag silently dropped there is a file written by a
   // command somebody believed meant something else (CC-580).
   handoff: ["--closed", "--out", "--offline", "--help", "-h"],
+  /* `cycle export` (CC-1150): reads only. `--out` takes the file, `--audits` adds
+     every kept audit record to a repo-wide export. */
+  export: ["--out", "--audits", "--help", "-h"],
   /* `discard` resets a branch to its base and deletes untracked files (CC-668).
      It is the most destructive command in this CLI by some distance, and it is
      also the one whose whole design is that it costs a single command with no
@@ -22059,7 +22134,8 @@ var COMMAND_HELP = {
   cycle start CC-55 --accept-position adopts its existing branch where it stands
 
   Files the task, scopes it, creates the branch, asks the gate to move it to In
-  Progress, writes the grant this machine reads, and writes .zones/tasks/<id>.md.
+  Progress, writes the grant this machine reads, and writes .zones/tasks/<id>.md
+  (not with records: "board" in .zones/board.json \u2014 the board holds it, CC-1150).
   Nothing else in this repository creates branches, so the branch it checks out is
   the branch the grant binds.
 
@@ -22111,7 +22187,8 @@ var COMMAND_HELP = {
 
   With --close it asks the gate to move the task In Review -> Done, submits the
   manifest, mirrors this task's events to the board, and writes the audit record
-  under .zones/audit \u2014 commit that record with the work.
+  under .zones/audit \u2014 commit that record with the work. The board keeps a copy
+  too; with records: "board" it is the only copy and nothing is written here.
 
   --from-history  check the task's own commits in main, for work that merged
                   before it closed, instead of this branch
@@ -22270,6 +22347,16 @@ var COMMAND_HELP = {
 
   Read-only, no board call. What task this branch is bound to, what the grant
   currently opens, and which board this repository reports to.`,
+  export: `cycle export \u2014 the board as one Markdown file
+
+  cycle export                    every task, its history and files touched, then the playbooks
+  cycle export CC-55              one task, with every audit record the board kept for it
+  cycle export --audits           every task, and every audit record in full
+  cycle export --out board.md     write a file instead of printing
+
+  Read-only. The board is the source of truth; this is the copy you ask for when
+  you want one in git (CC-1150). With records: "board" in .zones/board.json the
+  CLI writes no file per task and no audit record, and this is how you read them.`,
   show: `cycle show \u2014 read a task as the board holds it
 
   cycle show [task]
@@ -22592,7 +22679,7 @@ function repoRoot(from = process.cwd()) {
   }
   let cur = resolve6(from);
   for (; ; ) {
-    if (existsSync28(join35(cur, ".git"))) return cur;
+    if (existsSync29(join36(cur, ".git"))) return cur;
     const parent = dirname19(cur);
     if (parent === cur) return null;
     cur = parent;
@@ -22632,6 +22719,9 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
   cycle sync         Push the zone map and events, pull the grant for this branch
   cycle pull [--adopt] [--write-missing]
                   Reconcile the record files against the board's task states
+  cycle export [task] [--audits] [--out <file>]
+                  The board as one Markdown file: tasks, history, files touched,
+                  audit records and playbooks. The copy you ask for (CC-1150)
   cycle renew        The grant ran out and the work has not: re-issue exactly the
                   zones it already holds, for another TTL. Never widens; a board
                   with one member needs nobody else for it (D-33)
@@ -22685,7 +22775,7 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
   --help          This
   cycle <command> --help
                   What that one command changes, before it changes it`;
-function boardEnv(root) {
+function boardEnv(root, quiet = false) {
   const resolved2 = resolveBoard(root);
   const apiUrl = resolved2.apiUrl;
   if (!apiUrl) {
@@ -22721,7 +22811,7 @@ first half of the address in the console.
     );
     return null;
   }
-  console.log(`  board  ${apiUrl} \xB7 ${tenant}/${resolved2.repo}`);
+  if (!quiet) console.log(`  board  ${apiUrl} \xB7 ${tenant}/${resolved2.repo}`);
   return { apiUrl, token: resolved2.token, tenant, repo: resolved2.repo };
 }
 var NOT_YET = {};
@@ -22938,7 +23028,7 @@ Looking at ${root}
         acceptAll,
         harnesses: selection?.harnesses,
         log: (l) => console.log(l),
-        hookPath: existsSync28(join35(root, "packages/hook/bin/cc-hook.sh")) ? "$CLAUDE_PROJECT_DIR/packages/hook/bin/cc-hook.sh" : void 0,
+        hookPath: existsSync29(join36(root, "packages/hook/bin/cc-hook.sh")) ? "$CLAUDE_PROJECT_DIR/packages/hook/bin/cc-hook.sh" : void 0,
         /* An abandoned question is a no, not a crash (CC-181).
          *
          * `rl.question` rejects when stdin ends — a pipe running dry, a closed
@@ -22984,7 +23074,7 @@ Next: set a real owner for each zone in .zones/zones.yml \u2014 that is who gets
 asked when someone needs access. Then run \`cycle doctor\` to confirm it is live.
 `
       );
-      if (!existsSync28(join35(root, ".zones", "playbooks"))) {
+      if (!existsSync29(join36(root, ".zones", "playbooks"))) {
         console.log(
           `No playbooks yet. Once the board is connected, \`cycle seed\` drafts them from
 this codebase \u2014 offered as choices, claims citing real files, topics with
@@ -23091,7 +23181,7 @@ ${result.taskId} is In Progress on \`${result.branch}\``);
         if (p.behind) console.log(`  next   git merge ${p.trunk} \u2014 brings the trunk in; a merge rewrites nothing`);
       }
       console.log(result.open.length ? `  open   ${result.open.map((z) => `${z.id}:${z.mode}`).join(", ")}${result.expires ? ` \xB7 until ${result.expires}` : ""}` : "  open   no protected zones \u2014 everything unprotected is yours already");
-      console.log(`  record .zones/tasks/${result.taskId}.md`);
+      console.log(recordsOnBoard(root) ? `  record on the board \u2014 \`cycle export ${result.taskId}\` prints it` : `  record .zones/tasks/${result.taskId}.md`);
       if (result.playbooks.length) {
         console.log("\n  Read before working:");
         for (const p of result.playbooks) console.log(`    ${p}`);
@@ -23105,6 +23195,32 @@ ${result.taskId} is In Progress on \`${result.branch}\``);
     }
     /* Reading a task, which had no CLI path until CC-164 — the board holds
        Triage content and the repository does not (D-43). */
+    /* The board as one Markdown file (CC-1150): the copy you ask for, instead of
+       a record file per task that every sync rewrote. stdout by default, so it
+       pipes; --out writes a file and says where. */
+    case "export": {
+      const outAt = args.indexOf("--out");
+      const out = outAt >= 0 ? args[outAt + 1] : void 0;
+      if (outAt >= 0 && (!out || out.startsWith("--"))) {
+        console.error("--out needs a file path: `cycle export --out board.md`");
+        return 1;
+      }
+      const board2 = boardEnv(root, !out);
+      if (!board2) return 1;
+      const taskId = args.find((a, i) => !a.startsWith("--") && args[i - 1] !== "--out");
+      const result = await runExport({ ...board2, root, taskId, audits: args.includes("--audits") });
+      if (!result.ok) {
+        console.error(`  ${result.message}`);
+        return 1;
+      }
+      if (out) {
+        writeExport(out, result.markdown);
+        console.log(`  wrote ${out} \u2014 ${result.markdown.length.toLocaleString("en-US")} characters`);
+      } else {
+        process.stdout.write(result.markdown);
+      }
+      return 0;
+    }
     case "show": {
       const board2 = boardEnv(root);
       if (!board2) return 1;
