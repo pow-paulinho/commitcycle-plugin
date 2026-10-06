@@ -14439,6 +14439,7 @@ import { homedir } from "node:os";
 import { dirname, join as join2, resolve } from "node:path";
 var HOOK_SOURCE = ["packages/hook", "packages/contracts"];
 var WORKSPACE_CORE = ["packages", "hook", "dist", "core.js"];
+var WORKSPACE_RELEASE_CORE = ["packages", "hook", "dist", "core.release.js"];
 var COMMITTED_CORE = ["plugin", "hook", "dist", "core.js"];
 function git(root, args) {
   try {
@@ -14629,6 +14630,7 @@ function inspectEnforcement(root, opts = {}) {
   const enforcing = facts("enforcing", located.path, located.via);
   const workspace = facts("workspace", join2(root, ...WORKSPACE_CORE), "this checkout, built by `pnpm --filter @commitcycle/hook build`");
   const committed = facts("committed", join2(root, ...COMMITTED_CORE), "committed, and what a marketplace install downloads");
+  const release = facts("workspace", join2(root, ...WORKSPACE_RELEASE_CORE), "the release build in this checkout");
   if (!enforcing.path) {
     checks.push({
       name: "enforcing bundle",
@@ -14694,6 +14696,12 @@ function inspectEnforcement(root, opts = {}) {
       name: "shipped bundle vs source",
       status: "ok",
       detail: `byte-identical to the build in this checkout (sha ${short(committed.sha256)})`
+    });
+  } else if (release.exists && committed.sha256 === release.sha256) {
+    checks.push({
+      name: "shipped bundle vs source",
+      status: "ok",
+      detail: `byte-identical to the release build in this checkout, the same source with the board key compiled in (sha ${short(committed.sha256)})`
     });
   } else {
     const bundleCommit = lastCommit(root, [join2(...COMMITTED_CORE)]);
@@ -16994,7 +17002,7 @@ async function runReconcile(input) {
 import { existsSync as existsSync10, mkdirSync as mkdirSync7, readFileSync as readFileSync13, writeFileSync as writeFileSync9 } from "node:fs";
 import { homedir as homedir5 } from "node:os";
 import { dirname as dirname9, join as join15 } from "node:path";
-var CLI_VERSION = "0.1.16";
+var CLI_VERSION = "0.1.17";
 var CHECK_TTL_MS = 24 * 60 * 60 * 1e3;
 var updateCachePath = () => join15(homedir5(), ".commitcycle", "update-check.json");
 function isBehind(current, latest) {
