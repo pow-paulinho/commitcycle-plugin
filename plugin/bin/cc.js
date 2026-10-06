@@ -13857,7 +13857,15 @@ var GrantSchema = external_exports.object({
    * warn, then hooks refuse — and the day it becomes required is a decision on
    * the record, not a default flipped here.
    */
-  sig: external_exports.string().min(1).optional()
+  sig: external_exports.string().min(1).optional(),
+  /**
+   * The repository's mode when the grant was issued (CC-1149). `memory` means
+   * zones are not judged while this task is active: the only rule is that an
+   * edit needs an active task, which this grant is. Covered by the signature,
+   * so it cannot be written in by anyone but the board. Absent is governance,
+   * which is every grant issued before memory mode existed.
+   */
+  repo_mode: external_exports.enum(["memory", "governance"]).optional()
 });
 function resolveGrant(raw, now = /* @__PURE__ */ new Date()) {
   const parsed = GrantSchema.safeParse(raw);
@@ -17002,7 +17010,7 @@ async function runReconcile(input) {
 import { existsSync as existsSync10, mkdirSync as mkdirSync7, readFileSync as readFileSync13, writeFileSync as writeFileSync9 } from "node:fs";
 import { homedir as homedir5 } from "node:os";
 import { dirname as dirname9, join as join15 } from "node:path";
-var CLI_VERSION = "0.1.17";
+var CLI_VERSION = "0.1.18";
 var CHECK_TTL_MS = 24 * 60 * 60 * 1e3;
 var updateCachePath = () => join15(homedir5(), ".commitcycle", "update-check.json");
 function isBehind(current, latest) {
@@ -21893,6 +21901,27 @@ function writeExport(path, markdown) {
   writeFileSync21(path, markdown);
 }
 
+// src/mode.ts
+async function runMode(opts) {
+  const doFetch = opts.fetchImpl ?? fetch;
+  const url = `${opts.apiUrl.replace(/\/+$/, "")}/v1/${opts.tenant}/${opts.repo}/mode`;
+  let res;
+  try {
+    res = await doFetch(url, opts.set ? { method: "PUT", headers: { ...boardHeaders(opts.token), "content-type": "application/json" }, body: JSON.stringify({ mode: opts.set }) } : { headers: boardHeaders(opts.token) });
+  } catch {
+    return { ok: false, message: "the board is unreachable \u2014 nothing was read or changed" };
+  }
+  if (res.status === 403) return { ok: false, message: "the board only lets a signed-in person change the mode \u2014 run `cycle login`, then try again" };
+  if (res.status === 404) return { ok: false, message: "this board predates repository modes (CC-1149) \u2014 update the board" };
+  if (!res.ok) return { ok: false, message: `the board answered ${res.status}` };
+  const body = await res.json();
+  const mode = body.mode === "memory" ? "memory" : "governance";
+  return { ok: true, mode, chosen: body.chosen !== false, changed: !!opts.set };
+}
+function describeMode(mode) {
+  return mode === "memory" ? "memory \u2014 tasks, intake, states and records; an edit needs an active task, and zones are not judged" : "governance \u2014 zones with owners, approvals, grants bound to a branch, and Bash containment";
+}
+
 // src/deploy-guard.ts
 import { execFileSync as execFileSync14 } from "node:child_process";
 function currentBranch2(env = process.env, fromGit = gitBranch) {
@@ -22041,6 +22070,7 @@ var KNOWN_FLAGS = {
   /* `cycle export` (CC-1150): reads only. `--out` takes the file, `--audits` adds
      every kept audit record to a repo-wide export. */
   export: ["--out", "--audits", "--help", "-h"],
+  mode: ["--help", "-h"],
   /* `discard` resets a branch to its base and deletes untracked files (CC-668).
      It is the most destructive command in this CLI by some distance, and it is
      also the one whose whole design is that it costs a single command with no
@@ -22369,6 +22399,16 @@ var COMMAND_HELP = {
 
   Read-only, no board call. What task this branch is bound to, what the grant
   currently opens, and which board this repository reports to.`,
+  mode: `cycle mode \u2014 the repository's mode
+
+  cycle mode                 show it, and whether a person chose it
+  cycle mode memory          tasks, intake, states and records; an edit needs an active task
+  cycle mode governance      zones with owners, approvals, grants bound to a branch, containment
+
+  A person's decision on the board, like the failure policy: a machine token can
+  read it and never change it. Unchosen, a repository with a zone map on the
+  board is governance and one without is memory. The mode reaches the hook inside
+  the signed grant, so it applies from the next task started (CC-1149).`,
   export: `cycle export \u2014 the board as one Markdown file
 
   cycle export                    every task, its history and files touched, then the playbooks
@@ -22741,6 +22781,9 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
   cycle sync         Push the zone map and events, pull the grant for this branch
   cycle pull [--adopt] [--write-missing]
                   Reconcile the record files against the board's task states
+  cycle mode [memory|governance]
+                  Read the repository's mode, or choose it (a signed-in person):
+                  memory needs only an active task to edit; governance adds zones (CC-1149)
   cycle export [task] [--audits] [--out <file>]
                   The board as one Markdown file: tasks, history, files touched,
                   audit records and playbooks. The copy you ask for (CC-1150)
@@ -23214,6 +23257,24 @@ ${result.taskId} is In Progress on \`${result.branch}\``);
     /* The board as one Markdown file (CC-1150): the copy you ask for, instead of
        a record file per task that every sync rewrote. stdout by default, so it
        pipes; --out writes a file and says where. */
+    /* The repository's mode (CC-1149): read it, or choose it as a person. */
+    case "mode": {
+      const want = args.find((a) => !a.startsWith("-"));
+      if (want && want !== "memory" && want !== "governance") {
+        console.error(`cycle mode takes memory or governance, not "${want}"`);
+        return 1;
+      }
+      const board2 = boardEnv(root);
+      if (!board2) return 1;
+      const r = await runMode({ ...board2, set: want });
+      if (!r.ok) {
+        console.error(`  ${r.message}`);
+        return 1;
+      }
+      console.log(`  mode   ${describeMode(r.mode)}${r.chosen ? "" : " (the default: nobody has chosen yet)"}`);
+      if (r.changed) console.log("  It applies from the next task started; a running task keeps the mode its grant was issued with.");
+      return 0;
+    }
     case "export": {
       const outAt = args.indexOf("--out");
       const out = outAt >= 0 ? args[outAt + 1] : void 0;
