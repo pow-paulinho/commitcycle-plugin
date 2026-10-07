@@ -4000,10 +4000,10 @@ var require_resolve_block_map = __commonJS({
       let offset = bm.offset;
       let commentEnd = null;
       for (const collItem of bm.items) {
-        const { start, key, sep: sep2, value } = collItem;
+        const { start, key, sep: sep3, value } = collItem;
         const keyProps = resolveProps.resolveProps(start, {
           indicator: "explicit-key-ind",
-          next: key ?? sep2?.[0],
+          next: key ?? sep3?.[0],
           offset,
           onError,
           parentIndent: bm.indent,
@@ -4017,7 +4017,7 @@ var require_resolve_block_map = __commonJS({
             else if ("indent" in key && key.indent !== bm.indent)
               onError(offset, "BAD_INDENT", startColMsg);
           }
-          if (!keyProps.anchor && !keyProps.tag && !sep2) {
+          if (!keyProps.anchor && !keyProps.tag && !sep3) {
             commentEnd = keyProps.end;
             if (keyProps.comment) {
               if (map.comment)
@@ -4041,7 +4041,7 @@ var require_resolve_block_map = __commonJS({
         ctx.atKey = false;
         if (utilMapIncludes.mapIncludes(ctx, map.items, keyNode))
           onError(keyStart, "DUPLICATE_KEY", "Map keys must be unique");
-        const valueProps = resolveProps.resolveProps(sep2 ?? [], {
+        const valueProps = resolveProps.resolveProps(sep3 ?? [], {
           indicator: "map-value-ind",
           next: value,
           offset: keyNode.range[2],
@@ -4057,7 +4057,7 @@ var require_resolve_block_map = __commonJS({
             if (ctx.options.strict && keyProps.start < valueProps.found.offset - 1024)
               onError(keyNode.range, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit block mapping key");
           }
-          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : composeEmptyNode(ctx, offset, sep2, null, valueProps, onError);
+          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : composeEmptyNode(ctx, offset, sep3, null, valueProps, onError);
           if (ctx.schema.compat)
             utilFlowIndentCheck.flowIndentCheck(bm.indent, value, onError);
           offset = valueNode.range[2];
@@ -4148,7 +4148,7 @@ var require_resolve_end = __commonJS({
       let comment = "";
       if (end) {
         let hasSpace = false;
-        let sep2 = "";
+        let sep3 = "";
         for (const token of end) {
           const { source, type } = token;
           switch (type) {
@@ -4162,13 +4162,13 @@ var require_resolve_end = __commonJS({
               if (!comment)
                 comment = cb;
               else
-                comment += sep2 + cb;
-              sep2 = "";
+                comment += sep3 + cb;
+              sep3 = "";
               break;
             }
             case "newline":
               if (comment)
-                sep2 += source;
+                sep3 += source;
               hasSpace = true;
               break;
             default:
@@ -4211,18 +4211,18 @@ var require_resolve_flow_collection = __commonJS({
       let offset = fc.offset + fc.start.source.length;
       for (let i = 0; i < fc.items.length; ++i) {
         const collItem = fc.items[i];
-        const { start, key, sep: sep2, value } = collItem;
+        const { start, key, sep: sep3, value } = collItem;
         const props = resolveProps.resolveProps(start, {
           flow: fcName,
           indicator: "explicit-key-ind",
-          next: key ?? sep2?.[0],
+          next: key ?? sep3?.[0],
           offset,
           onError,
           parentIndent: fc.indent,
           startOnNewline: false
         });
         if (!props.found) {
-          if (!props.anchor && !props.tag && !sep2 && !value) {
+          if (!props.anchor && !props.tag && !sep3 && !value) {
             if (i === 0 && props.comma)
               onError(props.comma, "UNEXPECTED_TOKEN", `Unexpected , in ${fcName}`);
             else if (i < fc.items.length - 1)
@@ -4276,8 +4276,8 @@ var require_resolve_flow_collection = __commonJS({
             }
           }
         }
-        if (!isMap && !sep2 && !props.found) {
-          const valueNode = value ? composeNode(ctx, value, props, onError) : composeEmptyNode(ctx, props.end, sep2, null, props, onError);
+        if (!isMap && !sep3 && !props.found) {
+          const valueNode = value ? composeNode(ctx, value, props, onError) : composeEmptyNode(ctx, props.end, sep3, null, props, onError);
           coll.items.push(valueNode);
           offset = valueNode.range[2];
           if (isBlock(value))
@@ -4289,7 +4289,7 @@ var require_resolve_flow_collection = __commonJS({
           if (isBlock(key))
             onError(keyNode.range, "BLOCK_IN_FLOW", blockMsg);
           ctx.atKey = false;
-          const valueProps = resolveProps.resolveProps(sep2 ?? [], {
+          const valueProps = resolveProps.resolveProps(sep3 ?? [], {
             flow: fcName,
             indicator: "map-value-ind",
             next: value,
@@ -4300,8 +4300,8 @@ var require_resolve_flow_collection = __commonJS({
           });
           if (valueProps.found) {
             if (!isMap && !props.found && ctx.options.strict) {
-              if (sep2)
-                for (const st of sep2) {
+              if (sep3)
+                for (const st of sep3) {
                   if (st === valueProps.found)
                     break;
                   if (st.type === "newline") {
@@ -4318,7 +4318,7 @@ var require_resolve_flow_collection = __commonJS({
             else
               onError(valueProps.start, "MISSING_CHAR", `Missing , or : between ${fcName} items`);
           }
-          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : valueProps.found ? composeEmptyNode(ctx, valueProps.end, sep2, null, valueProps, onError) : null;
+          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : valueProps.found ? composeEmptyNode(ctx, valueProps.end, sep3, null, valueProps, onError) : null;
           if (valueNode) {
             if (isBlock(value))
               onError(valueNode.range, "BLOCK_IN_FLOW", blockMsg);
@@ -4498,7 +4498,7 @@ var require_resolve_block_scalar = __commonJS({
           chompStart = i + 1;
       }
       let value = "";
-      let sep2 = "";
+      let sep3 = "";
       let prevMoreIndented = false;
       for (let i = 0; i < contentStart; ++i)
         value += lines[i][0].slice(trimIndent) + "\n";
@@ -4515,24 +4515,24 @@ var require_resolve_block_scalar = __commonJS({
           indent = "";
         }
         if (type === Scalar.Scalar.BLOCK_LITERAL) {
-          value += sep2 + indent.slice(trimIndent) + content;
-          sep2 = "\n";
+          value += sep3 + indent.slice(trimIndent) + content;
+          sep3 = "\n";
         } else if (indent.length > trimIndent || content[0] === "	") {
-          if (sep2 === " ")
-            sep2 = "\n";
-          else if (!prevMoreIndented && sep2 === "\n")
-            sep2 = "\n\n";
-          value += sep2 + indent.slice(trimIndent) + content;
-          sep2 = "\n";
+          if (sep3 === " ")
+            sep3 = "\n";
+          else if (!prevMoreIndented && sep3 === "\n")
+            sep3 = "\n\n";
+          value += sep3 + indent.slice(trimIndent) + content;
+          sep3 = "\n";
           prevMoreIndented = true;
         } else if (content === "") {
-          if (sep2 === "\n")
+          if (sep3 === "\n")
             value += "\n";
           else
-            sep2 = "\n";
+            sep3 = "\n";
         } else {
-          value += sep2 + content;
-          sep2 = " ";
+          value += sep3 + content;
+          sep3 = " ";
           prevMoreIndented = false;
         }
       }
@@ -4714,25 +4714,25 @@ var require_resolve_flow_scalar = __commonJS({
       if (!match)
         return source;
       let res = match[1];
-      let sep2 = " ";
+      let sep3 = " ";
       let pos = first.lastIndex;
       line.lastIndex = pos;
       while (match = line.exec(source)) {
         if (match[1] === "") {
-          if (sep2 === "\n")
-            res += sep2;
+          if (sep3 === "\n")
+            res += sep3;
           else
-            sep2 = "\n";
+            sep3 = "\n";
         } else {
-          res += sep2 + match[1];
-          sep2 = " ";
+          res += sep3 + match[1];
+          sep3 = " ";
         }
         pos = line.lastIndex;
       }
       const last = /[ \t]*(.*)/sy;
       last.lastIndex = pos;
       match = last.exec(source);
-      return res + sep2 + (match?.[1] ?? "");
+      return res + sep3 + (match?.[1] ?? "");
     }
     function doubleQuotedValue(source, onError) {
       let res = "";
@@ -5542,14 +5542,14 @@ var require_cst_stringify = __commonJS({
         }
       }
     }
-    function stringifyItem({ start, key, sep: sep2, value }) {
+    function stringifyItem({ start, key, sep: sep3, value }) {
       let res = "";
       for (const st of start)
         res += st.source;
       if (key)
         res += stringifyToken(key);
-      if (sep2)
-        for (const st of sep2)
+      if (sep3)
+        for (const st of sep3)
           res += st.source;
       if (value)
         res += stringifyToken(value);
@@ -6716,18 +6716,18 @@ var require_parser = __commonJS({
         if (this.type === "map-value-ind") {
           const prev = getPrevProps(this.peek(2));
           const start = getFirstKeyStartProps(prev);
-          let sep2;
+          let sep3;
           if (scalar.end) {
-            sep2 = scalar.end;
-            sep2.push(this.sourceToken);
+            sep3 = scalar.end;
+            sep3.push(this.sourceToken);
             delete scalar.end;
           } else
-            sep2 = [this.sourceToken];
+            sep3 = [this.sourceToken];
           const map = {
             type: "block-map",
             offset: scalar.offset,
             indent: scalar.indent,
-            items: [{ start, key: scalar, sep: sep2 }]
+            items: [{ start, key: scalar, sep: sep3 }]
           };
           this.onKeyLine = true;
           this.stack[this.stack.length - 1] = map;
@@ -6880,15 +6880,15 @@ var require_parser = __commonJS({
                 } else if (isFlowToken(it.key) && !includesToken(it.sep, "newline")) {
                   const start2 = getFirstKeyStartProps(it.start);
                   const key = it.key;
-                  const sep2 = it.sep;
-                  sep2.push(this.sourceToken);
+                  const sep3 = it.sep;
+                  sep3.push(this.sourceToken);
                   delete it.key;
                   delete it.sep;
                   this.stack.push({
                     type: "block-map",
                     offset: this.offset,
                     indent: this.indent,
-                    items: [{ start: start2, key, sep: sep2 }]
+                    items: [{ start: start2, key, sep: sep3 }]
                   });
                 } else if (start.length > 0) {
                   it.sep = it.sep.concat(start, this.sourceToken);
@@ -7082,13 +7082,13 @@ var require_parser = __commonJS({
             const prev = getPrevProps(parent);
             const start = getFirstKeyStartProps(prev);
             fixFlowSeqItems(fc);
-            const sep2 = fc.end.splice(1, fc.end.length);
-            sep2.push(this.sourceToken);
+            const sep3 = fc.end.splice(1, fc.end.length);
+            sep3.push(this.sourceToken);
             const map = {
               type: "block-map",
               offset: fc.offset,
               indent: fc.indent,
-              items: [{ start, key: fc, sep: sep2 }]
+              items: [{ start, key: fc, sep: sep3 }]
             };
             this.onKeyLine = true;
             this.stack[this.stack.length - 1] = map;
@@ -9224,6 +9224,16 @@ var init_tools_list = __esm({
           },
           additionalProperties: false
         }
+      },
+      {
+        name: "cc_why",
+        description: "Which tasks changed a file or a folder, and why \u2014 before you edit it. Pass a path relative to the repository root; end it with / for a folder. Answers the tasks newest first with their state and the goal each was opened for, so you can keep what earlier work decided instead of undoing it. The board records a task's files at hand-in and close (CC-1155, CC-1177).",
+        inputSchema: {
+          type: "object",
+          properties: { path: { type: "string", description: "A file, or a folder ending in /, relative to the repository root." } },
+          required: ["path"],
+          additionalProperties: false
+        }
       }
     ];
   }
@@ -9340,6 +9350,10 @@ var init_api = __esm({
     };
     joinMessages = (items) => items && items.length ? items.map((m) => m.message).join(" ") : void 0;
     board = {
+      /** Which tasks touched a path, newest first (CC-1155). A folder ends in `/`. */
+      async why(scope, path) {
+        return call(scope, `/files?path=${encodeURIComponent(path)}`);
+      },
       /** One line in, one unscoped task in Triage out. */
       async intake(scope, title, requestedBy) {
         const { task } = await call(scope, "/tasks", {
@@ -9400,9 +9414,9 @@ var init_api = __esm({
 
 // ../../apps/mcp/src/checkout.ts
 import { existsSync as existsSync28, readFileSync as readFileSync32 } from "node:fs";
-import { dirname as dirname18, join as join35, resolve as resolve5 } from "node:path";
+import { dirname as dirname18, join as join35, resolve as resolve6 } from "node:path";
 function readCheckoutBinding(from = process.cwd()) {
-  let dir = resolve5(from);
+  let dir = resolve6(from);
   for (; ; ) {
     const file = join35(dir, ".zones", "board.json");
     if (existsSync28(file)) {
@@ -9444,6 +9458,20 @@ async function runTool(scope, name, args, readCheckout = readCheckoutBinding) {
   switch (name) {
     case "cc_zones":
       return JSON.stringify(await board.zones(scope), null, 2);
+    case "cc_why": {
+      const path = String(args.path ?? "").trim().replace(/^\.\//, "");
+      if (!path) return "cc_why needs a path: a file, or a folder ending in /.";
+      const r = await board.why(scope, path);
+      if (!r.touched_by.length) return `No task on this board has recorded touching ${r.path}${r.folder ? " or anything under it" : ""} yet.`;
+      const lines = [`${r.path} \u2014 ${r.touched_by.length} task(s), newest first:`, ""];
+      for (const t of r.touched_by.slice(0, 20)) {
+        lines.push(`${t.task_id} \xB7 ${t.state ?? "?"} \xB7 ${t.recorded_at.slice(0, 10)} \xB7 ${t.title ?? ""}`);
+        if (t.goal) lines.push(`  why: ${t.goal.replace(/\s+/g, " ").slice(0, 400)}`);
+        if (r.folder && t.files?.length) lines.push(`  files: ${t.files.slice(0, 8).join(", ")}`);
+        if (t.source === "reported") lines.push("  (files reported by the agent, not taken from a git diff)");
+      }
+      return lines.join("\n");
+    }
     case "cc_intake": {
       const title = String(args.title ?? "").trim();
       if (!title) return "A title is required \u2014 one line is enough.";
@@ -9524,7 +9552,7 @@ function reply(id, result) {
   if (id === void 0) return;
   process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id, result }) + "\n");
 }
-async function handle2(msg, resolve7 = scopeFromEnv, readCheckout = readCheckoutBinding) {
+async function handle2(msg, resolve8 = scopeFromEnv, readCheckout = readCheckoutBinding) {
   switch (msg.method) {
     case "initialize":
       return reply(msg.id, {
@@ -9538,14 +9566,14 @@ async function handle2(msg, resolve7 = scopeFromEnv, readCheckout = readCheckout
        caller cannot tell apart. Resolving here costs no network — every
        resolver in this product is filesystem-only (D-10). */
     case "tools/list": {
-      const scope = resolve7();
+      const scope = resolve8();
       return reply(msg.id, {
         tools: toolsForScope(TOOLS, "error" in scope ? scope : announced(scope))
       });
     }
     case "tools/call": {
       const params = msg.params ?? {};
-      const scope = resolve7();
+      const scope = resolve8();
       if ("error" in scope) {
         return reply(msg.id, { content: [{ type: "text", text: scope.error }], isError: true });
       }
@@ -9573,7 +9601,7 @@ async function handle2(msg, resolve7 = scopeFromEnv, readCheckout = readCheckout
       }
   }
 }
-function main(resolve7 = scopeFromEnv, readCheckout = readCheckoutBinding) {
+function main(resolve8 = scopeFromEnv, readCheckout = readCheckoutBinding) {
   const rl = createInterface2({ input: process.stdin });
   rl.on("line", (line) => {
     const text = line.trim();
@@ -9584,7 +9612,7 @@ function main(resolve7 = scopeFromEnv, readCheckout = readCheckoutBinding) {
     } catch {
       return;
     }
-    void handle2(msg, resolve7, readCheckout);
+    void handle2(msg, resolve8, readCheckout);
   });
 }
 var MCP_PROTOCOL_VERSION, SERVER, announced;
@@ -9611,7 +9639,7 @@ var init_server = __esm({
 import { createInterface as createInterface3 } from "node:readline/promises";
 import { execFileSync as execFileSync15 } from "node:child_process";
 import { existsSync as existsSync29 } from "node:fs";
-import { dirname as dirname19, join as join36, resolve as resolve6 } from "node:path";
+import { dirname as dirname19, join as join36, resolve as resolve7 } from "node:path";
 
 // src/branch.ts
 import { readFileSync, statSync } from "node:fs";
@@ -17014,7 +17042,7 @@ async function runReconcile(input) {
 import { existsSync as existsSync10, mkdirSync as mkdirSync7, readFileSync as readFileSync13, writeFileSync as writeFileSync9 } from "node:fs";
 import { homedir as homedir5 } from "node:os";
 import { dirname as dirname9, join as join15 } from "node:path";
-var CLI_VERSION = "0.1.19";
+var CLI_VERSION = "0.1.20";
 var CHECK_TTL_MS = 24 * 60 * 60 * 1e3;
 var updateCachePath = () => join15(homedir5(), ".commitcycle", "update-check.json");
 function isBehind(current, latest) {
@@ -21935,6 +21963,50 @@ function describeMode(mode) {
   return mode === "memory" ? "memory \u2014 tasks, intake, states and records; an edit needs an active task, and zones are not judged" : "governance \u2014 zones with owners, approvals, grants bound to a branch, and Bash containment";
 }
 
+// src/why.ts
+import { isAbsolute as isAbsolute4, relative as relative6, resolve as resolve5, sep as sep2 } from "node:path";
+function repoPath(root, cwd, input) {
+  const folder = input.endsWith("/") || input.endsWith(sep2);
+  const abs = isAbsolute4(input) ? input : resolve5(cwd, input);
+  let rel = relative6(root, abs).split(sep2).join("/");
+  if (rel === "") rel = "";
+  return folder && rel ? `${rel.replace(/\/+$/, "")}/` : rel;
+}
+async function runWhy(opts) {
+  const path = repoPath(opts.root, opts.cwd ?? process.cwd(), opts.path);
+  if (!path || path.startsWith("..")) return { ok: false, message: `${opts.path} is not inside this repository` };
+  const doFetch = opts.fetchImpl ?? fetch;
+  let res;
+  try {
+    res = await doFetch(`${opts.apiUrl.replace(/\/+$/, "")}/v1/${opts.tenant}/${opts.repo}/files?path=${encodeURIComponent(path)}`, { headers: boardHeaders(opts.token) });
+  } catch {
+    return { ok: false, message: "the board is unreachable" };
+  }
+  if (res.status === 404) return { ok: false, message: "this board predates file history (CC-1177) \u2014 update the board" };
+  if (!res.ok) return { ok: false, message: `the board answered ${res.status}` };
+  const body = await res.json();
+  return { ok: true, path: body.path, folder: !!body.folder, touched_by: body.touched_by ?? [] };
+}
+var oneLine = (s, max = 180) => {
+  const flat = (s ?? "").replace(/\s+/g, " ").trim();
+  return flat.length > max ? `${flat.slice(0, max - 1)}\u2026` : flat;
+};
+function formatWhy(r) {
+  if (!r.touched_by.length) {
+    return `  ${r.path} \u2014 no task on the board has recorded touching ${r.folder ? "anything under it" : "it"} yet.
+  Files are recorded at the hand-in and the close (cycle submit, cc_submit with files, verify --close).`;
+  }
+  const out = [`  ${r.path} \u2014 ${r.touched_by.length} task(s), newest first`, ""];
+  for (const t of r.touched_by) {
+    out.push(`  ${t.task_id.padEnd(8)} ${(t.state ?? "?").padEnd(12)} ${t.recorded_at.slice(0, 10)}  ${oneLine(t.title, 90)}`);
+    if (t.goal) out.push(`           why: ${oneLine(t.goal)}`);
+    if (r.folder && t.files?.length) out.push(`           files: ${t.files.slice(0, 6).join(", ")}${t.files.length > 6 ? `, and ${t.files.length - 6} more` : ""}`);
+    if (t.source === "reported") out.push("           (files reported by the agent, not taken from a git diff)");
+    out.push("");
+  }
+  return out.join("\n");
+}
+
 // src/deploy-guard.ts
 import { execFileSync as execFileSync14 } from "node:child_process";
 function currentBranch2(env = process.env, fromGit = gitBranch) {
@@ -22084,6 +22156,7 @@ var KNOWN_FLAGS = {
      every kept audit record to a repo-wide export. */
   export: ["--out", "--audits", "--help", "-h"],
   mode: ["--help", "-h"],
+  why: ["--help", "-h"],
   /* `discard` resets a branch to its base and deletes untracked files (CC-668).
      It is the most destructive command in this CLI by some distance, and it is
      also the one whose whole design is that it costs a single command with no
@@ -22416,6 +22489,15 @@ var COMMAND_HELP = {
 
   Read-only, no board call. What task this branch is bound to, what the grant
   currently opens, and which board this repository reports to.`,
+  why: `cycle why \u2014 which tasks changed a file or a folder, and why
+
+  cycle why src/billing/charge.ts     one file
+  cycle why src/billing/              everything under a folder (trailing slash)
+
+  Newest first, with each task's state and the goal it was opened for. A path is
+  read relative to where you run it. The board records a task's files at the
+  hand-in and the close; files an agent reported without a git diff are marked
+  as such (CC-1155, CC-1177).`,
   mode: `cycle mode \u2014 the repository's mode
 
   cycle mode                 show it, and whether a person chose it
@@ -22643,16 +22725,16 @@ var COMMAND_HELP = {
 
 // src/exit.ts
 function flush(stream, timeoutMs = 2e3) {
-  return new Promise((resolve7) => {
+  return new Promise((resolve8) => {
     if (stream.writableEnded) {
-      resolve7();
+      resolve8();
       return;
     }
     let settled = false;
     const done = () => {
       if (!settled) {
         settled = true;
-        resolve7();
+        resolve8();
       }
     };
     try {
@@ -22756,7 +22838,7 @@ function repoRoot(from = process.cwd()) {
     if (out) return out;
   } catch {
   }
-  let cur = resolve6(from);
+  let cur = resolve7(from);
   for (; ; ) {
     if (existsSync29(join36(cur, ".git"))) return cur;
     const parent = dirname19(cur);
@@ -22798,6 +22880,8 @@ var HELP = `cycle \u2014 a gate for AI-assisted development
   cycle sync         Push the zone map and events, pull the grant for this branch
   cycle pull [--adopt] [--write-missing]
                   Reconcile the record files against the board's task states
+  cycle why <file|folder/>
+                  Which tasks changed it, newest first, and the goal each was opened for (CC-1155)
   cycle mode [memory|governance]
                   Read the repository's mode, or choose it (a signed-in person):
                   memory needs only an active task to edit; governance adds zones (CC-1149)
@@ -23289,6 +23373,24 @@ ${result.taskId} is In Progress on \`${result.branch}\``);
     /* The board as one Markdown file (CC-1150): the copy you ask for, instead of
        a record file per task that every sync rewrote. stdout by default, so it
        pipes; --out writes a file and says where. */
+    /* Which tasks changed a file or a folder, and why (CC-1155). */
+    case "why": {
+      const target = args.find((a) => !a.startsWith("-"));
+      if (!target) {
+        console.error("cycle why takes a file, or a folder with a trailing slash: `cycle why src/billing/charge.ts`, `cycle why src/billing/`");
+        return 1;
+      }
+      const board2 = boardEnv(root);
+      if (!board2) return 1;
+      const r = await runWhy({ ...board2, root, cwd: process.cwd(), path: target });
+      if (!r.ok) {
+        console.error(`  ${r.message}`);
+        return 1;
+      }
+      console.log("");
+      console.log(formatWhy(r));
+      return 0;
+    }
     /* The repository's mode (CC-1149): read it, or choose it as a person. */
     case "mode": {
       const want = args.find((a) => !a.startsWith("-"));
