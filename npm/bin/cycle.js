@@ -16310,7 +16310,9 @@ function yaml(zones, owner) {
     "  - package-lock.json",
     '  - "**/dist/**"',
     "",
-    "zones:"
+    // An empty list written as `[]` (CC-1176): a bare `zones:` is YAML null,
+    // which the schema refuses, and a map the hook cannot parse denies everything.
+    zones.length ? "zones:" : "zones: []"
   ];
   for (const z of zones) {
     lines.push(`  - id: ${z.id}`);
@@ -16376,7 +16378,8 @@ async function runInit(opts) {
   const { root, acceptAll = false, log = () => {
   } } = opts;
   const ask = opts.ask ?? (async () => true);
-  const proposed = proposeZones(root);
+  const memory = opts.mode === "memory";
+  const proposed = memory ? [] : proposeZones(root);
   const { accepted: valid, findings } = validateCandidates(root, proposed);
   for (const f of findings.filter((x) => x.severity === "reject")) {
     log(`  skipped ${f.candidate}: ${f.message}`);
@@ -16393,9 +16396,10 @@ async function runInit(opts) {
   Is this dangerous to change?`);
     (yes ? accepted : declined).push(c);
   }
-  const proposal = proposedOwner(root);
+  const proposal = memory ? { owner: NO_OWNER, from: "" } : proposedOwner(root);
   let owner = NO_OWNER;
-  if (proposal.owner === NO_OWNER) {
+  if (memory) {
+  } else if (proposal.owner === NO_OWNER) {
     log(`
   Zone owners are left as ${NO_OWNER} \u2014 ${proposal.from}.`);
     log("  Fill them in before a high-risk zone is declared: the gate asks the owner, and it cannot ask nobody.");
@@ -17010,7 +17014,7 @@ async function runReconcile(input) {
 import { existsSync as existsSync10, mkdirSync as mkdirSync7, readFileSync as readFileSync13, writeFileSync as writeFileSync9 } from "node:fs";
 import { homedir as homedir5 } from "node:os";
 import { dirname as dirname9, join as join15 } from "node:path";
-var CLI_VERSION = "0.1.18";
+var CLI_VERSION = "0.1.19";
 var CHECK_TTL_MS = 24 * 60 * 60 * 1e3;
 var updateCachePath = () => join15(homedir5(), ".commitcycle", "update-check.json");
 function isBehind(current, latest) {
@@ -20154,10 +20158,19 @@ async function handOff(opts) {
   }
   const base = `${apiUrl.replace(/\/+$/, "")}/v1/${tenant}/${repo}`;
   const headers = boardHeaders(token);
+  let manifest;
+  if (to === "In Review") {
+    try {
+      manifest = buildManifest(root, forkPoint(root).sha);
+      if (!manifest.files.length) manifest = void 0;
+    } catch {
+      manifest = void 0;
+    }
+  }
   const res = await doFetch(`${base}/tasks/${taskId}/transition`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ to, actor, reason: opts.reason })
+    body: JSON.stringify({ to, actor, reason: opts.reason, ...manifest ? { manifest } : {} })
   });
   const drift = replyDrift(res);
   if (drift) warnings.push(`protocol: ${drift}`);
@@ -22013,7 +22026,7 @@ function runGuard(env = process.env, log = console.log, err = console.error, fro
 // src/help.ts
 var VALUE_FLAGS = {
   login: ["--email"],
-  init: ["--harness"],
+  init: ["--harness", "--mode"],
   pair: ["--board"],
   connect: ["--board"],
   approve: ["--hours"],
@@ -22367,9 +22380,13 @@ var COMMAND_HELP = {
   repository; the key goes to ~/.commitcycle and stays out of the repository.`,
   init: `cycle init \u2014 set this repository up
 
-  cycle init [--yes] [--harness claude-code,codex,cursor,windsurf|all]
+  cycle init [--yes] [--mode memory|governance] [--harness claude-code,codex,cursor,windsurf|all]
 
-  Proposes zones from what is actually in this repository, and writes
+  --mode memory (the default) starts the repository with no zones: every edit
+  needs an active task, and nothing else is judged (CC-1149). --mode governance
+  proposes zones from what is in the repository, as below, and asks for owners.
+
+  In governance, proposes zones from what is actually in this repository, and writes
   .zones/zones.yml, the CC block in AGENTS.md and the CLAUDE.md that imports it.
   It asks before protecting anything; --yes accepts every proposal without
   asking, and is required when there is no terminal to ask in.
@@ -23062,6 +23079,12 @@ Sessions are separate: \`cycle logout\` is what ends those.
       return runGuard();
     case "init": {
       const acceptAll = args.includes("--yes") || args.includes("-y");
+      const modeAt = args.findIndex((a) => a === "--mode" || a.startsWith("--mode="));
+      const modeValue = modeAt === -1 ? "memory" : args[modeAt].includes("=") ? args[modeAt].split("=")[1] : args[modeAt + 1];
+      if (modeValue !== "memory" && modeValue !== "governance") {
+        console.error(`cycle init --mode takes memory or governance, not "${modeValue ?? ""}". Nothing was written.`);
+        return 1;
+      }
       const harnessValues = args.flatMap((a, i) => {
         if (a === "--harness" && args[i + 1]) return [args[i + 1]];
         if (a.startsWith("--harness=")) return [a.slice("--harness=".length)];
@@ -23091,6 +23114,7 @@ Looking at ${root}
       const result = await runInit({
         root,
         acceptAll,
+        mode: modeValue,
         harnesses: selection?.harnesses,
         log: (l) => console.log(l),
         hookPath: existsSync29(join36(root, "packages/hook/bin/cc-hook.sh")) ? "$CLAUDE_PROJECT_DIR/packages/hook/bin/cc-hook.sh" : void 0,
@@ -23122,9 +23146,15 @@ Looking at ${root}
            is the one kind of question setup has ever been able to ask. */
       });
       rl?.close();
-      console.log(`
+      if (modeValue === "memory") {
+        console.log("\nMemory mode: every edit needs an active task, and no zone is protected.");
+        console.log("  Tasks, intake, states and records work as usual. For zones with owners and approvals,");
+        console.log("  run `cycle init --mode governance` instead, or later `cycle mode governance` and `cycle protect`.");
+      } else {
+        console.log(`
 Protecting ${result.accepted.length} zone(s):`);
-      for (const z of result.accepted) console.log(`  ${z.id.padEnd(16)} ${z.paths.join(", ")}`);
+        for (const z of result.accepted) console.log(`  ${z.id.padEnd(16)} ${z.paths.join(", ")}`);
+      }
       if (result.declined.length) {
         console.log(`
 Left unprotected (you said no): ${result.declined.map((z) => z.id).join(", ")}`);
@@ -23134,7 +23164,9 @@ Left unprotected (you said no): ${result.declined.map((z) => z.id).join(", ")}`)
 Wrote:`);
       for (const f of result.wrote) console.log(`  ${f}`);
       console.log(
-        `
+        modeValue === "memory" ? `
+Next: \`cycle pair\` connects this repository to a board, and \`cycle doctor\` confirms it is live.
+` : `
 Next: set a real owner for each zone in .zones/zones.yml \u2014 that is who gets
 asked when someone needs access. Then run \`cycle doctor\` to confirm it is live.
 `
