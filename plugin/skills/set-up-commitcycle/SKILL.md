@@ -114,7 +114,8 @@ Then ask which of three they are: they have a board already, they want one now,
 or they want to run locally first.
 
 **They want one now.** Say the sign-in is an address and a six-digit code, and
-hand them the command to run — `cycle login`. **Do not run it for them and never
+hand them the command to run — `cycle login` (from `npm i -g commitcycle`; the
+plugin does not put `cycle` on the PATH). **Do not run it for them and never
 handle the code.** It is a credential, and an agent typing one on somebody's
 behalf is the exact shape this product exists to make impossible. Wait, then
 continue with the address and organization below.
@@ -145,8 +146,9 @@ Never put a token in that file, or in any file in the repository.
 List the files written. Then say the two things people get wrong:
 
 - everything outside the zones is unprotected and needs no approval
-- enforcement is not installed yet by this skill alone — the hook is what
-  actually blocks a write, and it is a per-project install today
+- the hook is what actually blocks a write: with this plugin installed it is
+  already running and applies this zone map; over the hosted connector alone,
+  nothing on this machine blocks a write
 
 One mechanic worth a sentence: the committed AGENTS.md block is deliberately
 byte-stable — it never names the active task, so it never merge-conflicts.

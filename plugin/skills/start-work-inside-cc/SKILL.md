@@ -45,8 +45,8 @@ the four as a suggestion the person can take, edit, or replace:
 
 Never save the draft as it stands. It is a starting point for a thirty-second
 conversation, not an answer, and a spec nobody corrected is the one that gets
-argued about at the end. If there is no board configured, ask the four questions
-yourself and keep them just as short.
+argued about at the end. If there is no board configured, no task can be filed
+or started — say so, point to setting the repository up, and change nothing.
 
 **Save it with `cc_scope`, then start it with `cycle start <id>`.**
 
@@ -59,6 +59,31 @@ the answer arrives in this session (`cycle requests`). **Do not offer to remove 
 zone, widen one, or work around a block.** An agent proposing that is worse than
 the block it is avoiding, and it is the exact failure this product exists to
 catch.
+
+## Handing it in
+
+When the work is done, your final report goes on the ticket, not only in this
+chat. Hand in with `cycle submit --note "<report>"` (or, over the hosted connector, `cc_submit`
+with `note`), and write the report under these headings — the board reads them into
+the reviewer's checklist:
+
+```
+## Done
+- what changed
+## Beyond the ask
+- anything done that was not asked for
+## Different from the ask
+- where the work went another way, and why
+## Verification
+- how it was checked
+## Criteria
+1. evidence for the first acceptance criterion
+2. evidence for the second
+```
+
+Pass `--pr <url>` once the pull request exists. If you forget the note, your
+last reply is attached instead (the plugin keeps it on every stop), so end the
+task with the report itself rather than a one-line "done".
 
 ## What good looks like
 

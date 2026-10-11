@@ -10,11 +10,14 @@ one task on one branch and taken back when the work is handed in.
 |---|---|
 | `set-up-commitcycle` skill | Sets a repository up by asking about it — which areas are dangerous, who approves each, which board it reports to |
 | `start-work-inside-cc` skill | Files and scopes the task before the work, so the rule arrives as an arrangement rather than as a refusal |
-| `commitcycle` MCP server | Five read-and-describe tools: the zone map, one-line intake, the interview, scoping, and board status |
-| The hook | The part that actually blocks a write, on `PreToolUse` and `PostToolUse` |
+| `commitcycle` MCP server | Six tools: the zone map, one-line intake, the interview, scoping, board status, and which tasks changed a file (`cc_why`). Intake and scoping write to the board; none moves a task |
+| The hooks | `PreToolUse`/`PostToolUse`: the part that actually blocks a write. `Stop`: on a task branch in a repository with a board, sends the agent's last message to the board as the task's latest reply and keeps a copy in `.zones/state/replies/` |
 
-It brings its own binaries. There is no `npm install`, nothing is put on
-`PATH`, and nothing outside the project you are working in is touched.
+It brings its own binaries: the hook and the MCP server need no `npm install`,
+and nothing is put on `PATH`. The `cycle` command the skills ask you to run
+(`cycle login`, `cycle start`, `cycle submit`) is separate — `npm i -g commitcycle`.
+Outside the project you are working in, the only thing written is
+`~/.commitcycle/`, where sign-in, pairing and the update check keep their files.
 
 ## Why installing this cannot break your other projects
 
@@ -33,16 +36,21 @@ the setup and protected nothing, and a task is still required there.
 
 ## Using it without an account
 
-Everything local works with no board: the zone map, the audit of what is
-dangerous, and the record of what a task declared. A board is what issues
-grants, holds approvals and keeps the trail past one machine — the skill offers
-it and does not push it.
+Without a board there is no gate: no task can be filed or started, and in a
+repository with a zone map the hook then denies every write. So without an
+account the setup skill writes nothing and says why. A board is what issues
+grants, holds approvals and keeps the trail past one machine.
 
 ## The tools, and the line they do not cross
 
-`cc_zones`, `cc_intake`, `cc_interview`, `cc_scope`, `cc_status`.
+`cc_zones`, `cc_intake`, `cc_interview`, `cc_scope`, `cc_status`, `cc_why`.
 
 None of them starts work, issues a grant, or approves access to anything. That
 is not an oversight to be fixed later: an approval arriving through a tool the
 agent calls is authenticated by a token the agent holds, so a board could not
-tell your yes from the agent's own. The tools describe work. A person starts it.
+tell your yes from the agent's own. The tools describe work; starting it is
+`cycle start`, which the skill runs only on your say-so.
+
+The hosted connector (the board's MCP URL, added to a client instead of this
+plugin) is a different surface: its `cc_start`, `cc_submit` and `cc_close` move
+a task through the board's gate. It still has no tool that approves access.
